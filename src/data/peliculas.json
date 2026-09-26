@@ -3,24 +3,28 @@
     "id": 1,
     "titulo": "El viaje de Luna",
     "descripcion": "Una aventura animada sobre una niña que descubre un mundo mágico bajo la luna llena.",
-    "precio": 3500
+    "precio": 3500,
+    "imagen": "https://picsum.photos/seed/peli1/400/500"
   },
   {
     "id": 2,
     "titulo": "Código Rojo",
     "descripcion": "Un thriller de acción donde un agente encubierto debe detener una conspiración global.",
-    "precio": 4200
+    "precio": 4200,
+    "imagen": "https://picsum.photos/seed/peli2/400/500"
   },
   {
     "id": 3,
     "titulo": "Recuerdos de Verano",
     "descripcion": "Un drama íntimo sobre una familia que se reencuentra después de años de distancia.",
-    "precio": 3800
+    "precio": 3800,
+    "imagen": "https://picsum.photos/seed/peli3/400/500"
   },
   {
     "id": 4,
     "titulo": "Galaxia Perdida",
     "descripcion": "Una odisea espacial donde una tripulación busca un planeta habitable para la humanidad.",
-    "precio": 4500
+    "precio": 4500,
+    "imagen": "https://picsum.photos/seed/peli4/400/500"
   }
 ]
