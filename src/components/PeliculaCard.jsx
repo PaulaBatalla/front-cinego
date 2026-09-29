@@ -1,11 +1,16 @@
-function PeliculaCard({ titulo, descripcion, precio, imagen }) {
+import CustomCard from "./CustomCard";
+
+function PeliculaCard({ movie }) {
   return (
-    <div className="pelicula-card">
-      <img src={imagen} alt={titulo} className="pelicula-imagen" />
-      <h3>{titulo}</h3>
-      <p>{descripcion}</p>
-      <p className="precio">${precio}</p>
-    </div>
+    <CustomCard
+      image={movie.posterUrl}
+      imageAlt={`Póster de ${movie.titulo}`}
+      badge={`+${movie.clasificacion}`}
+      badgeTitle="Clasificación por edad"
+      title={movie.titulo}
+      description={movie.sinopsis}
+      duration={movie.duracion}
+    />
   );
 }
 
