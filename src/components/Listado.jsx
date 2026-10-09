@@ -7,6 +7,7 @@ function Listado() {
       {productos.map((pelicula) => (
         <PeliculaCard
           key={pelicula.id}
+          id={pelicula.id}
           titulo={pelicula.titulo}
           descripcion={pelicula.descripcion}
           precio={pelicula.precio}
