@@ -1,12 +1,16 @@
-import Listado from "./components/Listado";
+import { Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import PeliculaDetalle from "./pages/PeliculaDetalle";
+import SeleccionButacas from "./pages/SeleccionButacas";
 import "./App.css";
 
 function App() {
   return (
-    <div className="App">
-      <h1>Catálogo de Películas</h1>
-      <Listado />
-    </div>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/pelicula/:id" element={<PeliculaDetalle />} />
+      <Route path="/pelicula/:id/butacas" element={<SeleccionButacas />} />
+    </Routes>
   );
 }
 
