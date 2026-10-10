@@ -1,30 +1,26 @@
 [
   {
     "id": 1,
-    "titulo": "El viaje de Luna",
-    "descripcion": "Una aventura animada sobre una niña que descubre un mundo mágico bajo la luna llena.",
-    "precio": 3500,
-    "imagen": "https://picsum.photos/seed/peli1/400/500"
+    "titulo": "La odisea",
+    "duracion": "2h 30m",
+    "clasificacion": 18,
+    "sinopsis": "Una epopeya mitológica que sigue la historia de Odiseo y su largo viaje a casa, de 10 años de duración, tras la guerra de Troya.",
+    "posterUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnYKwLld4fwjRJ0SdxGc_WPNnZm9zUhL8WxEB7_6QUmQ&s=10"
   },
   {
     "id": 2,
-    "titulo": "Código Rojo",
-    "descripcion": "Un thriller de acción donde un agente encubierto debe detener una conspiración global.",
-    "precio": 4200,
-    "imagen": "https://picsum.photos/seed/peli2/400/500"
+    "titulo": "Spiderman: brand new day",
+    "duracion": "1h 45m",
+    "clasificacion": 14,
+    "sinopsis": "Tras el éxito mundial sin precedentes de Spider-Man: Sin regreso a casa, Spider-Man: Un nuevo día marca un capítulo completamente nuevo para Peter Parker y Spider-Man. Han pasado cuatro años desde los acontecimientos de Sin regreso a casa, y Peter ahora es un adulto que vive completamente solo, habiéndose borrado voluntariamente de la vida y los recuerdos de sus seres queridos.",
+    "posterUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRV4Ymhbyu4rSv8b7zluLsjzjkvZ4DtLXOjbp_OR-Rx2A&s=10"
   },
   {
     "id": 3,
-    "titulo": "Recuerdos de Verano",
-    "descripcion": "Un drama íntimo sobre una familia que se reencuentra después de años de distancia.",
-    "precio": 3800,
-    "imagen": "https://picsum.photos/seed/peli3/400/500"
-  },
-  {
-    "id": 4,
-    "titulo": "Galaxia Perdida",
-    "descripcion": "Una odisea espacial donde una tripulación busca un planeta habitable para la humanidad.",
-    "precio": 4500,
-    "imagen": "https://picsum.photos/seed/peli4/400/500"
+    "titulo": "Dune: Part 3",
+    "duracion": "2h 10m",
+    "clasificacion": 18,
+    "sinopsis": "Duna: Parte Tres se ambienta casi dos décadas después de que Paul Atreides tomó el control del Imperio. Convertido ahora en un despiadado Emperador, Paul deberá enfrentar las consecuencias de su reinado a medida que regresan viejos aliados, surgen aterradoras amenazas nuevas y la traición acecha en cada sombra.",
+    "posterUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSn6zu1u7Xudb3SG7pMkMZvIguVLOGU-JSs6Jd6FWZ9XA&s=10"
   }
 ]
