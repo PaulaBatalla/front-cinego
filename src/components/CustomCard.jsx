@@ -7,6 +7,7 @@ function CustomCard({
   badge,
   badgeTitle,
   duration,
+  children,
 }) {
   return (
     <div className="custom-card">
@@ -39,6 +40,9 @@ function CustomCard({
           ${precio}
         </p>
       )}
+
+      {/* Lo que se pase entre <CustomCard> y </CustomCard> (por ejemplo, un botón) */}
+      {children}
     </div>
   );
 }
