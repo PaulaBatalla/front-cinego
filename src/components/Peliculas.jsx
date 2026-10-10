@@ -9,27 +9,13 @@ function Peliculas() {
   useEffect(() => {
     const cargarPeliculas = async () => {
       try {
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-          throw new Error("Falta iniciar sesión para consultar las películas");
-        }
-
-        const respuesta = await fetch(
-          "http://localhost:8080/api/peliculas",
-          {
-            method: "GET",
-            headers: {
-              Accept: "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const respuesta = await fetch("http://localhost:8080/api/peliculas", {
+          method: "GET",
+          headers: { Accept: "application/json" },
+        });
 
         if (!respuesta.ok) {
-          throw new Error(
-            `Error al cargar las películas (${respuesta.status})`
-          );
+          throw new Error(`Error al cargar las películas (${respuesta.status})`);
         }
 
         const datos = await respuesta.json();

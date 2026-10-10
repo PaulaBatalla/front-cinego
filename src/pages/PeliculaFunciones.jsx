@@ -1,17 +1,67 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ResumenFuncion from "../components/funciones/ResumenFuncion";
 import SalaHorarios from "../components/funciones/SalaHorarios";
 import SelectorDia from "../components/funciones/SelectorDia";
-import todasLasFunciones from "../data/funciones.json";
-import { usePeliculas } from "../hooks/usePeliculas";
 import "./PeliculaFunciones.css";
+
+const API_URL = "http://localhost:8080/api";
+
+
+function adaptarFuncion(f) {
+  return {
+    id: f.id,
+    fecha: f.horarioInicio.slice(0, 10),
+    hora: f.horarioInicio.slice(11, 16),
+    sala: f.salaNombre,
+    precio: Number(f.precio),
+  };
+}
 
 // Página /pelicula/:id → se llega desde "Ver funciones" en la cartelera.
 function PeliculaFunciones() {
   const { id } = useParams();
-  const { peliculas } = usePeliculas();
-  const pelicula = peliculas.find((p) => p.id === Number(id));
+  const [pelicula, setPelicula] = useState(null);
+  const [funciones, setFunciones] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const cargarDatos = async () => {
+      try {
+        // Pedimos la película y todas las funciones al mismo tiempo.
+        const [respuestaPelicula, respuestaFunciones] = await Promise.all([
+          fetch(`${API_URL}/peliculas/${id}`),
+          fetch(`${API_URL}/funciones`),
+        ]);
+
+        if (respuestaPelicula.status === 404) {
+          setPelicula(null);
+          return;
+        }
+        if (!respuestaPelicula.ok || !respuestaFunciones.ok) {
+          throw new Error("No se pudieron cargar las funciones");
+        }
+
+        const datosPelicula = await respuestaPelicula.json();
+        const datosFunciones = await respuestaFunciones.json();
+
+        setPelicula(datosPelicula);
+        setFunciones(
+          datosFunciones.filter((f) => f.peliculaId === datosPelicula.id).map(adaptarFuncion),
+        );
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setCargando(false);
+      }
+    };
+
+    cargarDatos();
+  }, [id]);
+
+  if (cargando) return <p>Cargando funciones...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   if (!pelicula) {
     return (
@@ -23,23 +73,21 @@ function PeliculaFunciones() {
   }
 
   // key: si se pasa de una película a otra, el selector arranca de cero.
-  return <SeleccionFuncion key={pelicula.id} pelicula={pelicula} />;
+  return <SeleccionFuncion key={pelicula.id} pelicula={pelicula} funciones={funciones} />;
 }
 
-function SeleccionFuncion({ pelicula }) {
-  // Solo las funciones de esta película, ordenadas por día y hora.
-  const funciones = todasLasFunciones
-    .filter((f) => f.peliculaId === pelicula.id)
-    .sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
+function SeleccionFuncion({ pelicula, funciones }) {
+  // Ordenadas por día y hora.
+  const ordenadas = [...funciones].sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
 
   // Los días que tienen funciones, sin repetir.
-  const dias = funciones.map((f) => f.fecha).filter((fecha, i, lista) => lista.indexOf(fecha) === i);
+  const dias = ordenadas.map((f) => f.fecha).filter((fecha, i, lista) => lista.indexOf(fecha) === i);
 
   const [diaElegido, setDiaElegido] = useState(dias.length > 0 ? dias[0] : null);
   const [funcionElegida, setFuncionElegida] = useState(null);
 
   // Las funciones del día elegido, agrupadas por sala.
-  const funcionesDelDia = funciones.filter((f) => f.fecha === diaElegido);
+  const funcionesDelDia = ordenadas.filter((f) => f.fecha === diaElegido);
   const salas = funcionesDelDia.map((f) => f.sala).filter((sala, i, lista) => lista.indexOf(sala) === i);
 
   function elegirDia(dia) {
@@ -84,7 +132,6 @@ function SeleccionFuncion({ pelicula }) {
                     <SalaHorarios
                       key={sala}
                       sala={sala}
-                      formato={funcionesDeLaSala[0].formato}
                       precio={funcionesDeLaSala[0].precio}
                       funciones={funcionesDeLaSala}
                       funcionElegida={funcionElegida}
@@ -98,6 +145,7 @@ function SeleccionFuncion({ pelicula }) {
         </section>
 
         <ResumenFuncion titulo={pelicula.titulo} funcion={funcionElegida}>
+          {/* El paso siguiente (elegir asientos) es de otra tarea: acá se engancha. */}
           <button type="button" className="boton-continuar" disabled={funcionElegida === null}>
             {funcionElegida ? "Elegir asientos" : "Elegí un horario"}
           </button>
