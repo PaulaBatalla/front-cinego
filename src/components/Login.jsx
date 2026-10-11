@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import "./Auth.css";
 
 function validar(email, password) {
@@ -24,6 +25,7 @@ function Login() {
   const [errores, setErrores] = useState({});
   const [errorLogin, setErrorLogin] = useState(null);
   const [cargando, setCargando] = useState(false);
+  const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const recienRegistrado = location.state?.registrado;
@@ -58,7 +60,7 @@ function Login() {
 
       // El back devuelve el JWT como texto plano, no como JSON
       const token = await respuesta.text();
-      localStorage.setItem("token", token);
+      login(token);
       navigate("/");
     } catch (err) {
       setErrorLogin(
