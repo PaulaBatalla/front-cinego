@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Auth.css";
 
 function validar(email, password) {
@@ -21,9 +22,13 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errores, setErrores] = useState({});
+  const [errorLogin, setErrorLogin] = useState(null);
+  const [cargando, setCargando] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    setErrorLogin(null);
 
     const erroresEncontrados = validar(email, password);
     setErrores(erroresEncontrados);
@@ -31,11 +36,48 @@ function Login() {
     if (Object.keys(erroresEncontrados).length > 0) {
       return;
     }
+
+    setCargando(true);
+
+    try {
+      const respuesta = await fetch("http://localhost:8080/api/usuarios/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), password }),
+      });
+
+      if (respuesta.status === 401 || respuesta.status === 403) {
+        throw new Error("Email o contraseña incorrectos.");
+      }
+
+      if (!respuesta.ok) {
+        throw new Error(`No se pudo iniciar sesión (${respuesta.status})`);
+      }
+
+      // El back devuelve el JWT como texto plano, no como JSON
+      const token = await respuesta.text();
+      localStorage.setItem("token", token);
+      navigate("/");
+    } catch (err) {
+      setErrorLogin(
+        err instanceof TypeError
+          ? "No se pudo conectar con el servidor."
+          : err.message
+      );
+    } finally {
+      setCargando(false);
+    }
   };
 
   return (
     <form className="auth-form" onSubmit={handleSubmit} noValidate>
       <h1>Iniciar sesión</h1>
+
+      {errorLogin && (
+        <p className="auth-alert" role="alert">
+          {errorLogin}
+        </p>
+      )}
 
       <label className="auth-field">
         Email
@@ -65,8 +107,8 @@ function Login() {
         )}
       </label>
 
-      <button className="auth-submit" type="submit">
-        Ingresar
+      <button className="auth-submit" type="submit" disabled={cargando}>
+        {cargando ? "Ingresando..." : "Ingresar"}
       </button>
     </form>
   );
