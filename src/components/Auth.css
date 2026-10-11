@@ -41,6 +41,15 @@
   outline: 2px solid rgba(74, 222, 128, 0.3);
 }
 
+.auth-field input[aria-invalid="true"] {
+  border-color: #f87171;
+}
+
+.auth-error {
+  font-size: 0.8rem;
+  color: #f87171;
+}
+
 .auth-submit {
   margin-top: 0.5rem;
   padding: 0.8rem;
