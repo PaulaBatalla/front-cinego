@@ -27,7 +27,8 @@
   color: #cfcfcf;
 }
 
-.auth-field input {
+.auth-field input,
+.auth-field select {
   padding: 0.7rem 0.85rem;
   border: 1px solid #3a3a52;
   border-radius: 8px;
@@ -36,12 +37,14 @@
   font: inherit;
 }
 
-.auth-field input:focus {
+.auth-field input:focus,
+.auth-field select:focus {
   border-color: #4ade80;
   outline: 2px solid rgba(74, 222, 128, 0.3);
 }
 
-.auth-field input[aria-invalid="true"] {
+.auth-field input[aria-invalid="true"],
+.auth-field select[aria-invalid="true"] {
   border-color: #f87171;
 }
 
