@@ -109,7 +109,7 @@ function Registro() {
         throw new Error(`No se pudo crear la cuenta (${respuesta.status})`);
       }
 
-      navigate("/login");
+      navigate("/login", { state: { registrado: true } });
     } catch (err) {
       setErrorRegistro(
         err instanceof TypeError

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Auth.css";
 
 function validar(email, password) {
@@ -25,6 +25,8 @@ function Login() {
   const [errorLogin, setErrorLogin] = useState(null);
   const [cargando, setCargando] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const recienRegistrado = location.state?.registrado;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -72,6 +74,12 @@ function Login() {
   return (
     <form className="auth-form" onSubmit={handleSubmit} noValidate>
       <h1>Iniciar sesión</h1>
+
+      {recienRegistrado && !errorLogin && (
+        <p className="auth-success">
+          Cuenta creada. Ya podés iniciar sesión.
+        </p>
+      )}
 
       {errorLogin && (
         <p className="auth-alert" role="alert">
