@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Auth.css";
 
 function validar(datos) {
@@ -66,9 +66,13 @@ function Registro() {
   };
 
   const [errores, setErrores] = useState({});
+  const [errorRegistro, setErrorRegistro] = useState(null);
+  const [cargando, setCargando] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    setErrorRegistro(null);
 
     const erroresEncontrados = validar(datos);
     setErrores(erroresEncontrados);
@@ -76,11 +80,56 @@ function Registro() {
     if (Object.keys(erroresEncontrados).length > 0) {
       return;
     }
+
+    setCargando(true);
+
+    try {
+      const respuesta = await fetch(
+        "http://localhost:8080/api/usuarios/registro",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: datos.email.trim(),
+            nombre: datos.nombre.trim(),
+            apellido: datos.apellido.trim(),
+            password: datos.password,
+            fechaNacimiento: datos.fechaNacimiento,
+            sexo: datos.sexo,
+          }),
+        }
+      );
+
+      if (respuesta.status === 400) {
+        // El back manda el motivo como texto (ej: email ya registrado)
+        throw new Error(await respuesta.text());
+      }
+
+      if (!respuesta.ok) {
+        throw new Error(`No se pudo crear la cuenta (${respuesta.status})`);
+      }
+
+      navigate("/login");
+    } catch (err) {
+      setErrorRegistro(
+        err instanceof TypeError
+          ? "No se pudo conectar con el servidor."
+          : err.message
+      );
+    } finally {
+      setCargando(false);
+    }
   };
 
   return (
     <form className="auth-form" onSubmit={handleSubmit} noValidate>
       <h1>Crear cuenta</h1>
+
+      {errorRegistro && (
+        <p className="auth-alert" role="alert">
+          {errorRegistro}
+        </p>
+      )}
 
       <label className="auth-field">
         Nombre
@@ -184,8 +233,8 @@ function Registro() {
         {errores.sexo && <span className="auth-error">{errores.sexo}</span>}
       </label>
 
-      <button className="auth-submit" type="submit">
-        Crear cuenta
+      <button className="auth-submit" type="submit" disabled={cargando}>
+        {cargando ? "Creando cuenta..." : "Crear cuenta"}
       </button>
 
       <p className="auth-switch">
