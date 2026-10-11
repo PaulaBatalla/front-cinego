@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./Auth.css";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -9,10 +10,10 @@ function Login() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="auth-form" onSubmit={handleSubmit}>
       <h1>Iniciar sesión</h1>
 
-      <label>
+      <label className="auth-field">
         Email
         <input
           type="email"
@@ -23,7 +24,7 @@ function Login() {
         />
       </label>
 
-      <label>
+      <label className="auth-field">
         Contraseña
         <input
           type="password"
@@ -34,7 +35,7 @@ function Login() {
         />
       </label>
 
-      <button type="submit">Ingresar</button>
+      <button className="auth-submit" type="submit">Ingresar</button>
     </form>
   );
 }
