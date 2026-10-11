@@ -32,7 +32,21 @@
 	background-color: rgba(255, 255, 255, 0.1);
 }
 
+.site-login {
+	padding: 0.4rem 0.9rem;
+	border: 1px solid #4ade80;
+	border-radius: 999px;
+	color: #4ade80;
+	text-decoration: none;
+}
+
+.site-login:hover {
+	background-color: #4ade80;
+	color: #1e1e2f;
+}
+
 .site-brand:focus-visible,
+.site-login:focus-visible,
 .site-nav a:focus-visible {
 	outline: 2px solid #4ade80;
 	outline-offset: 3px;

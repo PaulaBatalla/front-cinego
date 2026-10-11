@@ -9,6 +9,7 @@ function Header() {
         <Link to="/">Peliculas</Link>
         <Link to="/candy">Candy</Link>
       </nav>
+      <Link className="site-login" to="/login">Ingresar</Link>
     </header>
   );
 }
