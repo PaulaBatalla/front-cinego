@@ -74,6 +74,16 @@
   cursor: not-allowed;
 }
 
+.auth-switch {
+  font-size: 0.9rem;
+  color: #cfcfcf;
+  text-align: center;
+}
+
+.auth-switch a {
+  color: #4ade80;
+}
+
 .auth-alert {
   padding: 0.7rem 0.85rem;
   border: 1px solid #f87171;

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Auth.css";
 
 function validar(email, password) {
@@ -110,6 +110,10 @@ function Login() {
       <button className="auth-submit" type="submit" disabled={cargando}>
         {cargando ? "Ingresando..." : "Ingresar"}
       </button>
+
+      <p className="auth-switch">
+        ¿No tenés cuenta? <Link to="/registro">Crear cuenta</Link>
+      </p>
     </form>
   );
 }

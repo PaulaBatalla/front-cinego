@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import "./Auth.css";
 
 function Registro() {
@@ -106,6 +107,10 @@ function Registro() {
       <button className="auth-submit" type="submit">
         Crear cuenta
       </button>
+
+      <p className="auth-switch">
+        ¿Ya tenés cuenta? <Link to="/login">Iniciar sesión</Link>
+      </p>
     </form>
   );
 }
