@@ -1,24 +1,9 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { validarLogin } from "../utils/validaciones";
 import CampoFormulario from "./CampoFormulario";
 import "./Auth.css";
-
-function validar(email, password) {
-  const errores = {};
-
-  if (!email.trim()) {
-    errores.email = "Ingresá tu email.";
-  } else if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
-    errores.email = "Ingresá un email válido.";
-  }
-
-  if (!password) {
-    errores.password = "Ingresá tu contraseña.";
-  }
-
-  return errores;
-}
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -35,7 +20,7 @@ function Login() {
     event.preventDefault();
     setErrorLogin(null);
 
-    const erroresEncontrados = validar(email, password);
+    const erroresEncontrados = validarLogin(email, password);
     setErrores(erroresEncontrados);
 
     if (Object.keys(erroresEncontrados).length > 0) {

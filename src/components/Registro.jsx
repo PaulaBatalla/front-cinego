@@ -1,52 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { validarRegistro } from "../utils/validaciones";
 import CampoFormulario from "./CampoFormulario";
 import "./Auth.css";
-
-function validar(datos) {
-  const errores = {};
-
-  if (!datos.nombre.trim()) {
-    errores.nombre = "Ingresá tu nombre.";
-  }
-
-  if (!datos.apellido.trim()) {
-    errores.apellido = "Ingresá tu apellido.";
-  }
-
-  if (!datos.email.trim()) {
-    errores.email = "Ingresá tu email.";
-  } else if (!/^\S+@\S+\.\S+$/.test(datos.email.trim())) {
-    errores.email = "Ingresá un email válido.";
-  }
-
-  if (!datos.password) {
-    errores.password = "Ingresá una contraseña.";
-  } else if (datos.password.length < 8) {
-    errores.password = "La contraseña debe tener al menos 8 caracteres.";
-  }
-
-  if (!datos.repetirPassword) {
-    errores.repetirPassword = "Repetí la contraseña.";
-  } else if (datos.repetirPassword !== datos.password) {
-    errores.repetirPassword = "Las contraseñas no coinciden.";
-  }
-
-  // "en-CA" da la fecha local como YYYY-MM-DD, igual que el input date
-  const hoy = new Date().toLocaleDateString("en-CA");
-
-  if (!datos.fechaNacimiento) {
-    errores.fechaNacimiento = "Ingresá tu fecha de nacimiento.";
-  } else if (datos.fechaNacimiento > hoy) {
-    errores.fechaNacimiento = "La fecha no puede ser futura.";
-  }
-
-  if (!datos.sexo) {
-    errores.sexo = "Elegí una opción.";
-  }
-
-  return errores;
-}
 
 function Registro() {
   const [datos, setDatos] = useState({
@@ -75,7 +31,7 @@ function Registro() {
     event.preventDefault();
     setErrorRegistro(null);
 
-    const erroresEncontrados = validar(datos);
+    const erroresEncontrados = validarRegistro(datos);
     setErrores(erroresEncontrados);
 
     if (Object.keys(erroresEncontrados).length > 0) {
