@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import CampoFormulario from "./CampoFormulario";
 import "./Auth.css";
 
 function validar(email, password) {
@@ -89,33 +90,25 @@ function Login() {
         </p>
       )}
 
-      <label className="auth-field">
-        Email
-        <input
-          type="email"
-          name="email"
-          placeholder="nombre@mail.com"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          aria-invalid={Boolean(errores.email)}
-        />
-        {errores.email && <span className="auth-error">{errores.email}</span>}
-      </label>
+      <CampoFormulario
+        etiqueta="Email"
+        type="email"
+        name="email"
+        placeholder="nombre@mail.com"
+        value={email}
+        onChange={(event) => setEmail(event.target.value)}
+        error={errores.email}
+      />
 
-      <label className="auth-field">
-        Contraseña
-        <input
-          type="password"
-          name="password"
-          placeholder="••••••••"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          aria-invalid={Boolean(errores.password)}
-        />
-        {errores.password && (
-          <span className="auth-error">{errores.password}</span>
-        )}
-      </label>
+      <CampoFormulario
+        etiqueta="Contraseña"
+        type="password"
+        name="password"
+        placeholder="••••••••"
+        value={password}
+        onChange={(event) => setPassword(event.target.value)}
+        error={errores.password}
+      />
 
       <button className="auth-submit" type="submit" disabled={cargando}>
         {cargando ? "Ingresando..." : "Ingresar"}

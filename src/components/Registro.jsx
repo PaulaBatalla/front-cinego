@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import CampoFormulario from "./CampoFormulario";
 import "./Auth.css";
 
 function validar(datos) {
@@ -131,107 +132,76 @@ function Registro() {
         </p>
       )}
 
-      <label className="auth-field">
-        Nombre
-        <input
-          type="text"
-          name="nombre"
-          placeholder="Tu nombre"
-          value={datos.nombre}
-          onChange={handleChange}
-          aria-invalid={Boolean(errores.nombre)}
-        />
-        {errores.nombre && <span className="auth-error">{errores.nombre}</span>}
-      </label>
+      <CampoFormulario
+        etiqueta="Nombre"
+        name="nombre"
+        placeholder="Tu nombre"
+        value={datos.nombre}
+        onChange={handleChange}
+        error={errores.nombre}
+      />
 
-      <label className="auth-field">
-        Apellido
-        <input
-          type="text"
-          name="apellido"
-          placeholder="Tu apellido"
-          value={datos.apellido}
-          onChange={handleChange}
-          aria-invalid={Boolean(errores.apellido)}
-        />
-        {errores.apellido && (
-          <span className="auth-error">{errores.apellido}</span>
-        )}
-      </label>
+      <CampoFormulario
+        etiqueta="Apellido"
+        name="apellido"
+        placeholder="Tu apellido"
+        value={datos.apellido}
+        onChange={handleChange}
+        error={errores.apellido}
+      />
 
-      <label className="auth-field">
-        Email
-        <input
-          type="email"
-          name="email"
-          placeholder="nombre@mail.com"
-          value={datos.email}
-          onChange={handleChange}
-          aria-invalid={Boolean(errores.email)}
-        />
-        {errores.email && <span className="auth-error">{errores.email}</span>}
-      </label>
+      <CampoFormulario
+        etiqueta="Email"
+        type="email"
+        name="email"
+        placeholder="nombre@mail.com"
+        value={datos.email}
+        onChange={handleChange}
+        error={errores.email}
+      />
 
-      <label className="auth-field">
-        Contraseña
-        <input
-          type="password"
-          name="password"
-          placeholder="Mínimo 8 caracteres"
-          value={datos.password}
-          onChange={handleChange}
-          aria-invalid={Boolean(errores.password)}
-        />
-        {errores.password && (
-          <span className="auth-error">{errores.password}</span>
-        )}
-      </label>
+      <CampoFormulario
+        etiqueta="Contraseña"
+        type="password"
+        name="password"
+        placeholder="Mínimo 8 caracteres"
+        value={datos.password}
+        onChange={handleChange}
+        error={errores.password}
+      />
 
-      <label className="auth-field">
-        Repetir contraseña
-        <input
-          type="password"
-          name="repetirPassword"
-          placeholder="••••••••"
-          value={datos.repetirPassword}
-          onChange={handleChange}
-          aria-invalid={Boolean(errores.repetirPassword)}
-        />
-        {errores.repetirPassword && (
-          <span className="auth-error">{errores.repetirPassword}</span>
-        )}
-      </label>
+      <CampoFormulario
+        etiqueta="Repetir contraseña"
+        type="password"
+        name="repetirPassword"
+        placeholder="••••••••"
+        value={datos.repetirPassword}
+        onChange={handleChange}
+        error={errores.repetirPassword}
+      />
 
-      <label className="auth-field">
-        Fecha de nacimiento
-        <input
-          type="date"
-          name="fechaNacimiento"
-          value={datos.fechaNacimiento}
-          onChange={handleChange}
-          aria-invalid={Boolean(errores.fechaNacimiento)}
-        />
-        {errores.fechaNacimiento && (
-          <span className="auth-error">{errores.fechaNacimiento}</span>
-        )}
-      </label>
+      <CampoFormulario
+        etiqueta="Fecha de nacimiento"
+        type="date"
+        name="fechaNacimiento"
+        value={datos.fechaNacimiento}
+        onChange={handleChange}
+        error={errores.fechaNacimiento}
+      />
 
-      <label className="auth-field">
-        Sexo
-        <select
-          name="sexo"
-          value={datos.sexo}
-          onChange={handleChange}
-          aria-invalid={Boolean(errores.sexo)}
-        >
-          <option value="">Elegí una opción</option>
-          <option value="F">Femenino</option>
-          <option value="M">Masculino</option>
-          <option value="X">Otro</option>
-          <option value="N">Prefiero no decirlo</option>
-        </select>
-        {errores.sexo && <span className="auth-error">{errores.sexo}</span>}
-      </label>
+      <CampoFormulario
+        etiqueta="Sexo"
+        name="sexo"
+        value={datos.sexo}
+        onChange={handleChange}
+        error={errores.sexo}
+      >
+        <option value="">Elegí una opción</option>
+        <option value="F">Femenino</option>
+        <option value="M">Masculino</option>
+        <option value="X">Otro</option>
+        <option value="N">Prefiero no decirlo</option>
+      </CampoFormulario>
 
       <button className="auth-submit" type="submit" disabled={cargando}>
         {cargando ? "Creando cuenta..." : "Crear cuenta"}
