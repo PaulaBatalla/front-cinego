@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { authService } from "../services/authService";
 import { validarLogin } from "../utils/validaciones";
 import CampoFormulario from "./CampoFormulario";
 import "./Auth.css";
@@ -30,30 +31,11 @@ function Login() {
     setCargando(true);
 
     try {
-      const respuesta = await fetch("http://localhost:8080/api/usuarios/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), password }),
-      });
-
-      if (respuesta.status === 401 || respuesta.status === 403) {
-        throw new Error("Email o contraseña incorrectos.");
-      }
-
-      if (!respuesta.ok) {
-        throw new Error(`No se pudo iniciar sesión (${respuesta.status})`);
-      }
-
-      // El back devuelve el JWT como texto plano, no como JSON
-      const token = await respuesta.text();
+      const token = await authService.login(email, password);
       login(token);
       navigate("/");
     } catch (err) {
-      setErrorLogin(
-        err instanceof TypeError
-          ? "No se pudo conectar con el servidor."
-          : err.message
-      );
+      setErrorLogin(err.message);
     } finally {
       setCargando(false);
     }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { authService } from "../services/authService";
 import { validarRegistro } from "../utils/validaciones";
 import CampoFormulario from "./CampoFormulario";
 import "./Auth.css";
@@ -41,38 +42,10 @@ function Registro() {
     setCargando(true);
 
     try {
-      const respuesta = await fetch(
-        "http://localhost:8080/api/usuarios/registro",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: datos.email.trim(),
-            nombre: datos.nombre.trim(),
-            apellido: datos.apellido.trim(),
-            password: datos.password,
-            fechaNacimiento: datos.fechaNacimiento,
-            sexo: datos.sexo,
-          }),
-        }
-      );
-
-      if (respuesta.status === 400) {
-        // El back manda el motivo como texto (ej: email ya registrado)
-        throw new Error(await respuesta.text());
-      }
-
-      if (!respuesta.ok) {
-        throw new Error(`No se pudo crear la cuenta (${respuesta.status})`);
-      }
-
+      await authService.registrar(datos);
       navigate("/login", { state: { registrado: true } });
     } catch (err) {
-      setErrorRegistro(
-        err instanceof TypeError
-          ? "No se pudo conectar con el servidor."
-          : err.message
-      );
+      setErrorRegistro(err.message);
     } finally {
       setCargando(false);
     }
