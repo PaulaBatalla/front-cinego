@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "nombre": "Pochoclos chico",
+    "descripcion": "Pochoclos recién hechos, a elección salados o dulces.",
+    "precio": 3500,
+    "imagenUrl": "https://placehold.co/400x400/1E222A/E8A33D?text=Pochoclos"
+  },
+  {
+    "id": 2,
+    "nombre": "Pochoclos grande",
+    "descripcion": "Balde grande de pochoclos, ideal para compartir.",
+    "precio": 5200,
+    "imagenUrl": "https://placehold.co/400x400/1E222A/E8A33D?text=Pochoclos+XL"
+  },
+  {
+    "id": 3,
+    "nombre": "Combo Pochoclo + Gaseosa",
+    "descripcion": "Pochoclos medianos más una gaseosa grande a elección.",
+    "precio": 7800,
+    "imagenUrl": "https://placehold.co/400x400/1E222A/E8A33D?text=Combo"
+  },
+  {
+    "id": 4,
+    "nombre": "Nachos con queso",
+    "descripcion": "Nachos crocantes con salsa de queso cheddar caliente.",
+    "precio": 4900,
+    "imagenUrl": "https://placehold.co/400x400/1E222A/E8A33D?text=Nachos"
+  },
+  {
+    "id": 5,
+    "nombre": "Gaseosa grande",
+    "descripcion": "Línea Coca-Cola, a elección con o sin azúcar.",
+    "precio": 3200,
+    "imagenUrl": "https://placehold.co/400x400/1E222A/E8A33D?text=Gaseosa"
+  },
+  {
+    "id": 6,
+    "nombre": "Chocolate",
+    "descripcion": "Barra de chocolate con leche, marca clásica de cine.",
+    "precio": 2800,
+    "imagenUrl": "https://placehold.co/400x400/1E222A/E8A33D?text=Chocolate"
+  }
+]
