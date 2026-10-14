@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import CustomCard from "./CustomCard";
 
 function PeliculaCard({ movie }) {
@@ -10,7 +11,11 @@ function PeliculaCard({ movie }) {
       title={movie.titulo}
       description={movie.sinopsis}
       duration={movie.duracion}
-    />
+    >
+      <Link className="boton-ver-funciones" to={`/pelicula/${movie.id}`}>
+        Ver funciones
+      </Link>
+    </CustomCard>
   );
 }
 

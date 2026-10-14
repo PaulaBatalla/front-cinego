@@ -6,6 +6,7 @@ import RutaInvitado from "./components/RutaInvitado";
 import "./App.css";
 import Header from "./components/Header";
 import Candy from "./components/Candy";
+import PeliculaFunciones from "./pages/PeliculaFunciones";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Peliculas />} />
         <Route path="/candy" element={<Candy />} />
+        <Route path="/pelicula/:id" element={<PeliculaFunciones />} />
         <Route element={<RutaInvitado />}>
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Registro />} />
