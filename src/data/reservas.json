@@ -1,0 +1,140 @@
+[
+  {
+    "id": 1,
+    "titulo": "El viaje de Luna",
+    "precio": 3500,
+    "funciones": [
+      {
+        "id": 101,
+        "fecha": "2026-10-01",
+        "hora": "18:00",
+        "sala": 1,
+        "asientos": ["A1", "A2", "A3", "A4", "A5", "B1", "B2", "B3", "B4", "B5"],
+        "asientosOcupados": ["A2", "B4"]
+      },
+      {
+        "id": 102,
+        "fecha": "2026-10-01",
+        "hora": "20:30",
+        "sala": 2,
+        "asientos": ["A1", "A2", "A3", "A4", "A5", "B1", "B2", "B3", "B4", "B5"],
+        "asientosOcupados": ["A1", "A3", "B2", "B5"]
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "titulo": "Código Rojo",
+    "precio": 4200,
+    "funciones": [
+      {
+        "id": 201,
+        "fecha": "2026-10-01",
+        "hora": "19:00",
+        "sala": 3,
+        "asientos": ["A1", "A2", "A3", "A4", "A5", "B1", "B2", "B3", "B4", "B5"],
+        "asientosOcupados": ["A4", "B1", "B3"]
+      },
+      {
+        "id": 202,
+        "fecha": "2026-10-02",
+        "hora": "21:15",
+        "sala": 1,
+        "asientos": ["A1", "A2", "A3", "A4", "A5", "B1", "B2", "B3", "B4", "B5"],
+        "asientosOcupados": ["A2", "A5", "B4"]
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "titulo": "Recuerdos de Verano",
+    "precio": 3800,
+    "funciones": [
+      {
+        "id": 301,
+        "fecha": "2026-10-01",
+        "hora": "17:30",
+        "sala": 2,
+        "asientos": ["A1", "A2", "A3", "A4", "A5", "B1", "B2", "B3", "B4", "B5"],
+        "asientosOcupados": ["A1", "A2", "A3"]
+      },
+      {
+        "id": 302,
+        "fecha": "2026-10-03",
+        "hora": "20:00",
+        "sala": 3,
+        "asientos": ["A1", "A2", "A3", "A4", "A5", "B1", "B2", "B3", "B4", "B5"],
+        "asientosOcupados": ["B2", "B3", "B5"]
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "titulo": "Galaxia Perdida",
+    "precio": 4500,
+    "funciones": [
+      {
+        "id": 401,
+        "fecha": "2026-10-02",
+        "hora": "18:45",
+        "sala": 1,
+        "asientos": ["A1", "A2", "A3", "A4", "A5", "B1", "B2", "B3", "B4", "B5"],
+        "asientosOcupados": ["A3", "B1", "B2", "B4"]
+      },
+      {
+        "id": 402,
+        "fecha": "2026-10-03",
+        "hora": "22:00",
+        "sala": 2,
+        "asientos": ["A1", "A2", "A3", "A4", "A5", "B1", "B2", "B3", "B4", "B5"],
+        "asientosOcupados": ["A5", "B3"]
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "titulo": "La última estación",
+    "precio": 4000,
+    "funciones": [
+      {
+        "id": 501,
+        "fecha": "2026-10-02",
+        "hora": "16:00",
+        "sala": 3,
+        "asientos": ["A1", "A2", "A3", "A4", "A5", "B1", "B2", "B3", "B4", "B5"],
+        "asientosOcupados": ["A2", "B5"]
+      },
+      {
+        "id": 502,
+        "fecha": "2026-10-03",
+        "hora": "19:30",
+        "sala": 1,
+        "asientos": ["A1", "A2", "A3", "A4", "A5", "B1", "B2", "B3", "B4", "B5"],
+        "asientosOcupados": ["A1", "A4", "B1", "B2"]
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "titulo": "Misterio en el teatro",
+    "precio": 3900,
+    "funciones": [
+      {
+        "id": 601,
+        "fecha": "2026-10-02",
+        "hora": "20:15",
+        "sala": 2,
+        "asientos": ["A1", "A2", "A3", "A4", "A5", "B1", "B2", "B3", "B4", "B5"],
+        "asientosOcupados": ["A3", "A4", "B3"]
+      },
+      {
+        "id": 602,
+        "fecha": "2026-10-03",
+        "hora": "21:00",
+        "sala": 3,
+        "asientos": ["A1", "A2", "A3", "A4", "A5", "B1", "B2", "B3", "B4", "B5"],
+        "asientosOcupados": ["A1", "A2", "B4", "B5"]
+      }
+    ]
+  }
+]
