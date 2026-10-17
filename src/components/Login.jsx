@@ -33,7 +33,7 @@ function Login() {
     try {
       const token = await authService.login(email, password);
       login(token);
-      navigate(location.state?.volverA || "/", { replace: true });
+      navigate("/");
     } catch (err) {
       setErrorLogin(err.message);
     } finally {
