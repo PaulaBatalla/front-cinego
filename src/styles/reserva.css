@@ -1,0 +1,94 @@
+﻿.reserva-page {
+  --reserva-fondo: #0e0e10;
+  --reserva-panel: #17171a;
+  --reserva-borde: #2d2d33;
+  --reserva-texto: #f4f1ea;
+  --reserva-secundario: #aaa7b0;
+  --reserva-acento: #ff6b4a;
+  margin-top: 24px;
+  padding: clamp(20px, 4vw, 44px);
+  border-radius: 20px;
+  background: var(--reserva-fondo);
+  color: var(--reserva-texto);
+  font: 14px/1.5 'DM Sans', system-ui, sans-serif;
+  text-align: left;
+  color-scheme: dark;
+}
+.reserva-page * { box-sizing: border-box; }
+.reserva-page h1, .reserva-page h2, .reserva-page h3 { color: var(--reserva-texto); }
+.reserva-volver { color: var(--reserva-secundario); text-decoration: none; font-size: 12px; }
+.reserva-volver:hover { color: var(--reserva-texto); }
+.reserva-ficha { display: flex; align-items: flex-start; gap: 30px; margin: 30px 0 24px; }
+.reserva-poster { width: 180px; aspect-ratio: 2 / 3; object-fit: cover; flex: none; border-radius: 12px; }
+.reserva-poster--alternativo { display: flex; flex-direction: column; justify-content: space-between; padding: 16px; background: #d4bb83; color: #25231f; }
+.reserva-poster--alternativo span { font-size: 9px; letter-spacing: 1.5px; }
+.reserva-poster--alternativo strong { font-size: 27px; line-height: 1; letter-spacing: -1px; overflow-wrap: anywhere; }
+.reserva-ficha-info { flex: 1; min-width: 0; }
+.reserva-ficha h1 { margin: 0 0 24px; font-size: clamp(28px, 4vw, 44px); font-weight: 800; line-height: 1.1; letter-spacing: -1.5px; }
+.reserva-ficha-info > p { margin-bottom: 20px; color: var(--reserva-secundario); }
+.reserva-page label { display: block; margin-bottom: 8px; color: var(--reserva-secundario); font-size: 12px; }
+.reserva-page select { max-width: 320px; width: 100%; min-height: 42px; padding: 8px 12px; border: 1px solid var(--reserva-borde); border-radius: 8px; background: var(--reserva-panel); color: var(--reserva-texto); font: inherit; }
+.reserva-layout { display: grid; grid-template-columns: minmax(0, 1fr) 240px; align-items: start; gap: 18px; }
+.reserva-panel, .reserva-resumen { padding: 24px; background: var(--reserva-panel); border: 1px solid var(--reserva-borde); border-radius: 18px; min-width: 0; }
+.reserva-pasos { display: flex; list-style: none; padding: 0; margin: 0 0 28px; gap: 30px; }
+.reserva-pasos li { display: flex; align-items: center; gap: 7px; color: var(--reserva-secundario); font-size: 11px; }
+.reserva-pasos li > span { display: grid; place-items: center; width: 22px; height: 22px; border: 1px solid #45454c; border-radius: 50%; }
+.reserva-pasos .reserva-paso-actual { color: var(--reserva-texto); font-weight: 700; }
+.reserva-paso-actual > span { background: var(--reserva-texto); color: #17171a; }
+.reserva-paso-completo > span { background: #83c9a6; color: #14271e; }
+.reserva-page .reserva-funciones h2, .reserva-page .reserva-sala h2, .reserva-espera h2 { margin: 0 0 12px; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 1.5px; color: var(--reserva-secundario); }
+.reserva-dias { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
+.reserva-dia { display: flex; flex-direction: column; align-items: center; min-width: 60px; min-height: 48px; padding: 7px 10px; border: 1px solid var(--reserva-borde); border-radius: 9px; background: #202024; color: var(--reserva-texto); font: inherit; cursor: pointer; }
+.reserva-dia > span { font-size: 10px; text-transform: capitalize; }
+.reserva-dia > strong { font-size: 12px; }
+.reserva-dia--activo { background: var(--reserva-texto); color: #17171a; border-color: var(--reserva-texto); }
+.reserva-salas { display: grid; gap: 8px; }
+.reserva-sala-horarios { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 12px; border: 1px solid var(--reserva-borde); border-radius: 12px; background: #1c1c20; }
+.reserva-sala-horarios > div:first-child { min-width: 112px; }
+.reserva-sala-horarios strong { font-size: 12px; }
+.reserva-sala-horarios small { display: block; color: var(--reserva-secundario); font-size: 10px; }
+.reserva-page .funciones-lista { display: flex; flex-wrap: wrap; gap: 8px; }
+.reserva-page .funcion-boton { min-height: 38px; padding: 6px 12px; border: 1px solid #3b3b42; border-radius: 7px; background: transparent; color: var(--reserva-texto); font: inherit; font-size: 12px; cursor: pointer; }
+.reserva-page .funcion-boton:hover, .reserva-dia:hover { border-color: var(--reserva-acento); }
+.reserva-page .funcion-boton--seleccionada { border-color: var(--reserva-acento); background: var(--reserva-acento); color: #24100b; }
+.reserva-espera { padding-top: 28px; }
+.reserva-espera p, .reserva-ayuda { color: var(--reserva-secundario); font-size: 12px; }
+.reserva-page .reserva-sala { padding: 28px 0 0; border: 0; border-radius: 0; background: transparent; }
+.reserva-page .pantalla { width: 70%; margin: 26px auto; padding-top: 10px; border-top: 3px solid #68666e; text-align: center; color: var(--reserva-secundario); font-size: 8px; letter-spacing: 2px; }
+.reserva-page .asientos { display: grid; gap: 8px; overflow-x: auto; padding: 5px 3px 16px; }
+.reserva-page .asientos-fila { display: flex; justify-content: center; align-items: center; gap: 8px; min-width: max-content; }
+.asientos-letra { width: 16px; color: var(--reserva-secundario); font-size: 10px; }
+.reserva-page .asiento { width: 36px; height: 36px; border: 1px solid #62616d; border-bottom-width: 3px; border-radius: 7px 7px 4px 4px; background: #34343d; color: var(--reserva-texto); font: inherit; font-size: 10px; cursor: pointer; }
+.reserva-page .asiento--disponible:hover { border-color: var(--reserva-acento); }
+.reserva-page .asiento--seleccionado { background: var(--reserva-acento); border-color: var(--reserva-acento); color: #230e08; font-weight: 700; }
+.reserva-page .asiento--ocupado { background: transparent; border-color: #34343c; color: #77747e; cursor: not-allowed; }
+.reserva-page .referencias-asientos { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-top: 10px; color: var(--reserva-secundario); font-size: 10px; }
+.referencias-asientos span { display: inline-flex; align-items: center; gap: 6px; }
+.referencia { width: 10px; height: 10px; border-radius: 3px; border: 1px solid #62616d; background: #34343d; }
+.referencia--seleccionado { border-color: var(--reserva-acento); background: var(--reserva-acento); }
+.referencia--ocupado { border-color: #34343c; background: transparent; }
+.reserva-resumen { position: sticky; top: 24px; padding: 20px; }
+.reserva-resumen h2 { margin: 0 0 18px; font-size: 18px; font-weight: 700; letter-spacing: -.4px; }
+.reserva-resumen dl { display: grid; gap: 12px; margin: 0 0 20px; font-size: 11px; }
+.reserva-resumen dl > div { display: flex; justify-content: space-between; gap: 12px; }
+.reserva-resumen dt { color: var(--reserva-secundario); }
+.reserva-resumen dd { margin: 0; text-align: right; font-weight: 600; overflow-wrap: anywhere; }
+.reserva-desglose { display: flex; justify-content: space-between; gap: 8px; border-top: 1px solid var(--reserva-borde); padding-top: 16px; color: var(--reserva-secundario); font-size: 11px; }
+.reserva-total { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-top: 12px; }
+.reserva-total > span { font-size: 12px; }
+.reserva-total strong { font-size: 30px; letter-spacing: -1px; }
+.reserva-nota { margin-top: 18px; color: var(--reserva-secundario); font-size: 11px; }
+.reserva-page :focus-visible { outline: 2px solid var(--reserva-acento); outline-offset: 4px; }
+@media (max-width: 760px) {
+  .reserva-layout { grid-template-columns: 1fr; }
+  .reserva-resumen { position: static; }
+  .reserva-poster { width: 125px; }
+  .reserva-poster--alternativo strong { font-size: 21px; }
+  .reserva-ficha { gap: 20px; }
+}
+@media (max-width: 480px) {
+  .reserva-page { margin-top: 16px; padding: 24px 14px; border-radius: 12px; }
+  .reserva-panel, .reserva-resumen { padding: 18px 14px; }
+  .reserva-ficha { flex-direction: column; }
+  .reserva-ficha-info { width: 100%; }
+}

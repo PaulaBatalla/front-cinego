@@ -4,19 +4,21 @@ function SelectorAsientos({
   asientosSeleccionados,
   onCambiarAsiento,
 }) {
-  const filas = ["A", "B"];
+  const filas = [...new Set(asientos.map((asiento) => asiento.replace(/\d+$/, "")))];
 
   return (
-    <section>
-      <h2>Elegí tus asientos</h2>
+    <section className="reserva-sala">
+      <h2>Asientos</h2>
+      <p className="reserva-ayuda">Podés seleccionar más de una butaca.</p>
 
       <div className="pantalla">PANTALLA</div>
 
       <div className="asientos">
         {filas.map((fila) => (
           <div className="asientos-fila" key={fila}>
+            <span className="asientos-letra" aria-hidden="true">{fila}</span>
             {asientos
-              .filter((asiento) => asiento.startsWith(fila))
+              .filter((asiento) => asiento.replace(/\d+$/, "") === fila)
               .map((asiento) => {
                 const estaOcupado = asientosOcupados.includes(asiento);
                 const estaSeleccionado =
@@ -37,6 +39,7 @@ function SelectorAsientos({
                     className={clase}
                     disabled={estaOcupado}
                     aria-pressed={estaSeleccionado}
+                    aria-label={`Asiento ${asiento}, ${estaOcupado ? "ocupado" : estaSeleccionado ? "seleccionado" : "disponible"}`}
                     onClick={() => onCambiarAsiento(asiento)}
                   >
                     {asiento}
@@ -48,9 +51,9 @@ function SelectorAsientos({
       </div>
 
       <div className="referencias-asientos">
-        <span>Disponible</span>
-        <span>Seleccionado</span>
-        <span>Ocupado</span>
+        <span><i className="referencia referencia--disponible" />Disponible</span>
+        <span><i className="referencia referencia--seleccionado" />Seleccionado</span>
+        <span><i className="referencia referencia--ocupado" />Ocupado</span>
       </div>
     </section>
   );
