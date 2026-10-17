@@ -5,9 +5,13 @@ import CustomCard from "./CustomCard";
 function CandyCard({ item }) {
   const dispatch = useDispatch();
 
-  const seleccionado = useSelector((state) =>
-    state.candy.items.some((producto) => producto.id === item.id)
-  );
+  const cantidad = useSelector((state) => {
+    const seleccionado = state.candy.items.find(
+      (producto) => producto.id === item.id
+    );
+
+    return seleccionado ? seleccionado.cantidad : 0;
+  });
 
   return (
     <CustomCard
@@ -17,12 +21,13 @@ function CandyCard({ item }) {
       description={item.descripcion}
       precio={item.precio}
     >
+      <p>Unidades seleccionadas: {cantidad}</p>
+
       <button
         type="button"
         onClick={() => dispatch(agregarCandy(item))}
-        disabled={seleccionado}
       >
-        {seleccionado ? "Agregado" : "Agregar"}
+        Agregar una unidad
       </button>
     </CustomCard>
   );
