@@ -4,10 +4,7 @@ import ResumenFuncion from "../components/funciones/ResumenFuncion";
 import SalaHorarios from "../components/funciones/SalaHorarios";
 import SelectorDia from "../components/funciones/SelectorDia";
 import "./PeliculaFunciones.css";
-
-const API_URL = "http://localhost:8080/api";
-
-
+import { solicitar } from "../services/api";
 function adaptarFuncion(f) {
   return {
     id: f.id,
@@ -30,28 +27,21 @@ function PeliculaFunciones() {
     const cargarDatos = async () => {
       try {
         // Pedimos la película y todas las funciones al mismo tiempo.
-        const [respuestaPelicula, respuestaFunciones] = await Promise.all([
-          fetch(`${API_URL}/peliculas/${id}`),
-          fetch(`${API_URL}/funciones`),
+        const [datosPelicula, datosFunciones] = await Promise.all([
+          solicitar(`/peliculas/${id}`),
+          solicitar("/funciones"),
         ]);
-
-        if (respuestaPelicula.status === 404) {
-          setPelicula(null);
-          return;
-        }
-        if (!respuestaPelicula.ok || !respuestaFunciones.ok) {
-          throw new Error("No se pudieron cargar las funciones");
-        }
-
-        const datosPelicula = await respuestaPelicula.json();
-        const datosFunciones = await respuestaFunciones.json();
 
         setPelicula(datosPelicula);
         setFunciones(
           datosFunciones.filter((f) => f.peliculaId === datosPelicula.id).map(adaptarFuncion),
         );
       } catch (err) {
-        setError(err.message);
+        if (err.status === 404) {
+          setPelicula(null);
+        } else {
+          setError(err.message);
+        }
       } finally {
         setCargando(false);
       }
@@ -145,10 +135,9 @@ function SeleccionFuncion({ pelicula, funciones }) {
         </section>
 
         <ResumenFuncion titulo={pelicula.titulo} funcion={funcionElegida}>
-          {/* El paso siguiente (elegir asientos) es de otra tarea: acá se engancha. */}
-          <button type="button" className="boton-continuar" disabled={funcionElegida === null}>
-            {funcionElegida ? "Elegir asientos" : "Elegí un horario"}
-          </button>
+          {funcionElegida ? (
+            <Link className="boton-continuar" to={`/reservas?funcionId=${funcionElegida.id}`}>Elegir asientos</Link>
+          ) : <button type="button" className="boton-continuar" disabled>Elegí un horario</button>}
         </ResumenFuncion>
       </div>
     </main>

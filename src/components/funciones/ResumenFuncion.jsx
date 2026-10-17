@@ -15,7 +15,7 @@ function ResumenFuncion({ titulo, funcion, children }) {
         </div>
         <div>
           <dt>Sala</dt>
-          <dd>{funcion ? `${funcion.sala} · ${funcion.formato}` : "Sin elegir"}</dd>
+          <dd>{funcion ? funcion.sala : "Sin elegir"}</dd>
         </div>
         <div>
           <dt>Horario</dt>
