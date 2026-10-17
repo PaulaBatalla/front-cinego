@@ -1,14 +1,20 @@
 import CandyCard from "./CandyCard";
-import {useCandy} from "../hooks/useCandy";
+import ResumenCandy from "./ResumenCandy";
+import { useCandy } from "../hooks/useCandy";
 
 function Candy() {
   const { candy } = useCandy();
+
   return (
-    <div className="listado">
-      {candy.map((candy) => (
-        <CandyCard key={candy.id} item={candy}/>
-      ))}
-    </div>
+    <>
+      <ResumenCandy />
+
+      <div className="listado">
+        {candy.map((producto) => (
+          <CandyCard key={producto.id} item={producto} />
+        ))}
+      </div>
+    </>
   );
 }
 
