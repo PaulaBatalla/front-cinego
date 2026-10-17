@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import PeliculaCard from "./PeliculaCard";
+import { solicitar } from "../services/api";
 
 function Peliculas() {
   const [peliculas, setPeliculas] = useState([]);
@@ -9,16 +10,7 @@ function Peliculas() {
   useEffect(() => {
     const cargarPeliculas = async () => {
       try {
-        const respuesta = await fetch("http://localhost:8080/api/peliculas", {
-          method: "GET",
-          headers: { Accept: "application/json" },
-        });
-
-        if (!respuesta.ok) {
-          throw new Error(`Error al cargar las películas (${respuesta.status})`);
-        }
-
-        const datos = await respuesta.json();
+        const datos = await solicitar("/peliculas");
         setPeliculas(datos);
       } catch (err) {
         setError(err.message);

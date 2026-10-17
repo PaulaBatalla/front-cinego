@@ -1,0 +1,19 @@
+﻿.reserva-page { padding: 24px; text-align: left; }
+.reserva-page fieldset { border: 0; padding: 0; min-width: 0; }
+.reserva-page section, .reserva-page .resumen { margin-top: 24px; }
+.reserva-page select, .reserva-page button { padding: 10px; margin: 6px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; }
+.reserva-page button:disabled { cursor: default; opacity: .55; }
+.funciones-lista, .asientos-fila, .referencias-asientos { display: flex; gap: 8px; flex-wrap: wrap; }
+.funcion-boton { display: flex; flex-direction: column; }
+.funcion-boton--seleccionada, .asiento--seleccionado { background: var(--accent); color: white; }
+.asiento--ocupado { background: #666; color: white; }
+.asiento--disponible { background: var(--accent-bg); color: var(--text-h); }
+.asientos { overflow-x: auto; }
+.asientos-fila { flex-wrap: nowrap; }
+.asiento { flex-shrink: 0; min-width: 48px; }
+.pantalla { margin: 20px 0; padding: 8px; background: var(--border); text-align: center; }
+.referencias-asientos { margin: 12px 0; }
+.referencias-asientos span { padding: 4px 10px; border: 1px solid var(--border); border-radius: 4px; }
+.referencias-asientos span:nth-child(2) { background: var(--accent); color: white; }
+.referencias-asientos span:nth-child(3) { background: #666; color: white; }
+.resumen p { margin: 8px 0; }
