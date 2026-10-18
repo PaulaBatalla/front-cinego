@@ -8,6 +8,8 @@ import "./App.css";
 import Header from "./components/Header";
 import Candy from "./components/Candy";
 import PeliculaFunciones from "./pages/PeliculaFunciones";
+import PeliculaDetalle from "./pages/PeliculaDetalle";
+import SeleccionButacas from "./pages/SeleccionButacas";
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
         <Route path="/candy" element={<Candy />} />
         <Route path="/reservas" element={<ReservaPage />} />
         <Route path="/pelicula/:id" element={<PeliculaFunciones />} />
+        <Route path="/detalle/:id" element={<PeliculaDetalle />} />
+        <Route path="/detalle/:id/butacas" element={<SeleccionButacas />} />
         <Route element={<RutaInvitado />}>
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Registro />} />
