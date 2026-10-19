@@ -2,7 +2,7 @@
 
 function SelectorFuncion({ funciones, precio, funcionSeleccionada, onSeleccionar }) {
   const dias = [...new Set(funciones.map((funcion) => funcion.fecha))].sort();
-  const [dia, setDia] = useState(dias[0]);
+  const [dia, setDia] = useState(funcionSeleccionada?.fecha ?? dias[0]);
   const funcionesDelDia = funciones.filter((funcion) => funcion.fecha === dia);
   const salas = [...new Set(funcionesDelDia.map((funcion) => funcion.sala))];
 
@@ -30,7 +30,7 @@ function SelectorFuncion({ funciones, precio, funcionSeleccionada, onSeleccionar
       <div className="reserva-salas">
         {salas.map((sala) => (
           <div className="reserva-sala-horarios" key={sala}>
-            <div><strong>Sala {sala}</strong><small>${precio.toLocaleString("es-AR")} por entrada</small></div>
+            <div><strong>Sala {sala}</strong><small>${Number(funcionesDelDia.find((f) => f.sala === sala)?.precio ?? precio ?? 0).toLocaleString("es-AR")} por entrada</small></div>
             <div className="funciones-lista">
               {funcionesDelDia.filter((funcion) => funcion.sala === sala).map((funcion) => (
                 <button key={funcion.id} type="button" aria-pressed={funcionSeleccionada?.id === funcion.id} className={`funcion-boton ${funcionSeleccionada?.id === funcion.id ? "funcion-boton--seleccionada" : ""}`} onClick={() => onSeleccionar(funcion)}>{funcion.hora}</button>
