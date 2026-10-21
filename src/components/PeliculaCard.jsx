@@ -16,9 +16,7 @@ function PeliculaCard({ movie }) {
         <Link className="boton-ver-funciones" to={`/pelicula/${movie.id}`}>
           Ver funciones
         </Link>
-        <Link className="btn-detalle" to={`/detalle/${movie.id}`}>
-          Ver detalle
-        </Link>
+  
       </div>
     </CustomCard>
   );
