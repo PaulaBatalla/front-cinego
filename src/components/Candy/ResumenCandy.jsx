@@ -4,7 +4,7 @@ import {
   disminuirCandy,
   quitarCandy,
   vaciarCandy,
-} from "../store/slices/candySlice";
+} from "../../store/slices/candySlice";
 
 function ResumenCandy() {
   const items = useSelector((state) => state.candy.items);

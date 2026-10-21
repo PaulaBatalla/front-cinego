@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
-import { agregarCandy } from "../store/slices/candySlice";
-import CustomCard from "./CustomCard";
+import { agregarCandy } from "../../store/slices/candySlice";
+import CustomCard from "../CustomCard";
 
 function CandyCard({ item }) {
   const dispatch = useDispatch();

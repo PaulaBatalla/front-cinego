@@ -1,7 +1,7 @@
 ﻿import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import SelectorFuncion from "../components/SelectorFuncion";
-import SelectorAsientos from "../components/SelectorAsientos";
+import SelectorFuncion from "../components/Reserva/SelectorFuncion";
+import SelectorAsientos from "../components/funciones/SelectorAsientos";
 import { useAuth } from "../hooks/useAuth";
 import { reservaService } from "../services/reservaService";
 import "../styles/reserva.css";

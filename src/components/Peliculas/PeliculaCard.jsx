@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import CustomCard from "./CustomCard";
+import CustomCard from "../CustomCard";
 
 function PeliculaCard({ movie }) {
   return (
