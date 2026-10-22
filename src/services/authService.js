@@ -1,5 +1,4 @@
-import { API_URL as API_BASE } from "./api";
-const API_URL = `${API_BASE}/usuarios`;
+const API_URL = "http://localhost:8080/api/usuarios";
 
 async function enviar(ruta, datos) {
   try {
