@@ -12,14 +12,9 @@ function PeliculaCard({ movie }) {
       description={movie.sinopsis}
       duration={movie.duracion}
     >
-      <div style={{ display: "flex", gap: "8px", justifyContent: "center", marginTop: "8px", flexWrap: "wrap" }}>
-        <Link className="boton-ver-funciones" to={`/pelicula/${movie.id}`}>
-          Ver funciones
-        </Link>
-        <Link className="btn-detalle" to={`/detalle/${movie.id}`}>
-          Ver detalle
-        </Link>
-      </div>
+      <Link className="boton-ver-funciones" to={`/pelicula/${movie.id}`}>
+        Ver funciones
+      </Link>
     </CustomCard>
   );
 }
