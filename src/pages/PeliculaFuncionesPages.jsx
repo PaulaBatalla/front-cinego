@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import ResumenFuncion from "../components/funciones/ResumenFuncion";
 import SalaHorarios from "../components/funciones/SalaHorarios";
 import SelectorDia from "../components/funciones/SelectorDia";
-import "./PeliculaFunciones.css";
+import "../styles/PeliculaFunciones.css";
 
 const API_URL = "http://localhost:8080/api";
 

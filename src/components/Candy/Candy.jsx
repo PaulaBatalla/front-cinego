@@ -1,6 +1,6 @@
 import CandyCard from "./CandyCard";
 import ResumenCandy from "./ResumenCandy";
-import { useCandy } from "../hooks/useCandy";
+import { useCandy } from "../../hooks/useCandy";
 
 function Candy() {
   const { candy } = useCandy();

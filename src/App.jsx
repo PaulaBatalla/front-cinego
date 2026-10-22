@@ -1,12 +1,12 @@
 import ReservaPage from "./pages/ReservaPage";
 import { Route, Routes } from "react-router-dom";
 import Peliculas from "./components/Peliculas/Peliculas";
-import Login from "./components/Login";
-import Registro from "./components/Registro";
+import Login from "./components/Auth/Login";
+import Registro from "./components/Auth/Registro";
 import RutaInvitado from "./components/RutaInvitado";
 import "./App.css";
 import Header from "./components/Header";
-import Candy from "./components/Candy";
+import Candy from "./components/Candy/Candy";
 import PeliculaFunciones from "./pages/PeliculaFuncionesPages";
 
 function App() {

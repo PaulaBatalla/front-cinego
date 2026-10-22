@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
-import { authService } from "../services/authService";
-import { validarLogin } from "../utils/validaciones";
+import { useAuth } from "../../hooks/useAuth";
+import { authService } from "../../services/authService";
+import { validarLogin } from "../../utils/validaciones";
 import CampoFormulario from "./CampoFormulario";
 import "./Auth.css";
 

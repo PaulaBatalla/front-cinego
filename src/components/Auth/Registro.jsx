@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { authService } from "../services/authService";
-import { validarRegistro } from "../utils/validaciones";
+import { authService } from "../../services/authService";
+import { validarRegistro } from "../../utils/validaciones";
 import CampoFormulario from "./CampoFormulario";
 import "./Auth.css";
 
