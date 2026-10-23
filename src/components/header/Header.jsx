@@ -1,7 +1,7 @@
-import { useEffect, useId, useState } from "react";
 import "../../styles/Header.css";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import useMobileMenu from "../../hooks/useMobileMenu";
 import LogoCineGo from "../LogoCineGo";
 import { UserIcon } from "../icons";
 import HamburgerMenu from "./hamburger-menu/HamburgerMenu";
@@ -9,42 +9,13 @@ import HamburgerMenu from "./hamburger-menu/HamburgerMenu";
 function Header() {
   const { usuario, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const drawerId = useId();
-
-  const closeMenu = () => setMenuOpen(false);
+  const { menuOpen, drawerId, closeMenu, toggleMenu } = useMobileMenu();
 
   const handleLogout = () => {
     logout();
     closeMenu();
     navigate("/login");
   };
-
-  useEffect(() => {
-    if (!menuOpen) return undefined;
-
-    const onKeyDown = (event) => {
-      if (event.key === "Escape") closeMenu();
-    };
-
-    document.addEventListener("keydown", onKeyDown);
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [menuOpen]);
-
-  useEffect(() => {
-    const media = window.matchMedia("(min-width: 768px)");
-    const onChange = (event) => {
-      if (event.matches) closeMenu();
-    };
-
-    media.addEventListener("change", onChange);
-    return () => media.removeEventListener("change", onChange);
-  }, []);
 
   const renderAuthActions = () =>
     isAuthenticated ? (
@@ -85,7 +56,7 @@ function Header() {
           aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
           aria-expanded={menuOpen}
           aria-controls={drawerId}
-          onClick={() => setMenuOpen((open) => !open)}
+          onClick={toggleMenu}
         >
           <span className="site-menu-toggle__bar" />
           <span className="site-menu-toggle__bar" />
@@ -99,7 +70,12 @@ function Header() {
         aria-hidden="true"
       />
 
-      <HamburgerMenu drawerId={drawerId} menuOpen={menuOpen} closeMenu={closeMenu} renderAuthActions={renderAuthActions} />
+      <HamburgerMenu
+        drawerId={drawerId}
+        menuOpen={menuOpen}
+        closeMenu={closeMenu}
+        renderAuthActions={renderAuthActions}
+      />
     </header>
   );
 }
