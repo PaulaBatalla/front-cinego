@@ -1,0 +1,548 @@
+/* ==========================================================================
+   CANDY BAR - CineGo (Estilo oficial según mockup PDF página 11)
+   ========================================================================== */
+
+.candy-pagina {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+  color: #f4f1ea;
+  text-align: left;
+  font-family: "DM Sans", system-ui, -apple-system, sans-serif;
+  box-sizing: border-box;
+}
+
+.candy-pagina * {
+  box-sizing: border-box;
+}
+
+/* ---------- Header de Candy & Categorías ---------- */
+.candy-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.candy-titulos {
+  max-width: 600px;
+}
+
+.candy-titulos h1 {
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: #f4f1ea;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.candy-titulos p {
+  font-size: 1rem;
+  color: #a9a6ae;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Categorías (Pills) */
+.candy-categorias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.candy-categoria-btn {
+  background: transparent;
+  color: #a9a6ae;
+  border: 1px solid #2a2a30;
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-height: 38px;
+}
+
+.candy-categoria-btn:hover {
+  border-color: #4a4852;
+  color: #f4f1ea;
+}
+
+.candy-categoria-btn.activa {
+  background: #f4f1ea;
+  color: #0e0e10;
+  border-color: #f4f1ea;
+  font-weight: 700;
+}
+
+/* ---------- Banner Promocional ---------- */
+.candy-promo-banner {
+  background: #141417;
+  border: 1px solid #222226;
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.candy-promo-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.candy-promo-icono {
+  background: #ff6b4a;
+  color: #1a0d09;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.candy-promo-texto strong {
+  display: block;
+  font-size: 0.95rem;
+  color: #f4f1ea;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+
+.candy-promo-texto span {
+  display: block;
+  font-size: 0.825rem;
+  color: #a9a6ae;
+}
+
+.candy-promo-link {
+  color: #ff6b4a;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: color 0.15s ease;
+  min-height: 44px;
+  padding: 0 0.5rem;
+}
+
+.candy-promo-link:hover {
+  color: #ff856b;
+  text-decoration: underline;
+}
+
+/* ---------- Grilla de Productos ---------- */
+.candy-grilla {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+@media (max-width: 1024px) {
+  .candy-grilla {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .candy-grilla {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  .candy-titulos h1 {
+    font-size: 2.2rem;
+  }
+  .candy-promo-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .candy-promo-link {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .candy-grilla {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Tarjeta de Producto ---------- */
+.candy-card {
+  background: #141417;
+  border: 1px solid #222226;
+  border-radius: 16px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+  position: relative;
+}
+
+.candy-card:hover {
+  border-color: #33333b;
+  transform: translateY(-2px);
+}
+
+/* Contenedor pastel superior */
+.candy-card-cover {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 12px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.candy-card-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: #141417;
+  color: #f4f1ea;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  letter-spacing: -0.01em;
+  z-index: 1;
+}
+
+.candy-card-icono-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(20, 20, 23, 0.75);
+}
+
+.candy-card-label-imagen {
+  position: absolute;
+  bottom: 6px;
+  right: 8px;
+  font-size: 0.58rem;
+  color: rgba(20, 20, 23, 0.45);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Contenido de la tarjeta */
+.candy-card-info {
+  padding: 12px 4px 4px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.candy-card-categoria {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #74717b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 2px;
+}
+
+.candy-card-titulo {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #f4f1ea;
+  margin: 0 0 4px;
+  line-height: 1.25;
+}
+
+.candy-card-desc {
+  font-size: 0.825rem;
+  color: #a9a6ae;
+  margin: 0 0 1rem;
+  line-height: 1.4;
+  min-height: 2.3em;
+}
+
+/* Pie de tarjeta: precio y botón */
+.candy-card-pie {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #1c1c22;
+}
+
+.candy-precios {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.candy-precio-actual {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #f4f1ea;
+  font-variant-numeric: tabular-nums;
+}
+
+.candy-precio-tachado {
+  font-size: 0.78rem;
+  color: #6a6773;
+  text-decoration: line-through;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Botón de acción "+" */
+.candy-btn-agregar {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: #ff6b4a;
+  color: #1a0d09;
+  font-size: 1.25rem;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.candy-btn-agregar:hover {
+  background: #ff856b;
+  transform: scale(1.05);
+}
+
+.candy-btn-agregar:active {
+  transform: scale(0.95);
+}
+
+/* Stepper para productos con unidades > 0 */
+.candy-stepper {
+  display: flex;
+  align-items: center;
+  background: #1c1c22;
+  border: 1px solid #2f2f38;
+  border-radius: 8px;
+  padding: 2px;
+  gap: 4px;
+}
+
+.candy-stepper-btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #f4f1ea;
+  font-size: 1rem;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.candy-stepper-btn:hover {
+  background: #2a2a35;
+}
+
+.candy-stepper-btn.sumar {
+  background: #ff6b4a;
+  color: #1a0d09;
+}
+
+.candy-stepper-btn.sumar:hover {
+  background: #ff856b;
+}
+
+.candy-stepper-cant {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #f4f1ea;
+  min-width: 22px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Panel Resumen / Carrito flotante ---------- */
+.candy-resumen-panel {
+  background: #141417;
+  border: 1px solid #222226;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-top: 2.5rem;
+}
+
+.candy-resumen-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #222226;
+}
+
+.candy-resumen-header h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #f4f1ea;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.candy-resumen-badge {
+  background: #ff6b4a;
+  color: #1a0d09;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.candy-resumen-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+}
+
+.candy-resumen-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid #1c1c22;
+}
+
+.candy-resumen-item-datos {
+  flex: 1;
+  min-width: 0;
+}
+
+.candy-resumen-item-nombre {
+  font-weight: 600;
+  color: #f4f1ea;
+  font-size: 0.95rem;
+  margin: 0 0 2px;
+}
+
+.candy-resumen-item-unitario {
+  font-size: 0.8rem;
+  color: #8a8793;
+  margin: 0;
+}
+
+.candy-resumen-subtotal {
+  font-weight: 700;
+  color: #f4f1ea;
+  font-size: 1rem;
+  min-width: 90px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.candy-resumen-quitar {
+  background: transparent;
+  border: none;
+  color: #6a6773;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  transition: color 0.15s ease;
+}
+
+.candy-resumen-quitar:hover {
+  color: #f87171;
+}
+
+.candy-resumen-pie {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-top: 1rem;
+}
+
+.candy-resumen-total-bloque {
+  display: flex;
+  flex-direction: column;
+}
+
+.candy-resumen-total-label {
+  font-size: 0.8rem;
+  color: #8a8793;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.candy-resumen-total-monto {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #f4f1ea;
+  font-variant-numeric: tabular-nums;
+}
+
+.candy-resumen-acciones {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.candy-btn-vaciar {
+  background: transparent;
+  border: 1px solid #33333b;
+  color: #a9a6ae;
+  padding: 0.65rem 1.1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+  transition: all 0.15s ease;
+}
+
+.candy-btn-vaciar:hover {
+  border-color: #f87171;
+  color: #f87171;
+}
+
+.candy-btn-continuar {
+  background: #ff6b4a;
+  color: #1a0d09;
+  border: none;
+  padding: 0.65rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background 0.15s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.candy-btn-continuar:hover {
+  background: #ff856b;
+}

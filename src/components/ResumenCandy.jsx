@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import {
   agregarCandy,
   disminuirCandy,
@@ -9,6 +10,10 @@ import {
 function ResumenCandy() {
   const items = useSelector((state) => state.candy.items);
   const dispatch = useDispatch();
+
+  if (items.length === 0) {
+    return null; // Si no hay productos, la vista se mantiene exactamente como en la página 11 del PDF
+  }
 
   const unidades = items.reduce(
     (acumulado, producto) => acumulado + producto.cantidad,
@@ -22,68 +27,81 @@ function ResumenCandy() {
   );
 
   return (
-    <section>
-      <h2>Tu selección de Candy</h2>
+    <section className="candy-resumen-panel" aria-label="Resumen de tu pedido de Candy">
+      <div className="candy-resumen-header">
+        <h2>
+          Tu pedido de Candy
+          <span className="candy-resumen-badge">{unidades} {unidades === 1 ? "unidad" : "unidades"}</span>
+        </h2>
+        <button
+          type="button"
+          className="candy-btn-vaciar"
+          onClick={() => dispatch(vaciarCandy())}
+        >
+          Vaciar pedido
+        </button>
+      </div>
 
-      {items.length === 0 ? (
-        <p>No agregaste productos todavía.</p>
-      ) : (
-        <>
-          <p>Unidades seleccionadas: {unidades}</p>
+      <ul className="candy-resumen-lista">
+        {items.map((producto) => (
+          <li className="candy-resumen-item" key={producto.id}>
+            <div className="candy-resumen-item-datos">
+              <p className="candy-resumen-item-nombre">{producto.nombre}</p>
+              <p className="candy-resumen-item-unitario">
+                ${Number(producto.precio).toLocaleString("es-AR")} c/u
+              </p>
+            </div>
 
-          <ul>
-            {items.map((producto) => (
-              <li key={producto.id}>
-                <p>
-                  {producto.nombre} — $
-                  {producto.precio.toLocaleString("es-AR")} por unidad
-                </p>
+            <div className="candy-stepper">
+              <button
+                type="button"
+                className="candy-stepper-btn"
+                aria-label={`Restar una unidad de ${producto.nombre}`}
+                onClick={() => dispatch(disminuirCandy(producto.id))}
+              >
+                −
+              </button>
+              <span className="candy-stepper-cant">{producto.cantidad}</span>
+              <button
+                type="button"
+                className="candy-stepper-btn sumar"
+                aria-label={`Sumar una unidad de ${producto.nombre}`}
+                onClick={() => dispatch(agregarCandy(producto))}
+              >
+                +
+              </button>
+            </div>
 
-                <button
-                  type="button"
-                  aria-label={`Restar una unidad de ${producto.nombre}`}
-                  onClick={() => dispatch(disminuirCandy(producto.id))}
-                >
-                  −
-                </button>
+            <span className="candy-resumen-subtotal">
+              ${Number(producto.precio * producto.cantidad).toLocaleString("es-AR")}
+            </span>
 
-                <span> {producto.cantidad} </span>
+            <button
+              type="button"
+              className="candy-resumen-quitar"
+              title="Quitar este producto"
+              onClick={() => dispatch(quitarCandy(producto.id))}
+            >
+              ✕
+            </button>
+          </li>
+        ))}
+      </ul>
 
-                <button
-                  type="button"
-                  aria-label={`Sumar una unidad de ${producto.nombre}`}
-                  onClick={() => dispatch(agregarCandy(producto))}
-                >
-                  +
-                </button>
+      <div className="candy-resumen-pie">
+        <div className="candy-resumen-total-bloque">
+          <span className="candy-resumen-total-label">Total Candy</span>
+          <span className="candy-resumen-total-monto">
+            ${Number(total).toLocaleString("es-AR")}
+          </span>
+        </div>
 
-                <p>
-                  Subtotal: $
-                  {(producto.precio * producto.cantidad).toLocaleString(
-                    "es-AR"
-                  )}
-                </p>
-
-                <button
-                  type="button"
-                  onClick={() => dispatch(quitarCandy(producto.id))}
-                >
-                  Quitar producto
-                </button>
-              </li>
-            ))}
-          </ul>
-
-          <p>Total: ${total.toLocaleString("es-AR")}</p>
-
-          <button
-            type="button"
-            onClick={() => dispatch(vaciarCandy())}
-          >
-            Vaciar selección
-          </button>
-        </>
-      )}
+        <div className="candy-resumen-acciones">
+          <Link to="/" className="candy-btn-continuar">
+            Ver funciones para tu entrada →
+          </Link>
+        </div>
+      </div>
     </section>
   );
 }

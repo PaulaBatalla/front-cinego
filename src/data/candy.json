@@ -1,44 +1,68 @@
 [
   {
     "id": 1,
-    "nombre": "Pochoclos chico",
-    "descripcion": "Pochoclos recién hechos, a elección salados o dulces.",
-    "precio": 3500,
-    "imagenUrl": "https://placehold.co/400x400/1E222A/E8A33D?text=Pochoclos"
+    "nombre": "Combo Pareja",
+    "categoria": "Combos",
+    "descripcion": "Pochoclo grande + 2 gaseosas medianas",
+    "precio": 12900,
+    "precioMostrador": 15400,
+    "badge": "Más pedido",
+    "color": "#f6d895",
+    "icono": "combo"
   },
   {
     "id": 2,
-    "nombre": "Pochoclos grande",
-    "descripcion": "Balde grande de pochoclos, ideal para compartir.",
-    "precio": 5200,
-    "imagenUrl": "https://placehold.co/400x400/1E222A/E8A33D?text=Pochoclos+XL"
+    "nombre": "Combo Familiar",
+    "categoria": "Combos",
+    "descripcion": "Pochoclo XL + 4 gaseosas + 2 golosinas",
+    "precio": 21500,
+    "precioMostrador": 26000,
+    "badge": "-17%",
+    "color": "#f2ab9f",
+    "icono": "combo"
   },
   {
     "id": 3,
-    "nombre": "Combo Pochoclo + Gaseosa",
-    "descripcion": "Pochoclos medianos más una gaseosa grande a elección.",
+    "nombre": "Combo Solo",
+    "categoria": "Combos",
+    "descripcion": "Pochoclo mediano + gaseosa mediana",
     "precio": 7800,
-    "imagenUrl": "https://placehold.co/400x400/1E222A/E8A33D?text=Combo"
+    "precioMostrador": 9200,
+    "badge": null,
+    "color": "#87c9cc",
+    "icono": "combo"
   },
   {
     "id": 4,
-    "nombre": "Nachos con queso",
-    "descripcion": "Nachos crocantes con salsa de queso cheddar caliente.",
-    "precio": 4900,
-    "imagenUrl": "https://placehold.co/400x400/1E222A/E8A33D?text=Nachos"
+    "nombre": "Pochoclo Grande",
+    "categoria": "Pochoclos",
+    "descripcion": "Dulce, salado o mixto",
+    "precio": 6200,
+    "precioMostrador": 7300,
+    "badge": null,
+    "color": "#ebe4d7",
+    "icono": "pochoclo"
   },
   {
     "id": 5,
-    "nombre": "Gaseosa grande",
-    "descripcion": "Línea Coca-Cola, a elección con o sin azúcar.",
-    "precio": 3200,
-    "imagenUrl": "https://placehold.co/400x400/1E222A/E8A33D?text=Gaseosa"
+    "nombre": "2×1 en gaseosas",
+    "categoria": "Bebidas",
+    "descripcion": "Válido de lunes a jueves",
+    "precio": 3400,
+    "precioMostrador": 6800,
+    "badge": "2×1",
+    "color": "#a2a9d6",
+    "icono": "bebida"
   },
   {
     "id": 6,
-    "nombre": "Chocolate",
-    "descripcion": "Barra de chocolate con leche, marca clásica de cine.",
-    "precio": 2800,
-    "imagenUrl": "https://placehold.co/400x400/1E222A/E8A33D?text=Chocolate"
+    "nombre": "Nachos con cheddar",
+    "categoria": "Dulces",
+    "descripcion": "Porción grande con dip de queso",
+    "precio": 5600,
+    "precioMostrador": 6500,
+    "badge": null,
+    "color": "#a3ca97",
+    "icono": "nachos"
   }
 ]
