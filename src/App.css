@@ -56,6 +56,14 @@
   position: relative;
 }
 
+.custom-card__body {
+  min-width: 0;
+}
+
+.custom-card__footer {
+  margin-top: 0.75rem;
+}
+
 .custom-card-badge {
   position: absolute;
   top: 0.5rem;

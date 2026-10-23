@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "../styles/Peliculas.css";
-import { normalizarBusquedaRegex } from "../utils/busquedaRegex";
-import PeliculaCard from "./PeliculaCard";
+import PeliculasFallback from "./PeliculasFallback";
+import PeliculasList from "./PeliculasList";
 import { SearchIcon } from "./icons";
 
 function Peliculas() {
@@ -34,12 +34,6 @@ function Peliculas() {
     cargarPeliculas();
   }, []);
 
-  const regex = busqueda.trim() ? normalizarBusquedaRegex(busqueda) : null;
-
-  const peliculasFiltradas = regex
-    ? peliculas.filter((pelicula) => pelicula.titulo && regex.test(pelicula.titulo))
-    : peliculas;
-
   if (cargando) return <p className="listado-status">Cargando películas...</p>;
   if (error) return <p className="listado-status">Error: {error}</p>;
 
@@ -66,17 +60,11 @@ function Peliculas() {
         </label>
       </section>
 
-      {peliculas.length === 0 ? (
-        <p className="listado-status">No hay películas disponibles.</p>
-      ) : peliculasFiltradas.length === 0 ? (
-        <p className="listado-status">No hay resultados para “{busqueda.trim()}”.</p>
-      ) : (
-        <section className="listado">
-          {peliculasFiltradas.map((pelicula) => (
-            <PeliculaCard key={pelicula.id} movie={pelicula} />
-          ))}
-        </section>
-      )}
+      <PeliculasList
+        fallback={<PeliculasFallback />}
+        peliculas={peliculas}
+        busqueda={busqueda}
+      />
     </div>
   );
 }
