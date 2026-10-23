@@ -1,28 +1,10 @@
 import { useEffect, useId, useState } from "react";
-import "./Header.css";
+import "../../styles/Header.css";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
-import LogoCineGo from "./LogoCineGo";
-
-function UserIcon() {
-  return (
-    <svg
-      className="site-login__icon"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <circle cx="12" cy="8" r="3.25" fill="none" stroke="currentColor" strokeWidth="1.75" />
-      <path
-        d="M5.5 19.25c1.4-3.1 3.6-4.5 6.5-4.5s5.1 1.4 6.5 4.5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
+import { useAuth } from "../../hooks/useAuth";
+import LogoCineGo from "../LogoCineGo";
+import { UserIcon } from "../icons";
+import HamburgerMenu from "./hamburger-menu/HamburgerMenu";
 
 function Header() {
   const { usuario, isAuthenticated, logout } = useAuth();
@@ -117,36 +99,7 @@ function Header() {
         aria-hidden="true"
       />
 
-      <aside
-        id={drawerId}
-        className={`site-drawer${menuOpen ? " is-open" : ""}`}
-        aria-hidden={!menuOpen}
-        aria-label="Menú de navegación"
-      >
-        <div className="site-drawer__header">
-          <span className="site-drawer__title">Menú</span>
-          <button
-            className="site-drawer__close"
-            type="button"
-            aria-label="Cerrar menú"
-            onClick={closeMenu}
-          >
-            ×
-          </button>
-        </div>
-        <nav className="site-nav site-nav--drawer" aria-label="Navegación móvil">
-          <NavLink to="/" end onClick={closeMenu}>
-            Películas
-          </NavLink>
-          <NavLink to="/candy" onClick={closeMenu}>
-            Candy
-          </NavLink>
-          <NavLink to="/reservas" onClick={closeMenu}>
-            Reservas
-          </NavLink>
-        </nav>
-        <div className="site-drawer__actions">{renderAuthActions()}</div>
-      </aside>
+      <HamburgerMenu drawerId={drawerId} menuOpen={menuOpen} closeMenu={closeMenu} renderAuthActions={renderAuthActions} />
     </header>
   );
 }
