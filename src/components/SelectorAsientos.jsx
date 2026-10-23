@@ -1,56 +1,63 @@
-function SelectorAsientos({
-  asientos,
-  asientosOcupados,
-  asientosSeleccionados,
-  onCambiarAsiento,
-}) {
-  const filas = ["A", "B"];
+import "./SelectorAsientos.css";
+
+function SelectorAsientos({ asientos, asientosSeleccionados, onCambiarAsiento }) {
+  const filas = [...new Set(asientos.map((a) => a.fila))].sort();
 
   return (
-    <section>
-      <h2>Elegí tus asientos</h2>
+    <section className="selector-butacas-container" aria-label="Selección de butacas">
+      <h2>Elegí tus butacas</h2>
 
-      <div className="pantalla">PANTALLA</div>
+      {/* Pantalla 3D */}
+      <div className="pantalla-wrapper">
+        <div className="pantalla">
+          <span>PANTALLA</span>
+        </div>
+      </div>
 
-      <div className="asientos">
+      {/* Grilla de butacas por fila */}
+      <div className="grilla">
         {filas.map((fila) => (
-          <div className="asientos-fila" key={fila}>
-            {asientos
-              .filter((asiento) => asiento.startsWith(fila))
-              .map((asiento) => {
-                const estaOcupado = asientosOcupados.includes(asiento);
-                const estaSeleccionado =
-                  asientosSeleccionados.includes(asiento);
+          <div className="fila" key={fila}>
+            <span className="fila-label">{fila}</span>
+            <div className="fila-butacas">
+              {asientos
+                .filter((a) => a.fila === fila)
+                .sort((a, b) => a.numero - b.numero)
+                .map((a) => {
+                  const seleccionado = asientosSeleccionados.includes(a.id);
+                  const estado = a.ocupado ? "ocupada" : seleccionado ? "seleccionada" : "libre";
 
-                let clase = "asiento asiento--disponible";
-
-                if (estaOcupado) {
-                  clase = "asiento asiento--ocupado";
-                } else if (estaSeleccionado) {
-                  clase = "asiento asiento--seleccionado";
-                }
-
-                return (
-                  <button
-                    key={asiento}
-                    type="button"
-                    className={clase}
-                    disabled={estaOcupado}
-                    aria-pressed={estaSeleccionado}
-                    onClick={() => onCambiarAsiento(asiento)}
-                  >
-                    {asiento}
-                  </button>
-                );
-              })}
+                  return (
+                    <button
+                      key={a.id}
+                      type="button"
+                      className={`butaca ${estado}`}
+                      disabled={a.ocupado}
+                      aria-pressed={seleccionado}
+                      aria-label={`Butaca ${a.fila}${a.numero}${a.ocupado ? ", ocupada" : ""}`}
+                      onClick={() => onCambiarAsiento(a.id)}
+                      title={`Butaca ${a.fila}${a.numero}`}
+                    >
+                      {a.numero}
+                    </button>
+                  );
+                })}
+            </div>
           </div>
         ))}
       </div>
 
-      <div className="referencias-asientos">
-        <span>Disponible</span>
-        <span>Seleccionado</span>
-        <span>Ocupado</span>
+      {/* Leyenda de estados */}
+      <div className="leyenda">
+        <span className="leyenda-item">
+          <span className="dot libre"></span>Libre
+        </span>
+        <span className="leyenda-item">
+          <span className="dot seleccionada"></span>Seleccionada
+        </span>
+        <span className="leyenda-item">
+          <span className="dot ocupada"></span>Ocupada
+        </span>
       </div>
     </section>
   );

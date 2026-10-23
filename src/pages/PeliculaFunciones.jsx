@@ -3,14 +3,13 @@ import { Link, useParams } from "react-router-dom";
 import ResumenFuncion from "../components/funciones/ResumenFuncion";
 import SalaHorarios from "../components/funciones/SalaHorarios";
 import SelectorDia from "../components/funciones/SelectorDia";
+import ReservaFuncion from "../components/ReservaFuncion";
 import "./PeliculaFunciones.css";
-
-const API_URL = "http://localhost:8080/api";
-
-
+import { solicitar } from "../services/api";
 function adaptarFuncion(f) {
   return {
     id: f.id,
+    peliculaId: f.peliculaId,
     fecha: f.horarioInicio.slice(0, 10),
     hora: f.horarioInicio.slice(11, 16),
     sala: f.salaNombre,
@@ -30,28 +29,21 @@ function PeliculaFunciones() {
     const cargarDatos = async () => {
       try {
         // Pedimos la película y todas las funciones al mismo tiempo.
-        const [respuestaPelicula, respuestaFunciones] = await Promise.all([
-          fetch(`${API_URL}/peliculas/${id}`),
-          fetch(`${API_URL}/funciones`),
+        const [datosPelicula, datosFunciones] = await Promise.all([
+          solicitar(`/peliculas/${id}`),
+          solicitar("/funciones"),
         ]);
-
-        if (respuestaPelicula.status === 404) {
-          setPelicula(null);
-          return;
-        }
-        if (!respuestaPelicula.ok || !respuestaFunciones.ok) {
-          throw new Error("No se pudieron cargar las funciones");
-        }
-
-        const datosPelicula = await respuestaPelicula.json();
-        const datosFunciones = await respuestaFunciones.json();
 
         setPelicula(datosPelicula);
         setFunciones(
           datosFunciones.filter((f) => f.peliculaId === datosPelicula.id).map(adaptarFuncion),
         );
       } catch (err) {
-        setError(err.message);
+        if (err.status === 404) {
+          setPelicula(null);
+        } else {
+          setError(err.message);
+        }
       } finally {
         setCargando(false);
       }
@@ -85,6 +77,13 @@ function SeleccionFuncion({ pelicula, funciones }) {
 
   const [diaElegido, setDiaElegido] = useState(dias.length > 0 ? dias[0] : null);
   const [funcionElegida, setFuncionElegida] = useState(null);
+  const [asientosElegidos, setAsientosElegidos] = useState([]);
+
+  function elegirFuncion(funcion) {
+    if (funcion?.id === funcionElegida?.id) return;
+    setFuncionElegida(funcion);
+    setAsientosElegidos([]);
+  }
 
   // Las funciones del día elegido, agrupadas por sala.
   const funcionesDelDia = ordenadas.filter((f) => f.fecha === diaElegido);
@@ -93,6 +92,7 @@ function SeleccionFuncion({ pelicula, funciones }) {
   function elegirDia(dia) {
     setDiaElegido(dia);
     setFuncionElegida(null); // al cambiar de día, se borra el horario elegido
+    setAsientosElegidos([]);
   }
 
   return (
@@ -135,20 +135,22 @@ function SeleccionFuncion({ pelicula, funciones }) {
                       precio={funcionesDeLaSala[0].precio}
                       funciones={funcionesDeLaSala}
                       funcionElegida={funcionElegida}
-                      onElegir={setFuncionElegida}
+                      onElegir={elegirFuncion}
                     />
                   );
                 })}
               </div>
+              {funcionElegida && <ReservaFuncion key={funcionElegida.id} funcion={funcionElegida} onResumen={setAsientosElegidos} />}
             </>
           )}
         </section>
 
         <ResumenFuncion titulo={pelicula.titulo} funcion={funcionElegida}>
-          {/* El paso siguiente (elegir asientos) es de otra tarea: acá se engancha. */}
-          <button type="button" className="boton-continuar" disabled={funcionElegida === null}>
-            {funcionElegida ? "Elegir asientos" : "Elegí un horario"}
-          </button>
+          <dl>
+            <div><dt>Asientos</dt><dd>{asientosElegidos.join(", ") || "Sin elegir"}</dd></div>
+            <div aria-live="polite"><dt>Total</dt><dd>${((funcionElegida?.precio ?? 0) * asientosElegidos.length).toLocaleString("es-AR")}</dd></div>
+          </dl>
+          {!funcionElegida && <p>Elegí un horario para ver los asientos.</p>}
         </ResumenFuncion>
       </div>
     </main>
