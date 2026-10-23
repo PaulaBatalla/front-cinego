@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
+import "../styles/Peliculas.css";
+import { normalizarBusquedaRegex } from "../utils/busquedaRegex";
 import PeliculaCard from "./PeliculaCard";
+import { SearchIcon } from "./icons";
 
 function Peliculas() {
   const [peliculas, setPeliculas] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
+  const [busqueda, setBusqueda] = useState("");
 
   useEffect(() => {
     const cargarPeliculas = async () => {
@@ -30,15 +34,49 @@ function Peliculas() {
     cargarPeliculas();
   }, []);
 
-  if (cargando) return <p>Cargando películas...</p>;
-  if (error) return <p>Error: {error}</p>;
-  if (peliculas.length === 0) return <p>No hay películas disponibles.</p>;
+  const regex = busqueda.trim() ? normalizarBusquedaRegex(busqueda) : null;
+
+  const peliculasFiltradas = regex
+    ? peliculas.filter((pelicula) => pelicula.titulo && regex.test(pelicula.titulo))
+    : peliculas;
+
+  if (cargando) return <p className="listado-status">Cargando películas...</p>;
+  if (error) return <p className="listado-status">Error: {error}</p>;
 
   return (
-    <div className="listado">
-      {peliculas.map((pelicula) => (
-        <PeliculaCard key={pelicula.id} movie={pelicula} />
-      ))}
+    <div className="listado-container">
+      <section className="listado-header">
+        <div className="listado-header__copy">
+          <h1 className="listado-header__title">En cartelera</h1>
+          <p className="listado-header__subtitle">
+            {peliculas.length} películas disponibles
+          </p>
+        </div>
+
+        <label className="listado-search">
+          <SearchIcon />
+          <span className="visually-hidden">Buscar película</span>
+          <input
+            type="search"
+            placeholder="Buscar película..."
+            className="listado-search__input"
+            value={busqueda}
+            onChange={(event) => setBusqueda(event.target.value)}
+          />
+        </label>
+      </section>
+
+      {peliculas.length === 0 ? (
+        <p className="listado-status">No hay películas disponibles.</p>
+      ) : peliculasFiltradas.length === 0 ? (
+        <p className="listado-status">No hay resultados para “{busqueda.trim()}”.</p>
+      ) : (
+        <section className="listado">
+          {peliculasFiltradas.map((pelicula) => (
+            <PeliculaCard key={pelicula.id} movie={pelicula} />
+          ))}
+        </section>
+      )}
     </div>
   );
 }
