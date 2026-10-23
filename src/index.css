@@ -8,6 +8,11 @@
   --accent-bg: rgba(170, 59, 255, 0.1);
   --accent-border: rgba(170, 59, 255, 0.5);
   --social-bg: rgba(244, 243, 236, 0.5);
+  --brand-orange: #ff6b4a;
+  --padding-inline-mobile: 1rem;
+  --padding-inline-tablet: 2rem;
+  --padding-inline-desktop: 6rem;
+  --padding-inline: var(--padding-inline-mobile);
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
@@ -15,7 +20,7 @@
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
-  font: 18px/145% var(--sans);
+  font: 16px/145% var(--sans);
   letter-spacing: 0.18px;
   color-scheme: light dark;
   color: var(--text);
@@ -25,8 +30,13 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
+  @media (min-width: 768px) {
+    --padding-inline: var(--padding-inline-tablet);
+  }
+
+  @media (min-width: 1024px) {
+    --padding-inline: var(--padding-inline-desktop);
+    font-size: 18px;
   }
 }
 
@@ -55,11 +65,11 @@ body {
 }
 
 #root {
-  width: 1126px;
+  background-color: #0e0e10;
+  width: 100%;
   max-width: 100%;
-  margin: 0 auto;
+  margin: 0;
   text-align: center;
-  border-inline: 1px solid var(--border);
   min-height: 100svh;
   display: flex;
   flex-direction: column;

@@ -25,24 +25,29 @@ function CustomCard({
         )}
       </div>
 
-      <h3>{title}</h3>
+      <div className="custom-card__body">
+        <h3>{title}</h3>
 
-      <p>{description}</p>
+        {description && (
+          <p className="custom-card__description">{description}</p>
+        )}
 
-      {duration && (
-        <p className="custom-duration">
-          Duración: {duration}
-        </p>
+        {duration && (
+          <p className="custom-duration">
+            Duración: {duration} mins
+          </p>
+        )}
+
+        {precio && (
+          <p className="custom-precio">
+            ${precio}
+          </p>
+        )}
+      </div>
+
+      {children && (
+        <div className="custom-card__footer">{children}</div>
       )}
-
-      {precio && (
-        <p className="custom-precio">
-          ${precio}
-        </p>
-      )}
-
-      {/* Lo que se pase entre <CustomCard> y </CustomCard> (por ejemplo, un botón) */}
-      {children}
     </div>
   );
 }
