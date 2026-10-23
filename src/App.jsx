@@ -5,7 +5,7 @@ import Login from "./components/Login";
 import Registro from "./components/Registro";
 import RutaInvitado from "./components/RutaInvitado";
 import "./App.css";
-import Header from "./components/Header/Header";
+import Header from "./components/header/Header";
 import Candy from "./components/Candy";
 import PeliculaFunciones from "./pages/PeliculaFunciones";
 
