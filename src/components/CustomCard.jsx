@@ -34,7 +34,7 @@ function CustomCard({
 
         {duration && (
           <p className="custom-duration">
-            Duración: {duration}
+            Duración: {duration} mins
           </p>
         )}
 
