@@ -6,6 +6,7 @@ import useMobileMenu from "../../hooks/useMobileMenu";
 import LogoCineGo from "../LogoCineGo";
 import { UserIcon } from "../icons";
 import HamburgerMenu from "./hamburger-menu/HamburgerMenu";
+import Campanita from "./Campanita";
 
 function Header() {
   const { usuario, isAuthenticated, logout } = useAuth();
@@ -51,20 +52,24 @@ function Header() {
           </nav>
         </div>
 
-        <div className="site-header__actions">{renderAuthActions()}</div>
+        <div className="site-header__right">
+          {isAuthenticated && <Campanita />}
 
-        <button
-          className={`site-menu-toggle${menuOpen ? " is-open" : ""}`}
-          type="button"
-          aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
-          aria-expanded={menuOpen}
-          aria-controls={drawerId}
-          onClick={toggleMenu}
-        >
-          <span className="site-menu-toggle__bar" />
-          <span className="site-menu-toggle__bar" />
-          <span className="site-menu-toggle__bar" />
-        </button>
+          <div className="site-header__actions">{renderAuthActions()}</div>
+
+          <button
+            className={`site-menu-toggle${menuOpen ? " is-open" : ""}`}
+            type="button"
+            aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+            aria-expanded={menuOpen}
+            aria-controls={drawerId}
+            onClick={toggleMenu}
+          >
+            <span className="site-menu-toggle__bar" />
+            <span className="site-menu-toggle__bar" />
+            <span className="site-menu-toggle__bar" />
+          </button>
+        </div>
       </div>
 
       <div

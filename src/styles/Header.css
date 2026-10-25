@@ -27,6 +27,12 @@
 	flex: 1;
 }
 
+.site-header__right {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
 .site-brand,
 .site-nav a {
 	color: inherit;
@@ -358,5 +364,29 @@
 	.site-login {
 		gap: 0.45rem;
 		padding: 0.45rem 1rem;
+	}
+}
+
+/* Tablet+ : orden email - campanita - cerrar sesión */
+@media (min-width: 768px) {
+	.site-header__right {
+		gap: 0.75rem;
+	}
+
+	.site-header__actions,
+	.site-header__actions .site-session {
+		display: contents;
+	}
+
+	.site-header__actions .site-session span {
+		order: 1;
+	}
+
+	.site-header__right .campanita {
+		order: 2;
+	}
+
+	.site-header__actions .site-login {
+		order: 3;
 	}
 }
