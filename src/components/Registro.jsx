@@ -4,7 +4,7 @@ import { useNotificaciones } from "../hooks/useNotificaciones";
 import { authService } from "../services/authService";
 import { validarRegistro } from "../utils/validaciones";
 import CampoFormulario from "./CampoFormulario";
-import "./Auth.css";
+import "../styles/Auth.css";
 
 function Registro() {
   const [datos, setDatos] = useState({

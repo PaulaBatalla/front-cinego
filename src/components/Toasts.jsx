@@ -1,5 +1,5 @@
 import { useNotificaciones } from "../hooks/useNotificaciones";
-import "./Toasts.css";
+import "../styles/Toasts.css";
 
 function Toasts() {
   const { notificaciones, cerrar } = useNotificaciones();

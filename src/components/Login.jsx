@@ -5,7 +5,7 @@ import { useNotificaciones } from "../hooks/useNotificaciones";
 import { authService } from "../services/authService";
 import { validarLogin } from "../utils/validaciones";
 import CampoFormulario from "./CampoFormulario";
-import "./Auth.css";
+import "../styles/Auth.css";
 
 function Login() {
   const [email, setEmail] = useState("");
