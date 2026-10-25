@@ -1,9 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
 import { agregarCandy, disminuirCandy } from "../store/slices/candySlice";
+import { useNotificaciones } from "../hooks/useNotificaciones";
 import CandyIcon from "./CandyIcon";
 
 function CandyCard({ item }) {
   const dispatch = useDispatch();
+  const { notificar } = useNotificaciones();
 
   const cantidad = useSelector((state) => {
     const seleccionado = state.candy.items.find(
@@ -11,6 +13,11 @@ function CandyCard({ item }) {
     );
     return seleccionado ? seleccionado.cantidad : 0;
   });
+
+  const agregarAlPedido = () => {
+    dispatch(agregarCandy(item));
+    notificar(`Agregaste ${item.nombre} a tu pedido`);
+  };
 
   return (
     <article className="candy-card">
@@ -79,7 +86,7 @@ function CandyCard({ item }) {
               type="button"
               className="candy-btn-agregar"
               aria-label={`Agregar ${item.nombre} al pedido`}
-              onClick={() => dispatch(agregarCandy(item))}
+              onClick={agregarAlPedido}
             >
               +
             </button>
