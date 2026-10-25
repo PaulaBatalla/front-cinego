@@ -1,6 +1,7 @@
 import "../../styles/Header.css";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { useNotificaciones } from "../../hooks/useNotificaciones";
 import useMobileMenu from "../../hooks/useMobileMenu";
 import LogoCineGo from "../LogoCineGo";
 import { UserIcon } from "../icons";
@@ -8,11 +9,13 @@ import HamburgerMenu from "./hamburger-menu/HamburgerMenu";
 
 function Header() {
   const { usuario, isAuthenticated, logout } = useAuth();
+  const { notificar } = useNotificaciones();
   const navigate = useNavigate();
   const { menuOpen, drawerId, closeMenu, toggleMenu } = useMobileMenu();
 
   const handleLogout = () => {
     logout();
+    notificar("Cerraste sesión");
     closeMenu();
     navigate("/login");
   };

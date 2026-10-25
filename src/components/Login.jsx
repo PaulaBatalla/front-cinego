@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { useNotificaciones } from "../hooks/useNotificaciones";
 import { authService } from "../services/authService";
 import { validarLogin } from "../utils/validaciones";
 import CampoFormulario from "./CampoFormulario";
@@ -13,9 +14,8 @@ function Login() {
   const [errorLogin, setErrorLogin] = useState(null);
   const [cargando, setCargando] = useState(false);
   const { login } = useAuth();
+  const { notificar } = useNotificaciones();
   const navigate = useNavigate();
-  const location = useLocation();
-  const recienRegistrado = location.state?.registrado;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -33,6 +33,7 @@ function Login() {
     try {
       const token = await authService.login(email, password);
       login(token);
+      notificar("Sesión iniciada");
       navigate("/");
     } catch (err) {
       setErrorLogin(err.message);
@@ -44,12 +45,6 @@ function Login() {
   return (
     <form className="auth-form" onSubmit={handleSubmit} noValidate>
       <h1>Iniciar sesión</h1>
-
-      {recienRegistrado && !errorLogin && (
-        <p className="auth-success">
-          Cuenta creada. Ya podés iniciar sesión.
-        </p>
-      )}
 
       {errorLogin && (
         <p className="auth-alert" role="alert">

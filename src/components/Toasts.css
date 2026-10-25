@@ -1,15 +1,21 @@
 .toasts {
   position: fixed;
-  right: 1rem;
-  bottom: 1rem;
+  top: 5rem;
+  left: 0;
+  right: 0;
   z-index: 200;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.75rem;
-  width: min(360px, calc(100vw - 2rem));
+  padding-inline: 1rem;
+  /* El contenedor ocupa todo el ancho: sin esto bloquearía los clics a la página */
+  pointer-events: none;
 }
 
 .toast {
+  max-width: 420px;
+  pointer-events: auto;
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
@@ -54,7 +60,7 @@
 @keyframes toast-entrar {
   from {
     opacity: 0;
-    transform: translateY(0.5rem);
+    transform: translateY(-0.5rem);
   }
   to {
     opacity: 1;
