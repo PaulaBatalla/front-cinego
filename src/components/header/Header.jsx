@@ -25,7 +25,7 @@ function Header() {
     isAuthenticated ? (
       <div className="site-session">
         <span>{usuario.email}</span>
-        <button className="site-login" type="button" onClick={handleLogout}>
+        <button className="site-login site-logout" type="button" onClick={handleLogout}>
           Cerrar sesión
         </button>
       </div>

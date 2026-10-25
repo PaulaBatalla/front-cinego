@@ -389,4 +389,19 @@
 	.site-header__actions .site-login {
 		order: 3;
 	}
+
+	.site-header__actions .site-logout {
+		padding-inline: 0.25rem;
+		border-color: transparent;
+		color: #9ca3af;
+		font-size: 0.85rem;
+	}
+
+	.site-header__actions .site-logout:hover {
+		border-color: transparent;
+		background: none;
+		color: #f5f5f5;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
 }
