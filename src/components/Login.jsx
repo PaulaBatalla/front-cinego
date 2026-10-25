@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useNotificaciones } from "../hooks/useNotificaciones";
 import { authService } from "../services/authService";
@@ -16,6 +16,7 @@ function Login() {
   const { login } = useAuth();
   const { notificar } = useNotificaciones();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -34,7 +35,7 @@ function Login() {
       const token = await authService.login(email, password);
       login(token);
       notificar("Sesión iniciada");
-      navigate("/");
+      navigate(location.state?.volverA || "/", { replace: true });
     } catch (err) {
       setErrorLogin(err.message);
     } finally {
