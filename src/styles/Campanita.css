@@ -90,6 +90,10 @@
   background-color: #1e1e22;
 }
 
+.campanita__item--leido {
+  border-left-color: #4b4b52;
+}
+
 .campanita__cuando {
   font-size: 0.8rem;
   font-weight: 600;
