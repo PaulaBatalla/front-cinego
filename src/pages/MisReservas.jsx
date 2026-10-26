@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { reservaService } from "../services/reservaService";
 import "../styles/reserva.css";
@@ -15,20 +15,17 @@ function fecha(valor) {
 
 export default function MisReservas() {
   const { isAuthenticated, token } = useAuth();
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace state={{ volverA: "/mis-reservas" }} />;
+  }
   return (
     <section className="reserva-page mis-reservas" aria-labelledby="mis-reservas-titulo">
       <Link className="reserva-volver" to="/">← Volver a la cartelera</Link>
       <header className="mis-reservas-cabecera">
         <div><h1 id="mis-reservas-titulo">Mis reservas</h1><p>Todos tus planes de cine, en un solo lugar.</p></div>
-        {isAuthenticated && <Link className="mis-reservas-accion" to="/reservas">Reservar entradas</Link>}
+        <Link className="mis-reservas-accion" to="/reservas">Reservar entradas</Link>
       </header>
-      {isAuthenticated ? <ListadoReservas key={token} /> : (
-        <div className="reserva-panel mis-reservas-mensaje">
-          <h2>Tus reservas te esperan</h2>
-          <p>Iniciá sesión para consultar tus reservas.</p>
-          <Link className="mis-reservas-accion" to="/login" state={{ volverA: "/mis-reservas" }}>Iniciar sesión</Link>
-        </div>
-      )}
+      <ListadoReservas key={token} />
     </section>
   );
 }
