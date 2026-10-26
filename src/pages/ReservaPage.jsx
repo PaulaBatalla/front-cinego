@@ -95,6 +95,7 @@ function SeleccionReserva({ datos, funcionId, onCambiarFuncion }) {
           <p>Asientos: {etiquetas.join(", ")}</p>
           <p>Total: ${reserva.total}</p>
           <Link to="/">Volver a la cartelera</Link>
+          <Link to="/mis-reservas">Ver mis reservas</Link>
         </section>
       ) : (
         <div className="reserva-layout">
