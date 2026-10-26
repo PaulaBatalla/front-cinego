@@ -1,4 +1,5 @@
 import ReservaPage from "./pages/ReservaPage";
+import MisReservas from "./pages/MisReservas";
 import { Route, Routes } from "react-router-dom";
 import Peliculas from "./components/Peliculas";
 import Login from "./components/Login";
@@ -18,6 +19,7 @@ function App() {
           <Route path="/" element={<Peliculas />} />
           <Route path="/candy" element={<Candy />} />
           <Route path="/reservas" element={<ReservaPage />} />
+          <Route path="/mis-reservas" element={<MisReservas />} />
           <Route path="/pelicula/:id" element={<PeliculaFunciones />} />
           <Route element={<RutaInvitado />}>
             <Route path="/login" element={<Login />} />

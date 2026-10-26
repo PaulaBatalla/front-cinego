@@ -1,8 +1,8 @@
-const API_URL = "http://localhost:8080/api/usuarios";
+import { API_URL } from "./api";
 
 async function enviar(ruta, datos) {
   try {
-    return await fetch(`${API_URL}${ruta}`, {
+    return await fetch(`${API_URL}/usuarios${ruta}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(datos),

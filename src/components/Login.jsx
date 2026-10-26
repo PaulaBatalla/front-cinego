@@ -33,7 +33,8 @@ function Login() {
     try {
       const token = await authService.login(email, password);
       login(token);
-      navigate("/");
+      const destino = location.state?.volverA;
+      navigate(typeof destino === "string" && destino.startsWith("/") && !destino.startsWith("//") ? destino : "/", { replace: true });
     } catch (err) {
       setErrorLogin(err.message);
     } finally {
