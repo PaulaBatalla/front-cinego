@@ -4,6 +4,7 @@ import SelectorFuncion from "../components/SelectorFuncion";
 import SelectorAsientos from "../components/SelectorAsientos";
 import ResumenReserva from "../components/ResumenReserva";
 import { useAuth } from "../hooks/useAuth";
+import { useNotificaciones } from "../hooks/useNotificaciones";
 import { reservaService } from "../services/reservaService";
 import "../styles/reserva.css";
 
@@ -46,6 +47,7 @@ function SeleccionReserva({ datos, funcionId, onCambiarFuncion }) {
   const [error, setError] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [reserva, setReserva] = useState(null);
+  const { notificar } = useNotificaciones();
   const [intento, setIntento] = useState(0);
 
   useEffect(() => {
@@ -63,12 +65,16 @@ function SeleccionReserva({ datos, funcionId, onCambiarFuncion }) {
     setError("");
     try {
       setReserva(await reservaService.crear(funcion.id, seleccionados));
+      const cantidad = seleccionados.length;
+      notificar(`Reserva confirmada: ${cantidad} ${cantidad === 1 ? "entrada" : "entradas"} para ${pelicula.titulo}`);
     } catch (err) {
-      setError(err.message);
       if (err.status === 409) {
+        notificar("Alguien reservó uno de esos asientos. Elegí otros", "error");
         setSeleccionados([]);
         setAsientos(null);
         setIntento((valor) => valor + 1);
+      } else {
+        setError(err.message);
       }
     } finally {
       setEnviando(false);

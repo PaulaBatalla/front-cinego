@@ -3,10 +3,12 @@ import { Link } from "react-router-dom";
 import SelectorAsientos from "./SelectorAsientos";
 import { reservaService } from "../services/reservaService";
 import { useAuth } from "../hooks/useAuth";
+import { useNotificaciones } from "../hooks/useNotificaciones";
 
 // Se monta de nuevo para cada función: nunca arrastra butacas de otro horario.
-export default function ReservaFuncion({ funcion, onResumen }) {
+export default function ReservaFuncion({ funcion, titulo, onResumen }) {
   const { isAuthenticated } = useAuth();
+  const { notificar } = useNotificaciones();
   const [asientos, setAsientos] = useState(null);
   const [seleccionados, setSeleccionados] = useState([]);
   const [error, setError] = useState("");
@@ -36,13 +38,17 @@ export default function ReservaFuncion({ funcion, onResumen }) {
     setError("");
     try {
       setReserva(await reservaService.crear(funcion.id, seleccionados));
+      const cantidad = seleccionados.length;
+      notificar(`Reserva confirmada: ${cantidad} ${cantidad === 1 ? "entrada" : "entradas"} para ${titulo}`);
     } catch (err) {
-      setError(err.message);
       if (err.status === 409) {
+        notificar("Alguien reservó uno de esos asientos. Elegí otros", "error");
         setSeleccionados([]);
         onResumen([]);
         setAsientos(null);
         setIntento((actual) => actual + 1);
+      } else {
+        setError(err.message);
       }
     } finally {
       setEnviando(false);

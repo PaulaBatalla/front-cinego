@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useNotificaciones } from "../hooks/useNotificaciones";
 import { authService } from "../services/authService";
 import { validarRegistro } from "../utils/validaciones";
 import CampoFormulario from "./CampoFormulario";
@@ -26,6 +27,7 @@ function Registro() {
   const [errores, setErrores] = useState({});
   const [errorRegistro, setErrorRegistro] = useState(null);
   const [cargando, setCargando] = useState(false);
+  const { notificar } = useNotificaciones();
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -43,7 +45,8 @@ function Registro() {
 
     try {
       await authService.registrar(datos);
-      navigate("/login", { state: { registrado: true } });
+      notificar("Cuenta creada. Ya podés iniciar sesión");
+      navigate("/login");
     } catch (err) {
       setErrorRegistro(err.message);
     } finally {

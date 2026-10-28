@@ -6,10 +6,12 @@ import {
   quitarCandy,
   vaciarCandy,
 } from "../store/slices/candySlice";
+import { useNotificaciones } from "../hooks/useNotificaciones";
 
 function ResumenCandy() {
   const items = useSelector((state) => state.candy.items);
   const dispatch = useDispatch();
+  const { notificar } = useNotificaciones();
 
   if (items.length === 0) {
     return null; // Si no hay productos, la vista se mantiene exactamente como en la página 11 del PDF
@@ -19,6 +21,16 @@ function ResumenCandy() {
     (acumulado, producto) => acumulado + producto.cantidad,
     0
   );
+
+  const vaciarPedido = () => {
+    dispatch(vaciarCandy());
+    notificar("Vaciaste tu pedido de Candy");
+  };
+
+  const quitarDelPedido = (producto) => {
+    dispatch(quitarCandy(producto.id));
+    notificar(`Quitaste ${producto.nombre}`);
+  };
 
   const total = items.reduce(
     (acumulado, producto) =>
@@ -36,7 +48,7 @@ function ResumenCandy() {
         <button
           type="button"
           className="candy-btn-vaciar"
-          onClick={() => dispatch(vaciarCandy())}
+          onClick={vaciarPedido}
         >
           Vaciar pedido
         </button>
@@ -80,7 +92,7 @@ function ResumenCandy() {
               type="button"
               className="candy-resumen-quitar"
               title="Quitar este producto"
-              onClick={() => dispatch(quitarCandy(producto.id))}
+              onClick={() => quitarDelPedido(producto)}
             >
               ✕
             </button>
