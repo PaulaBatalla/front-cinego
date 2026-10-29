@@ -12,3 +12,5 @@ export { default as TrashIcon } from "./TrashIcon";
 export { default as StarIcon } from "./StarIcon";
 export { default as CheckIcon } from "./CheckIcon";
 export { default as AlertIcon } from "./AlertIcon";
+export { default as CopyIcon } from "./CopyIcon";
+export { default as CalendarIcon } from "./CalendarIcon";

@@ -11,6 +11,7 @@ import AdminLayout from "./components/admin/AdminLayout";
 import Candy from "./components/Candy";
 import PeliculaFunciones from "./pages/PeliculaFunciones";
 import AdminPeliculas from "./pages/AdminPeliculas";
+import AdminFunciones from "./pages/AdminFunciones";
 import Toasts from "./components/Toasts";
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Navigate to="peliculas" replace />} />
             <Route path="peliculas" element={<AdminPeliculas />} />
+            <Route path="funciones" element={<AdminFunciones />} />
           </Route>
         </Route>
       </Routes>
