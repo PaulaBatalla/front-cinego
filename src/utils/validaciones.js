@@ -51,6 +51,32 @@ export function validarPelicula(datos) {
   return errores;
 }
 
+export function validarFuncion(datos) {
+  const errores = {};
+
+  if (!datos.peliculaId) {
+    errores.peliculaId = "Elegí la película.";
+  }
+
+  if (!datos.salaId) {
+    errores.salaId = "Elegí la sala.";
+  }
+
+  if (!datos.fechas.length) {
+    errores.fechas = "Elegí al menos una fecha.";
+  }
+
+  if (!/^\d{2}:\d{2}$/.test(datos.hora)) {
+    errores.hora = "Elegí a qué hora empieza.";
+  }
+
+  if (!(Number(datos.precio) > 0)) {
+    errores.precio = "Ingresá un precio mayor a 0.";
+  }
+
+  return errores;
+}
+
 export function validarRegistro(datos) {
   const errores = {};
 

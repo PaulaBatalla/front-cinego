@@ -446,6 +446,8 @@
   max-width: 100%;
   padding-bottom: 4px;
   overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #3a3a40 transparent;
 }
 
 .admin-chip {
@@ -825,6 +827,92 @@
   padding: 12px 14px;
   line-height: 1.5;
   resize: vertical;
+}
+
+.admin-input--select-form {
+  cursor: pointer;
+}
+
+.admin-form__nota {
+  margin: -4px 0 0;
+  color: var(--admin-texto-2);
+  font-size: 14px;
+}
+
+.admin-form__nota strong {
+  color: var(--admin-texto);
+}
+
+/* Varias fechas en el formulario (chips) */
+.admin-fechas-form__chips {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-fecha-chip {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 40px;
+  padding: 0 2px 0 12px;
+  box-sizing: border-box;
+  border: 1px solid #3a3a40;
+  border-radius: 999px;
+  background: #26262b;
+  color: var(--admin-texto);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.admin-fecha-chip__quitar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--admin-texto-2);
+}
+
+.admin-fecha-chip__quitar:hover {
+  background: var(--admin-hover);
+  color: var(--admin-texto);
+}
+
+.admin-fecha-chip__icono {
+  width: 14px;
+  height: 14px;
+}
+
+/* Avisos dentro de los formularios */
+.admin-aviso {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.admin-aviso--error {
+  border: 1px solid rgba(255, 138, 128, 0.4);
+  background: rgba(217, 48, 54, 0.12);
+  color: #ffd2cd;
+}
+
+.admin-aviso--error .admin-aviso__titulo {
+  color: #ff8a80;
+}
+
+.admin-aviso__ayuda {
+  color: var(--admin-texto-2);
 }
 
 /* Confirmación de borrado */

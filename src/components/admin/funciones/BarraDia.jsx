@@ -1,17 +1,7 @@
-import { CalendarIcon, CopyIcon, TrashIcon } from "../../icons";
 import { fechaLarga } from "../../../utils/fechas";
 
-// Resumen del día elegido, filtro por película y acciones sobre todas sus funciones
-function BarraDia({
-  dia,
-  cantidad,
-  peliculas,
-  peliculaFiltro,
-  onFiltrar,
-  onCopiar,
-  onMover,
-  onEliminar,
-}) {
+// Resumen del día elegido y filtro por película
+function BarraDia({ dia, cantidad, peliculas, peliculaFiltro, onFiltrar }) {
   return (
     <div className="admin-barra-dia">
       <div className="admin-barra-dia__copy">
@@ -37,28 +27,6 @@ function BarraDia({
             ))}
           </select>
         </label>
-
-        {cantidad > 0 && (
-          <>
-            <button className="admin-boton-fila" type="button" onClick={onCopiar}>
-              <CopyIcon />
-              Copiar día
-            </button>
-            <button className="admin-boton-fila" type="button" onClick={onMover}>
-              <CalendarIcon />
-              Cambiar fecha
-            </button>
-            <button
-              className="admin-boton-fila admin-boton-fila--peligro"
-              type="button"
-              aria-label="Eliminar todas las funciones de este día"
-              onClick={onEliminar}
-            >
-              <TrashIcon />
-              <span className="admin-ocultar-sm">Eliminar día</span>
-            </button>
-          </>
-        )}
       </div>
     </div>
   );
