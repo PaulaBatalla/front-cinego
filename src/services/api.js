@@ -26,5 +26,9 @@ export async function solicitar(ruta, opciones = {}) {
     error.status = respuesta.status;
     throw error;
   }
+  // 204 (por ejemplo, un DELETE) no trae cuerpo para leer
+  if (respuesta.status === 204) {
+    return null;
+  }
   return respuesta.json();
 }

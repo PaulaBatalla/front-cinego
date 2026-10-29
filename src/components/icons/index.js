@@ -6,3 +6,7 @@ export { default as BellIcon } from "./BellIcon";
 export { default as PanelIcon } from "./PanelIcon";
 export { default as EyeIcon } from "./EyeIcon";
 export { default as LogoutIcon } from "./LogoutIcon";
+export { default as PlusIcon } from "./PlusIcon";
+export { default as EditIcon } from "./EditIcon";
+export { default as TrashIcon } from "./TrashIcon";
+export { default as StarIcon } from "./StarIcon";

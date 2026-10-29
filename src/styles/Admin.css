@@ -16,6 +16,7 @@
   --admin-padding: 32px;
 
   min-height: 100vh;
+  color-scheme: dark;
   background: var(--admin-fondo);
   color: var(--admin-texto);
   font-family: "DM Sans", system-ui, sans-serif;
@@ -25,7 +26,8 @@
   text-align: left;
 }
 
-.admin button {
+/* :where() deja la especificidad en 0 para que cada botón defina su propio peso */
+.admin :where(button) {
   font: inherit;
   cursor: pointer;
 }
@@ -189,8 +191,251 @@
   line-height: 1.1;
 }
 
+.admin-seccion__subtitulo {
+  color: var(--admin-texto-2);
+}
+
+.admin-seccion__acciones {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Buscador */
+.admin-buscador {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* el width hace que el contenedor reserve los 280px y no corte el botón a otra línea */
+  flex: 0 1 280px;
+  width: 280px;
+  height: 48px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  border: 1px solid #2a2a2f;
+  border-radius: 12px;
+  background: var(--admin-superficie);
+}
+
+.admin-buscador:focus-within {
+  border-color: var(--admin-acento);
+  box-shadow: 0 0 0 3px rgba(255, 107, 74, 0.18);
+}
+
+.admin-buscador__icono {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--admin-texto-3);
+}
+
+.admin-buscador input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--admin-texto);
+  font: inherit;
+}
+
+.admin-buscador input::placeholder {
+  color: var(--admin-texto-3);
+}
+
+/* Botón principal (coral) */
+.admin-boton-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--admin-acento);
+  color: var(--admin-fondo);
+  font-weight: 600;
+}
+
+.admin-boton-cta:hover {
+  background: var(--admin-acento-hover);
+}
+
+.admin-boton-cta--chico {
+  min-height: 44px;
+  padding: 0 18px;
+}
+
+/* Lista de películas */
+.admin-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-fila {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px;
+  border: 1px solid var(--admin-borde);
+  border-radius: 16px;
+  background: var(--admin-superficie-2);
+}
+
+.admin-fila:hover {
+  border-color: #34343a;
+}
+
+.admin-poster {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.admin-poster__imagen {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-poster__titulo {
+  color: var(--admin-fondo);
+  font-family: var(--admin-titulos);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.admin-fila__poster {
+  flex: 0 0 52px;
+  height: 78px;
+  border-radius: 10px;
+}
+
+.admin-fila__datos {
+  flex: 1 1 200px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-fila__titulo {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.admin-fila__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  color: var(--admin-texto-2);
+  font-size: 14px;
+}
+
+.admin-fila__puntaje {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.admin-estrella {
+  width: 12px;
+  height: 12px;
+  color: var(--admin-rating);
+}
+
+.admin-fila__sinopsis {
+  flex: 2 1 260px;
+  min-width: 0;
+  margin: 0;
+  color: var(--admin-texto-3);
+  font-size: 14px;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.admin-fila__acciones {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-boton-fila {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--admin-borde-control);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--admin-texto);
+  font-weight: 500;
+}
+
+.admin-boton-fila:hover {
+  background: var(--admin-hover);
+}
+
+.admin-boton-fila--peligro {
+  padding: 0 12px;
+  color: #c9c6ce;
+}
+
+.admin-boton-fila--peligro:hover {
+  border-color: #5a2a2c;
+  background: #241416;
+  color: #ff8a80;
+}
+
+.admin-icon--sm {
+  width: 16px;
+  height: 16px;
+}
+
+/* Estados: cargando, vacío y error */
+.admin-estado {
+  margin: 0;
+  color: var(--admin-texto-2);
+}
+
+.admin-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 48px 24px;
+  border: 1px dashed var(--admin-borde-control);
+  border-radius: 18px;
+  text-align: center;
+}
+
+.admin-vacio__texto {
+  color: var(--admin-texto-2);
+}
+
 .admin-boton-ghost:focus-visible,
-.admin-tab:focus-visible {
+.admin-tab:focus-visible,
+.admin-boton-cta:focus-visible,
+.admin-boton-fila:focus-visible {
   outline: 2px solid var(--admin-acento);
   outline-offset: 2px;
 }
@@ -208,5 +453,24 @@
   .admin-ocultar-sm,
   .admin-header__badge {
     display: none;
+  }
+
+  .admin-seccion__acciones {
+    width: 100%;
+  }
+
+  .admin-buscador {
+    flex: 1 1 auto;
+    width: auto;
+  }
+
+  .admin-fila__acciones {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .admin-fila__poster {
+    flex-basis: 44px;
+    height: 66px;
   }
 }
