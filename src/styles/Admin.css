@@ -1,0 +1,212 @@
+/* Panel de administración: colores y tipografías del mockup (Linear API-16) */
+.admin {
+  --admin-fondo: #0e0e10;
+  --admin-superficie: #17171a;
+  --admin-superficie-2: #141417;
+  --admin-borde: #222226;
+  --admin-borde-control: #2e2e33;
+  --admin-texto: #f4f1ea;
+  --admin-texto-2: #a9a6ae;
+  --admin-texto-3: #8a8790;
+  --admin-acento: #ff6b4a;
+  --admin-acento-hover: #ff8466;
+  --admin-hover: #232327;
+  --admin-rating: #ffc24a;
+  --admin-titulos: "Bricolage Grotesque", sans-serif;
+  --admin-padding: 32px;
+
+  min-height: 100vh;
+  background: var(--admin-fondo);
+  color: var(--admin-texto);
+  font-family: "DM Sans", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: left;
+}
+
+.admin button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.admin-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Header */
+.admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(14, 14, 16, 0.92);
+  border-bottom: 1px solid var(--admin-borde);
+  backdrop-filter: blur(10px);
+}
+
+.admin-header__barra {
+  max-width: 1280px;
+  height: 72px;
+  margin: 0 auto;
+  padding: 0 var(--admin-padding);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.admin-header__marca {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.admin-header__marca .logo-cinego {
+  gap: 8px;
+}
+
+.admin-header__marca .logo-cinego__icon {
+  width: 30px;
+  height: 30px;
+}
+
+.admin-header__marca .logo-cinego__text {
+  color: var(--admin-texto);
+  font-family: var(--admin-titulos);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.admin-header__badge {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255, 194, 74, 0.12);
+  color: var(--admin-rating);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.admin-header__acciones {
+  display: flex;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.admin-boton-ghost {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  border: 1px solid var(--admin-borde-control);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--admin-texto);
+  font-weight: 500;
+}
+
+.admin-boton-ghost:hover {
+  background: var(--admin-hover);
+}
+
+/* Pestañas de secciones */
+.admin-tabs {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--admin-padding);
+  box-sizing: border-box;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+}
+
+.admin-tab {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 16px;
+  border-bottom: 2px solid transparent;
+  color: var(--admin-texto-2);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.admin-tab:hover {
+  color: var(--admin-texto);
+}
+
+.admin-tab.active {
+  border-bottom-color: var(--admin-acento);
+  color: var(--admin-texto);
+  font-weight: 600;
+}
+
+/* Contenido de cada sección */
+.admin-contenido {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: clamp(24px, 3vw, 40px) var(--admin-padding) 120px;
+  box-sizing: border-box;
+}
+
+.admin-seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.admin-seccion__encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-seccion__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-titulo {
+  margin: 0;
+  color: var(--admin-texto);
+  font-family: var(--admin-titulos);
+  font-size: clamp(32px, 4vw, 44px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+
+.admin-boton-ghost:focus-visible,
+.admin-tab:focus-visible {
+  outline: 2px solid var(--admin-acento);
+  outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .admin {
+    --admin-padding: 16px;
+  }
+
+  .admin-header__barra {
+    height: 64px;
+    gap: 12px;
+  }
+
+  .admin-ocultar-sm,
+  .admin-header__badge {
+    display: none;
+  }
+}
