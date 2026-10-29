@@ -10,11 +10,11 @@ function NotificacionesProvider({ children }) {
     setNotificaciones((actuales) => actuales.filter((n) => n.id !== id));
   }, []);
 
-  // accion (opcional): { texto, onClick }, por ejemplo el "Deshacer" del panel
+  // duracion (opcional): para avisos que conviene dejar más tiempo, como los errores
   const notificar = useCallback(
-    (mensaje, tipo = "exito", { accion, duracion = DURACION_MS } = {}) => {
+    (mensaje, tipo = "exito", { duracion = DURACION_MS } = {}) => {
       const id = crypto.randomUUID();
-      setNotificaciones((actuales) => [...actuales, { id, mensaje, tipo, accion }]);
+      setNotificaciones((actuales) => [...actuales, { id, mensaje, tipo }]);
       setTimeout(() => cerrar(id), duracion);
     },
     [cerrar]

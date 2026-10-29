@@ -22,18 +22,6 @@ function Toasts() {
               <CheckIcon className="toast__icono" />
             ))}
           <p className="toast__mensaje">{notificacion.mensaje}</p>
-          {notificacion.accion && (
-            <button
-              type="button"
-              className="toast__accion"
-              onClick={() => {
-                notificacion.accion.onClick();
-                cerrar(notificacion.id);
-              }}
-            >
-              {notificacion.accion.texto}
-            </button>
-          )}
           {!enPanel && (
             <button
               type="button"

@@ -57,19 +57,6 @@
   color: #f5f5f5;
 }
 
-.toast__accion {
-  flex-shrink: 0;
-  padding: 0.35rem 0.75rem;
-  border: 0;
-  border-radius: 6px;
-  background: #f5f5f5;
-  color: #1e1e2f;
-  font: inherit;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
 /* Variante del panel de administración (mockup): abajo al centro y en crema */
 .toasts--admin {
   top: auto;
@@ -108,20 +95,6 @@
 
 .toasts--admin .toast--error .toast__icono {
   color: #b8262b;
-}
-
-.toasts--admin .toast__accion {
-  min-height: 44px;
-  padding: 0 16px;
-  border-radius: 10px;
-  background: #0e0e10;
-  color: #f4f1ea;
-  font-size: 1rem;
-}
-
-.toast__accion:focus-visible {
-  outline: 2px solid var(--brand-orange);
-  outline-offset: 2px;
 }
 
 @keyframes toast-subir {
