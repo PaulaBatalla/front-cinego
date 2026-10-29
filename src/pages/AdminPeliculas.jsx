@@ -1,12 +1,18 @@
 import { useState } from "react";
+import ConfirmarEliminar from "../components/admin/ConfirmarEliminar";
 import PeliculaFila from "../components/admin/peliculas/PeliculaFila";
+import PeliculaFormModal from "../components/admin/peliculas/PeliculaFormModal";
 import { PlusIcon, SearchIcon } from "../components/icons";
 import { useAdminPeliculas } from "../hooks/useAdminPeliculas";
 import { normalizarBusquedaRegex } from "../utils/busquedaRegex";
 
 function AdminPeliculas() {
-  const { peliculas, cargando, error, reintentar } = useAdminPeliculas();
+  const { peliculas, cargando, error, reintentar, funcionesDe, guardar, eliminar } =
+    useAdminPeliculas();
   const [busqueda, setBusqueda] = useState("");
+  // null: cerrado · { pelicula: null }: nueva · { pelicula }: edición
+  const [editor, setEditor] = useState(null);
+  const [aEliminar, setAEliminar] = useState(null);
 
   const regex = busqueda.trim() ? normalizarBusquedaRegex(busqueda) : null;
   const peliculasFiltradas = regex
@@ -16,6 +22,30 @@ function AdminPeliculas() {
   const cantidadTexto = `${peliculas.length} ${
     peliculas.length === 1 ? "película en cartelera" : "películas en cartelera"
   }`;
+
+  const abrirNueva = () => setEditor({ pelicula: null });
+
+  const handleGuardar = async (datos) => {
+    const esNueva = !editor.pelicula;
+    await guardar(datos, editor.pelicula?.id);
+    setEditor(null);
+    // Si había una búsqueda, la limpia para que se vea la película recién agregada
+    if (esNueva) setBusqueda("");
+  };
+
+  const handleConfirmarEliminar = () => {
+    eliminar(aEliminar);
+    setAEliminar(null);
+  };
+
+  const textoEliminar = (pelicula) => {
+    const cantidad = funcionesDe(pelicula.id);
+    return cantidad
+      ? `La película deja de aparecer en la cartelera y se eliminan sus ${cantidad} ${
+          cantidad === 1 ? "función programada" : "funciones programadas"
+        }.`
+      : "La película deja de aparecer en la cartelera.";
+  };
 
   const renderContenido = () => {
     if (cargando) {
@@ -45,7 +75,11 @@ function AdminPeliculas() {
               ? "No encontramos películas con ese nombre."
               : "Todavía no hay películas. Agregá la primera."}
           </span>
-          <button className="admin-boton-cta admin-boton-cta--chico" type="button">
+          <button
+            className="admin-boton-cta admin-boton-cta--chico"
+            type="button"
+            onClick={abrirNueva}
+          >
             Agregar película
           </button>
         </div>
@@ -55,7 +89,12 @@ function AdminPeliculas() {
     return (
       <ul className="admin-lista">
         {peliculasFiltradas.map((pelicula) => (
-          <PeliculaFila key={pelicula.id} pelicula={pelicula} />
+          <PeliculaFila
+            key={pelicula.id}
+            pelicula={pelicula}
+            onEditar={(seleccionada) => setEditor({ pelicula: seleccionada })}
+            onEliminar={setAEliminar}
+          />
         ))}
       </ul>
     );
@@ -84,7 +123,7 @@ function AdminPeliculas() {
               onChange={(event) => setBusqueda(event.target.value)}
             />
           </label>
-          <button className="admin-boton-cta" type="button">
+          <button className="admin-boton-cta" type="button" onClick={abrirNueva}>
             <PlusIcon />
             Agregar película
           </button>
@@ -92,6 +131,24 @@ function AdminPeliculas() {
       </div>
 
       {renderContenido()}
+
+      {editor && (
+        <PeliculaFormModal
+          pelicula={editor.pelicula}
+          idColor={editor.pelicula?.id ?? peliculas.length}
+          onGuardar={handleGuardar}
+          onCerrar={() => setEditor(null)}
+        />
+      )}
+
+      {aEliminar && (
+        <ConfirmarEliminar
+          titulo={`¿Eliminar “${aEliminar.titulo}”?`}
+          texto={textoEliminar(aEliminar)}
+          onConfirmar={handleConfirmarEliminar}
+          onCancelar={() => setAEliminar(null)}
+        />
+      )}
     </section>
   );
 }
