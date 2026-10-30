@@ -39,8 +39,8 @@
 
 .auth-field input:focus,
 .auth-field select:focus {
-  border-color: #4ade80;
-  outline: 2px solid rgba(74, 222, 128, 0.3);
+  border-color: var(--brand-orange);
+  outline: 2px solid rgba(255, 107, 74, 0.3);
 }
 
 .auth-field input[aria-invalid="true"],
@@ -58,15 +58,15 @@
   padding: 0.8rem;
   border: 0;
   border-radius: 8px;
-  background-color: #4ade80;
-  color: #1e1e2f;
+  background-color: var(--brand-orange);
+  color: #0e0e10;
   font: inherit;
   font-weight: 700;
   cursor: pointer;
 }
 
 .auth-submit:hover {
-  background-color: #6ee7a0;
+  background-color: #ff8466;
 }
 
 .auth-submit:disabled {
@@ -81,7 +81,7 @@
 }
 
 .auth-switch a {
-  color: #4ade80;
+  color: var(--brand-orange);
 }
 
 .auth-alert {
