@@ -1,0 +1,223 @@
+/* ==========================================================================
+   FILTROS DE CARTELERA - CineGo
+   Compacto, modular y adaptado a la estética oscura oficial
+   ========================================================================== */
+
+.peliculas-filtros {
+  background: #141417;
+  border: 1px solid #222226;
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+/* ---------- Fila 1: Segmentado de Días ---------- */
+.filtros-dias {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: #2a2a32 transparent;
+}
+
+.filtros-dias::-webkit-scrollbar {
+  height: 4px;
+}
+
+.filtros-dias::-webkit-scrollbar-thumb {
+  background: #2a2a32;
+  border-radius: 4px;
+}
+
+.filtro-dia-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 66px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #2a2a30;
+  background: #17171a;
+  color: #a9a6ae;
+  cursor: pointer;
+  font: inherit;
+  transition: all 0.15s ease;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.filtro-dia-btn:hover {
+  border-color: #4a4852;
+  color: #f4f1ea;
+  background: #1c1c20;
+}
+
+.filtro-dia-nombre {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
+
+.filtro-dia-fecha {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #74717b;
+  margin-top: 2px;
+  line-height: 1.1;
+}
+
+/* Día activo (estilo blanco sólido del mockup de usuario) */
+.filtro-dia-btn.activo {
+  background: #f4f1ea;
+  border-color: #f4f1ea;
+  color: #0e0e10;
+}
+
+.filtro-dia-btn.activo .filtro-dia-nombre {
+  color: #0e0e10;
+}
+
+.filtro-dia-btn.activo .filtro-dia-fecha {
+  color: #38363d;
+  font-weight: 600;
+}
+
+/* ---------- Fila 2: Selectores secundarios ---------- */
+.filtros-secundarios {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  border-top: 1px solid #1c1c22;
+}
+
+.filtros-selects {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filtro-select-group {
+  position: relative;
+}
+
+.filtro-select {
+  background: #17171a;
+  border: 1px solid #2a2a30;
+  border-radius: 8px;
+  color: #f4f1ea;
+  padding: 6px 12px;
+  font-size: 0.825rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 36px;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  font-family: inherit;
+}
+
+.filtro-select:hover {
+  border-color: #4a4852;
+}
+
+.filtro-select:focus {
+  border-color: #ff6b4a;
+}
+
+.filtro-select option {
+  background: #141417;
+  color: #f4f1ea;
+  padding: 8px;
+}
+
+/* Conteo y Botón de Limpiar */
+.filtros-resumen {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.filtros-conteo {
+  font-size: 0.8rem;
+  color: #74717b;
+  font-weight: 500;
+}
+
+.filtro-limpiar-btn {
+  background: transparent;
+  border: 1px solid #33333b;
+  color: #a9a6ae;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filtro-limpiar-btn:hover {
+  border-color: #ff6b4a;
+  color: #ff6b4a;
+}
+
+/* Badges de etiquetas en las tarjetas */
+.movie-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+  margin-bottom: 4px;
+}
+
+.movie-tag {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #202026;
+  color: #c5c2cc;
+  border: 1px solid #2d2d36;
+  letter-spacing: 0.02em;
+}
+
+.movie-tag.highlight {
+  background: rgba(255, 107, 74, 0.12);
+  color: #ff856b;
+  border-color: rgba(255, 107, 74, 0.3);
+}
+
+@media (max-width: 640px) {
+  .peliculas-filtros {
+    padding: 10px;
+    gap: 10px;
+  }
+  .filtros-secundarios {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .filtros-selects {
+    width: 100%;
+  }
+  .filtro-select {
+    flex: 1;
+    width: 100%;
+  }
+  .filtros-resumen {
+    margin-left: 0;
+    justify-content: space-between;
+    width: 100%;
+  }
+}
