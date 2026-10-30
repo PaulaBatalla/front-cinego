@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useNotificaciones } from "../hooks/useNotificaciones";
 import { authService } from "../services/authService";
 import { validarLogin } from "../utils/validaciones";
+import { destinoTrasLogin } from "../utils/roles";
 import CampoFormulario from "./CampoFormulario";
 import "../styles/Auth.css";
 
@@ -33,9 +34,16 @@ function Login() {
 
     try {
       const token = await authService.login(email, password);
-      login(token);
-      notificar("Sesión iniciada");
-      navigate(location.state?.volverA || "/", { replace: true });
+      const nuevoUsuario = login(token);
+      const destino = destinoTrasLogin(nuevoUsuario, location.state?.volverA);
+
+      // Un admin entra directo al panel, salvo que viniera de otra página
+      notificar(
+        destino.startsWith("/admin")
+          ? "Entraste al panel de administración"
+          : "Sesión iniciada"
+      );
+      navigate(destino, { replace: true });
     } catch (err) {
       setErrorLogin(err.message);
     } finally {

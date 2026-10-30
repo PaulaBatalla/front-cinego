@@ -26,6 +26,57 @@ export function validarLogin(email, password) {
   return errores;
 }
 
+// Acepta "8,1" y "8.1" para el puntaje
+export function leerDecimal(texto) {
+  return parseFloat(String(texto).replace(",", "."));
+}
+
+export function validarPelicula(datos) {
+  const errores = {};
+
+  if (!datos.titulo.trim()) {
+    errores.titulo = "Escribí el título de la película.";
+  }
+
+  const duracion = Number(datos.duracion);
+  if (!Number.isInteger(duracion) || duracion <= 0) {
+    errores.duracion = "Ingresá los minutos (ej: 104).";
+  }
+
+  const puntaje = leerDecimal(datos.clasificacion);
+  if (!(puntaje >= 0 && puntaje <= 10)) {
+    errores.clasificacion = "Tiene que ser un número entre 0 y 10.";
+  }
+
+  return errores;
+}
+
+export function validarFuncion(datos) {
+  const errores = {};
+
+  if (!datos.peliculaId) {
+    errores.peliculaId = "Elegí la película.";
+  }
+
+  if (!datos.salaId) {
+    errores.salaId = "Elegí la sala.";
+  }
+
+  if (!datos.fechas.length) {
+    errores.fechas = "Elegí al menos una fecha.";
+  }
+
+  if (!/^\d{2}:\d{2}$/.test(datos.hora)) {
+    errores.hora = "Elegí a qué hora empieza.";
+  }
+
+  if (!(Number(datos.precio) > 0)) {
+    errores.precio = "Ingresá un precio mayor a 0.";
+  }
+
+  return errores;
+}
+
 export function validarRegistro(datos) {
   const errores = {};
 
