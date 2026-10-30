@@ -4,7 +4,13 @@ import PeliculasFallback from "./PeliculasFallback";
 import PeliculasList from "./PeliculasList";
 import PeliculasFiltros from "./PeliculasFiltros";
 import { SearchIcon } from "./icons";
-import { normalizarBusquedaRegex } from "../utils/busquedaRegex";
+import { filtrarPeliculas } from "../utils/filtrarPeliculas";
+
+const FILTROS_INICIALES = {
+  dia: "todos",
+  idioma: "todos",
+  formato: "todos",
+};
 
 // Metadatos complementarios para idiomas y formatos de cada película
 const METADATOS_DEFAULT = {
@@ -21,9 +27,11 @@ function Peliculas() {
 
   // Estados de filtros
   const [busqueda, setBusqueda] = useState("");
-  const [diaSeleccionado, setDiaSeleccionado] = useState("todos");
-  const [idiomaSeleccionado, setIdiomaSeleccionado] = useState("todos");
-  const [formatoSeleccionado, setFormatoSeleccionado] = useState("todos");
+  const [filtros, setFiltros] = useState(FILTROS_INICIALES);
+
+  const actualizarFiltro = (nombre, valor) => {
+    setFiltros((anteriores) => ({ ...anteriores, [nombre]: valor }));
+  };
 
   useEffect(() => {
     const cargarDatos = async () => {
@@ -89,56 +97,18 @@ function Peliculas() {
   // Función para resetear todos los filtros
   const limpiarFiltros = () => {
     setBusqueda("");
-    setDiaSeleccionado("todos");
-    setIdiomaSeleccionado("todos");
-    setFormatoSeleccionado("todos");
+    setFiltros(FILTROS_INICIALES);
   };
 
   const hayFiltrosActivos =
     busqueda.trim() !== "" ||
-    diaSeleccionado !== "todos" ||
-    idiomaSeleccionado !== "todos" ||
-    formatoSeleccionado !== "todos";
+    Object.values(filtros).some((filtro) => filtro !== "todos");
 
   // Aplicación combinada de filtros
-  const peliculasFiltradas = useMemo(() => {
-    const regex = busqueda.trim() ? normalizarBusquedaRegex(busqueda) : null;
-
-    return peliculas.filter((pelicula) => {
-      // 1. Filtro por buscador (título)
-      if (regex && (!pelicula.titulo || !regex.test(pelicula.titulo))) {
-        return false;
-      }
-
-      // 2. Filtro por día
-      if (diaSeleccionado !== "todos") {
-        const tieneFuncionEnDia =
-          pelicula.fechasFunciones &&
-          pelicula.fechasFunciones.includes(diaSeleccionado);
-
-        // Si la película tiene funciones asignadas, debe coincidir con el día
-        if (pelicula.fechasFunciones?.length > 0 && !tieneFuncionEnDia) {
-          return false;
-        }
-      }
-
-      // 3. Filtro por idioma (sub o castellano)
-      if (idiomaSeleccionado !== "todos") {
-        if (!pelicula.idiomas?.includes(idiomaSeleccionado)) {
-          return false;
-        }
-      }
-
-      // 4. Filtro por formato (2D, 3D, premium)
-      if (formatoSeleccionado !== "todos") {
-        if (!pelicula.formatos?.includes(formatoSeleccionado)) {
-          return false;
-        }
-      }
-
-      return true;
-    });
-  }, [peliculas, busqueda, diaSeleccionado, idiomaSeleccionado, formatoSeleccionado]);
+  const peliculasFiltradas = useMemo(
+    () => filtrarPeliculas(peliculas, busqueda, filtros),
+    [peliculas, busqueda, filtros]
+  );
 
   if (cargando) return <p className="listado-status">Cargando películas...</p>;
   if (error) return <p className="listado-status">Error: {error}</p>;
@@ -169,12 +139,12 @@ function Peliculas() {
 
       {/* Barra de Filtros compacta: Días + Idioma + Formato */}
       <PeliculasFiltros
-        diaSeleccionado={diaSeleccionado}
-        onSeleccionarDia={setDiaSeleccionado}
-        idiomaSeleccionado={idiomaSeleccionado}
-        onSeleccionarIdioma={setIdiomaSeleccionado}
-        formatoSeleccionado={formatoSeleccionado}
-        onSeleccionarFormato={setFormatoSeleccionado}
+        diaSeleccionado={filtros.dia}
+        onSeleccionarDia={(valor) => actualizarFiltro("dia", valor)}
+        idiomaSeleccionado={filtros.idioma}
+        onSeleccionarIdioma={(valor) => actualizarFiltro("idioma", valor)}
+        formatoSeleccionado={filtros.formato}
+        onSeleccionarFormato={(valor) => actualizarFiltro("formato", valor)}
         onLimpiarFiltros={limpiarFiltros}
         hayFiltrosActivos={hayFiltrosActivos}
         totalResultados={peliculasFiltradas.length}
