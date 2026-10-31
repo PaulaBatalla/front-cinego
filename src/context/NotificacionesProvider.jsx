@@ -10,11 +10,12 @@ function NotificacionesProvider({ children }) {
     setNotificaciones((actuales) => actuales.filter((n) => n.id !== id));
   }, []);
 
+  // duracion (opcional): para avisos que conviene dejar más tiempo, como los errores
   const notificar = useCallback(
-    (mensaje, tipo = "exito") => {
+    (mensaje, tipo = "exito", { duracion = DURACION_MS } = {}) => {
       const id = crypto.randomUUID();
       setNotificaciones((actuales) => [...actuales, { id, mensaje, tipo }]);
-      setTimeout(() => cerrar(id), DURACION_MS);
+      setTimeout(() => cerrar(id), duracion);
     },
     [cerrar]
   );

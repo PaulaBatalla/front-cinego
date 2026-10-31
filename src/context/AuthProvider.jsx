@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { AuthContext } from "./AuthContext";
+import { esRolAdmin } from "../utils/roles";
 
 // El JWT tiene tres partes separadas por puntos; la del medio trae los datos
 function leerUsuario(token) {
@@ -22,9 +23,11 @@ function AuthProvider({ children }) {
 
   const usuario = token ? leerUsuario(token) : null;
 
+  // Devuelve el usuario del token nuevo para decidir a dónde navegar sin esperar al render
   const login = (nuevoToken) => {
     localStorage.setItem("token", nuevoToken);
     setToken(nuevoToken);
+    return leerUsuario(nuevoToken);
   };
 
   const logout = () => {
@@ -38,6 +41,7 @@ function AuthProvider({ children }) {
         token,
         usuario,
         isAuthenticated: Boolean(usuario),
+        esAdmin: esRolAdmin(usuario?.rol),
         login,
         logout,
       }}
