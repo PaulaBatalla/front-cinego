@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { useNotificaciones } from "../hooks/useNotificaciones";
-import { authService } from "../services/authService";
+import { clearError, loginUser } from "../store/slices/authSlice";
 import { validarLogin } from "../utils/validaciones";
 import CampoFormulario from "./CampoFormulario";
 import "../styles/Auth.css";
@@ -11,16 +11,17 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errores, setErrores] = useState({});
-  const [errorLogin, setErrorLogin] = useState(null);
-  const [cargando, setCargando] = useState(false);
-  const { login } = useAuth();
+  const { isLoading, error } = useSelector((state) => state.auth);
   const { notificar } = useNotificaciones();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    return () => dispatch(clearError());
+  }, [dispatch]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setErrorLogin(null);
+    dispatch(clearError());
 
     const erroresEncontrados = validarLogin(email, password);
     setErrores(erroresEncontrados);
@@ -29,17 +30,10 @@ function Login() {
       return;
     }
 
-    setCargando(true);
+    const resultado = await dispatch(loginUser({ email, password }));
 
-    try {
-      const token = await authService.login(email, password);
-      login(token);
+    if (loginUser.fulfilled.match(resultado)) {
       notificar("Sesión iniciada");
-      navigate(location.state?.volverA || "/", { replace: true });
-    } catch (err) {
-      setErrorLogin(err.message);
-    } finally {
-      setCargando(false);
     }
   };
 
@@ -47,9 +41,9 @@ function Login() {
     <form className="auth-form" onSubmit={handleSubmit} noValidate>
       <h1>Iniciar sesión</h1>
 
-      {errorLogin && (
+      {error && (
         <p className="auth-alert" role="alert">
-          {errorLogin}
+          {error}
         </p>
       )}
 
@@ -73,8 +67,8 @@ function Login() {
         error={errores.password}
       />
 
-      <button className="auth-submit" type="submit" disabled={cargando}>
-        {cargando ? "Ingresando..." : "Ingresar"}
+      <button className="auth-submit" type="submit" disabled={isLoading}>
+        {isLoading ? "Ingresando..." : "Ingresar"}
       </button>
 
       <p className="auth-switch">
