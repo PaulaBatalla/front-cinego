@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { reservaService } from "../services/reservaService";
+import { useMisReservasQuery, useFuncionesQuery, usePeliculasQuery } from "../services/reservasApi";
 import "../styles/reserva.css";
 import "../styles/misReservas.css";
 
@@ -32,36 +31,17 @@ export default function MisReservas() {
 
 function ListadoReservas() {
   const { logout } = useAuth();
-  const [resultado, setResultado] = useState(null);
-  const [error, setError] = useState(null);
-  const [intento, setIntento] = useState(0);
-
-  useEffect(() => {
-    let activo = true;
-    const controller = new AbortController();
-    async function cargar() {
-      try {
-        const reservas = await reservaService.misReservas(controller.signal);
-        if (!activo) return;
-        if (!Array.isArray(reservas)) throw new Error("La respuesta de reservas no es válida.");
-        const catalogos = reservas.length ? await Promise.allSettled([
-          reservaService.funciones(controller.signal),
-          reservaService.peliculas(controller.signal),
-        ]) : [];
-        if (!activo) return;
-        setResultado({
-          reservas: [...reservas].sort((a, b) => (Date.parse(b.fechaReserva) || 0) - (Date.parse(a.fechaReserva) || 0) || b.idReserva - a.idReserva),
-          funciones: catalogos[0]?.status === "fulfilled" && Array.isArray(catalogos[0].value) ? catalogos[0].value : [],
-          peliculas: catalogos[1]?.status === "fulfilled" && Array.isArray(catalogos[1].value) ? catalogos[1].value : [],
-          incompleto: catalogos.some((catalogo) => catalogo.status === "rejected"),
-        });
-      } catch (err) {
-        if (activo) setError(err);
-      }
-    }
-    cargar();
-    return () => { activo = false; controller.abort(); };
-  }, [intento]);
+  const reservas = useMisReservasQuery(undefined, { refetchOnMountOrArgChange: true });
+  const consultarCatalogos = Boolean(reservas.data?.length);
+  const funciones = useFuncionesQuery(undefined, { skip: !consultarCatalogos });
+  const peliculas = usePeliculasQuery(undefined, { skip: !consultarCatalogos });
+  const error = reservas.error;
+  const resultado = reservas.data && !funciones.isLoading && !peliculas.isLoading ? {
+    reservas: [...reservas.data].sort((a, b) => (Date.parse(b.fechaReserva) || 0) - (Date.parse(a.fechaReserva) || 0) || b.idReserva - a.idReserva),
+    funciones: funciones.data || [],
+    peliculas: peliculas.data || [],
+    incompleto: Boolean(funciones.error || peliculas.error),
+  } : null;
 
   if (error) return (
     <div className="reserva-panel mis-reservas-mensaje">
@@ -69,7 +49,7 @@ function ListadoReservas() {
       <p role="alert">{[401, 403].includes(error.status) ? "Iniciá sesión nuevamente para consultar tus reservas." : "Ocurrió un problema al consultar el servidor. Intentá nuevamente."}</p>
       {[401, 403].includes(error.status)
         ? <Link className="mis-reservas-accion" to="/login" state={{ volverA: "/mis-reservas" }} onClick={logout}>Iniciar sesión</Link>
-        : <button className="mis-reservas-accion" type="button" onClick={() => { setError(null); setIntento((valor) => valor + 1); }}>Reintentar</button>}
+        : <button className="mis-reservas-accion" type="button" onClick={reservas.refetch}>Reintentar</button>}
     </div>
   );
   if (!resultado) return <p className="reserva-panel" role="status">Cargando tus reservas…</p>;

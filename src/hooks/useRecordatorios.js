@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useAuth } from "./useAuth";
-import { reservaService } from "../services/reservaService";
+import { useMisReservasQuery, useFuncionesQuery } from "../services/reservasApi";
 import { armarRecordatorios } from "../utils/recordatorios";
 
 function leerLeidos(clave) {
@@ -12,38 +12,27 @@ function leerLeidos(clave) {
 }
 
 export function useRecordatorios() {
-  const { isAuthenticated, token, usuario } = useAuth();
-  const [resultado, setResultado] = useState({ token: null, recordatorios: [] });
-  const [intento, setIntento] = useState(0);
-  const clave = `recordatoriosLeidos:${usuario?.email}`;
-  const [leidos, setLeidos] = useState(() => leerLeidos(clave));
+  const { isAuthenticated, usuario } = useAuth();
+  const reservas = useMisReservasQuery(undefined, { skip: !isAuthenticated });
+  const funciones = useFuncionesQuery(undefined, { skip: !isAuthenticated });
+  const clave = "recordatoriosLeidos:" + usuario?.email;
+  const [lectura, setLectura] = useState(() => ({ clave, ids: leerLeidos(clave) }));
+  const leidos = lectura.clave === clave ? lectura.ids : leerLeidos(clave);
 
-  useEffect(() => {
+  const recargar = () => {
     if (!isAuthenticated) return;
+    reservas.refetch();
+    funciones.refetch();
+  };
 
-    const controlador = new AbortController();
-
-    Promise.all([
-      reservaService.misReservas(controlador.signal),
-      reservaService.funciones(controlador.signal),
-    ])
-      .then(([reservas, funciones]) => {
-        setResultado({ token, recordatorios: armarRecordatorios(reservas, funciones) });
-      })
-      .catch(() => {});
-
-    return () => controlador.abort();
-  }, [isAuthenticated, token, intento]);
-
-  const recargar = useCallback(() => setIntento((actual) => actual + 1), []);
-
-  const actuales =
-    isAuthenticated && resultado.token === token ? resultado.recordatorios : [];
+  const actuales = useMemo(() => isAuthenticated && reservas.data && funciones.data
+    ? armarRecordatorios(reservas.data, funciones.data)
+    : [], [isAuthenticated, reservas.data, funciones.data]);
 
   const marcarLeidos = useCallback(() => {
     const ids = actuales.map((recordatorio) => recordatorio.id);
     localStorage.setItem(clave, JSON.stringify(ids));
-    setLeidos(ids);
+    setLectura({ clave, ids });
   }, [actuales, clave]);
 
   const recordatorios = actuales.map((recordatorio) => ({
