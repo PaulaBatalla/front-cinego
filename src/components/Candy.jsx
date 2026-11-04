@@ -1,15 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import CandyCard from "./CandyCard";
 import ResumenCandy from "./ResumenCandy";
 import { useCandy } from "../hooks/useCandy";
+import { useAuth } from "../hooks/useAuth";
+import { fetchCarrito } from "../store/slices/candySlice";
 import "./Candy.css";
 
 const CATEGORIAS = ["Todos", "Combos", "Pochoclos", "Bebidas", "Dulces"];
 
 function Candy() {
-  const { candy } = useCandy();
+  const { candy, cargando } = useCandy();
+  const { isAuthenticated } = useAuth();
+  const dispatch = useDispatch();
   const [categoriaActiva, setCategoriaActiva] = useState("Todos");
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(fetchCarrito());
+    }
+  }, [isAuthenticated, dispatch]);
 
   const productosFiltrados =
     categoriaActiva === "Todos"
@@ -65,11 +76,15 @@ function Candy() {
       </section>
 
       {/* Grilla de productos de Candy */}
-      <section className="candy-grilla" aria-label="Listado de combos y golosinas">
-        {productosFiltrados.map((producto) => (
-          <CandyCard key={producto.id} item={producto} />
-        ))}
-      </section>
+      {cargando && candy.length === 0 ? (
+        <p role="status">Cargando productos de Candy...</p>
+      ) : (
+        <section className="candy-grilla" aria-label="Listado de combos y golosinas">
+          {productosFiltrados.map((producto) => (
+            <CandyCard key={producto.id} item={producto} />
+          ))}
+        </section>
+      )}
 
       {/* Resumen del pedido (se activa cuando el usuario agrega items) */}
       <ResumenCandy />

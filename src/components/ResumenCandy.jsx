@@ -1,20 +1,22 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
-  agregarCandy,
-  disminuirCandy,
-  quitarCandy,
-  vaciarCandy,
+  agregarItemCarrito,
+  disminuirItemCarrito,
+  quitarItemCarrito,
+  vaciarPedidoCarrito,
 } from "../store/slices/candySlice";
+import { useAuth } from "../hooks/useAuth";
 import { useNotificaciones } from "../hooks/useNotificaciones";
 
 function ResumenCandy() {
   const items = useSelector((state) => state.candy.items);
   const dispatch = useDispatch();
   const { notificar } = useNotificaciones();
+  const { isAuthenticated } = useAuth();
 
   if (items.length === 0) {
-    return null; // Si no hay productos, la vista se mantiene exactamente como en la página 11 del PDF
+    return null;
   }
 
   const unidades = items.reduce(
@@ -23,18 +25,18 @@ function ResumenCandy() {
   );
 
   const vaciarPedido = () => {
-    dispatch(vaciarCandy());
+    dispatch(vaciarPedidoCarrito({ items, isAuthenticated }));
     notificar("Vaciaste tu pedido de Candy");
   };
 
   const quitarDelPedido = (producto) => {
-    dispatch(quitarCandy(producto.id));
+    dispatch(quitarItemCarrito({ item: producto, isAuthenticated }));
     notificar(`Quitaste ${producto.nombre}`);
   };
 
   const total = items.reduce(
     (acumulado, producto) =>
-      acumulado + producto.precio * producto.cantidad,
+      acumulado + Number(producto.precio) * producto.cantidad,
     0
   );
 
@@ -69,7 +71,14 @@ function ResumenCandy() {
                 type="button"
                 className="candy-stepper-btn"
                 aria-label={`Restar una unidad de ${producto.nombre}`}
-                onClick={() => dispatch(disminuirCandy(producto.id))}
+                onClick={() =>
+                  dispatch(
+                    disminuirItemCarrito({
+                      item: producto,
+                      isAuthenticated,
+                    })
+                  )
+                }
               >
                 −
               </button>
@@ -78,7 +87,15 @@ function ResumenCandy() {
                 type="button"
                 className="candy-stepper-btn sumar"
                 aria-label={`Sumar una unidad de ${producto.nombre}`}
-                onClick={() => dispatch(agregarCandy(producto))}
+                onClick={() =>
+                  dispatch(
+                    agregarItemCarrito({
+                      producto: { id: producto.candyId ?? producto.id },
+                      cantidad: 1,
+                      isAuthenticated,
+                    })
+                  )
+                }
               >
                 +
               </button>

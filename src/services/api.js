@@ -26,5 +26,8 @@ export async function solicitar(ruta, opciones = {}) {
     error.status = respuesta.status;
     throw error;
   }
+  if (respuesta.status === 204) {
+    return null;
+  }
   return respuesta.json();
 }

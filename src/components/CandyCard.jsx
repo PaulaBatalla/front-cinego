@@ -1,22 +1,43 @@
 import { useDispatch, useSelector } from "react-redux";
-import { agregarCandy, disminuirCandy } from "../store/slices/candySlice";
+import {
+  agregarItemCarrito,
+  disminuirItemCarrito,
+} from "../store/slices/candySlice";
+import { useAuth } from "../hooks/useAuth";
 import { useNotificaciones } from "../hooks/useNotificaciones";
 import CandyIcon from "./CandyIcon";
 
 function CandyCard({ item }) {
   const dispatch = useDispatch();
   const { notificar } = useNotificaciones();
+  const { isAuthenticated } = useAuth();
 
-  const cantidad = useSelector((state) => {
-    const seleccionado = state.candy.items.find(
-      (producto) => producto.id === item.id
-    );
-    return seleccionado ? seleccionado.cantidad : 0;
-  });
+  const seleccionado = useSelector((state) =>
+    state.candy.items.find(
+      (producto) => (producto.candyId ?? producto.id) === item.id
+    )
+  );
+  const cantidad = seleccionado ? seleccionado.cantidad : 0;
 
   const agregarAlPedido = () => {
-    dispatch(agregarCandy(item));
+    dispatch(
+      agregarItemCarrito({
+        producto: item,
+        cantidad: 1,
+        isAuthenticated,
+      })
+    );
     notificar(`Agregaste ${item.nombre} a tu pedido`);
+  };
+
+  const restarDelPedido = () => {
+    if (!seleccionado) return;
+    dispatch(
+      disminuirItemCarrito({
+        item: seleccionado,
+        isAuthenticated,
+      })
+    );
   };
 
   return (
@@ -67,7 +88,7 @@ function CandyCard({ item }) {
                 type="button"
                 className="candy-stepper-btn"
                 aria-label={`Restar una unidad de ${item.nombre}`}
-                onClick={() => dispatch(disminuirCandy(item.id))}
+                onClick={restarDelPedido}
               >
                 −
               </button>
@@ -76,7 +97,7 @@ function CandyCard({ item }) {
                 type="button"
                 className="candy-stepper-btn sumar"
                 aria-label={`Sumar una unidad de ${item.nombre}`}
-                onClick={() => dispatch(agregarCandy(item))}
+                onClick={agregarAlPedido}
               >
                 +
               </button>

@@ -1,8 +1,10 @@
 import "../../styles/Header.css";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { useAuth } from "../../hooks/useAuth";
 import { useNotificaciones } from "../../hooks/useNotificaciones";
 import useMobileMenu from "../../hooks/useMobileMenu";
+import { vaciarCandyLocal } from "../../store/slices/candySlice";
 import LogoCineGo from "../LogoCineGo";
 import { UserIcon } from "../icons";
 import HamburgerMenu from "./hamburger-menu/HamburgerMenu";
@@ -11,10 +13,12 @@ import Campanita from "./Campanita";
 function Header() {
   const { usuario, isAuthenticated, logout } = useAuth();
   const { notificar } = useNotificaciones();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { menuOpen, drawerId, closeMenu, toggleMenu } = useMobileMenu();
 
   const handleLogout = () => {
+    dispatch(vaciarCandyLocal());
     logout();
     notificar("Cerraste sesión");
     closeMenu();
