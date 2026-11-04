@@ -140,7 +140,7 @@ function SeleccionFuncion({ pelicula, funciones }) {
                   );
                 })}
               </div>
-              {funcionElegida && <ReservaFuncion key={funcionElegida.id} funcion={funcionElegida} onResumen={setAsientosElegidos} />}
+              {funcionElegida && <ReservaFuncion key={funcionElegida.id} funcion={funcionElegida} titulo={pelicula.titulo} onResumen={setAsientosElegidos} />}
             </>
           )}
         </section>

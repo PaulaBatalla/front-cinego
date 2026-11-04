@@ -9,6 +9,7 @@ import "./App.css";
 import Header from "./components/header/Header";
 import Candy from "./components/Candy";
 import PeliculaFunciones from "./pages/PeliculaFunciones";
+import Toasts from "./components/Toasts";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="*" element={<h1>Página no encontrada</h1>} />
         </Routes>
       </main>
+      <Toasts />
     </div>
   );
 }
