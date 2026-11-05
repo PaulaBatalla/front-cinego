@@ -1,12 +1,22 @@
 import { configureStore } from "@reduxjs/toolkit";
 import candyReducer from "./slices/candySlice";
+import authReducer, { loginUser, logout } from "./slices/authSlice";
 import { reservasApi } from "../services/reservasApi";
+
+const limpiarReservasAlCambiarSesion = ({ dispatch }) => (next) => (action) => {
+  const resultado = next(action);
+  if (logout.match(action) || loginUser.pending.match(action)) {
+    dispatch(reservasApi.util.resetApiState());
+  }
+  return resultado;
+};
 
 export const store = configureStore({
   reducer: {
     candy: candyReducer,
+    auth: authReducer,
     [reservasApi.reducerPath]: reservasApi.reducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware()
-    .concat(reservasApi.middleware),
+    .concat(limpiarReservasAlCambiarSesion, reservasApi.middleware),
 });
