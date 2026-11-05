@@ -1,8 +1,6 @@
 import { useFuncionesDisponibles } from "../hooks/useFuncionesDisponibles";
-import { formatearClasificacion } from "../utils/peliculas";
 import { useState } from "react";
 import { Link, useParams, useSearchParams, useLocation } from "react-router-dom";
-import ResumenFuncion from "../components/funciones/ResumenFuncion";
 import SalaHorarios from "../components/funciones/SalaHorarios";
 import SelectorDia from "../components/funciones/SelectorDia";
 import ReservaFuncion from "../components/ReservaFuncion";
@@ -56,20 +54,13 @@ function SeleccionFuncion({ pelicula, funciones }) {
   // Los días que tienen funciones, sin repetir.
   const dias = ordenadas.map((f) => f.fecha).filter((fecha, i, lista) => lista.indexOf(fecha) === i);
 
-  const funcionElegida = ordenadas.find((f) => String(f.id) === params.get("funcionId")) ?? null;
+  const funcionElegida = funciones.find((f) => String(f.id) === params.get("funcionId")) ?? null;
   const [dia, setDia] = useState(dias[0] ?? null);
-  const diaElegido = funcionElegida?.fecha ?? (dias.includes(dia) ? dia : dias[0]);
+  const diaElegido = funcionElegida && dias.includes(funcionElegida.fecha) ? funcionElegida.fecha : dias.includes(dia) ? dia : dias[0];
   const claveSeleccion = `${token}-${location.key}-${funcionElegida?.id}`;
-  const [seleccion, setSeleccion] = useState({ clave: null, asientos: [] });
-  const asientosElegidos = seleccion.clave === claveSeleccion ? seleccion.asientos : [];
-  function setAsientosElegidos(asientos) {
-    setSeleccion({ clave: claveSeleccion, asientos });
-  }
-
   function elegirFuncion(funcion) {
     if (funcion?.id === funcionElegida?.id) return;
     setParams(funcion ? { funcionId: funcion.id } : {});
-    setAsientosElegidos([]);
   }
 
   // Las funciones del día elegido, agrupadas por sala.
@@ -79,7 +70,6 @@ function SeleccionFuncion({ pelicula, funciones }) {
   function elegirDia(dia) {
     setDia(dia);
     setParams({}); // al cambiar de día, se borra el horario elegido
-    setAsientosElegidos([]);
   }
 
   return (
@@ -88,24 +78,8 @@ function SeleccionFuncion({ pelicula, funciones }) {
         ← Volver a la cartelera
       </Link>
 
-      <section className="pelicula-detalle">
-        <img className="pelicula-detalle-poster" src={pelicula.posterUrl} alt={`Póster de ${pelicula.titulo}`} />
-        <div>
-          <h1>{pelicula.titulo}</h1>
-          <div className="etiquetas">
-            <span className="etiqueta" title="Clasificación por edad">
-              {formatearClasificacion(pelicula.clasificacion)}
-            </span>
-            <span className="etiqueta">{pelicula.duracion}</span>
-          </div>
-          <h2 className="selector-titulo">Sinopsis</h2>
-          <p className="sinopsis">{pelicula.sinopsis}</p>
-        </div>
-      </section>
-
       {params.get("funcionId") && !funcionElegida && <p role="status">La función elegida ya no está disponible. Elegí otro horario.</p>}
-      <div className="funciones-layout">
-        <section className="funciones-selector">
+      <ReservaFuncion key={claveSeleccion} pelicula={pelicula} funcion={funcionElegida}>
           {dias.length === 0 ? (
             <p className="sin-funciones">Por ahora no hay funciones disponibles para esta película.</p>
           ) : (
@@ -128,19 +102,9 @@ function SeleccionFuncion({ pelicula, funciones }) {
                   );
                 })}
               </div>
-              {funcionElegida && <ReservaFuncion key={claveSeleccion} funcion={funcionElegida} titulo={pelicula.titulo} onResumen={setAsientosElegidos} />}
             </>
           )}
-        </section>
-
-        <ResumenFuncion titulo={pelicula.titulo} funcion={funcionElegida}>
-          <dl>
-            <div><dt>Asientos</dt><dd>{funcionElegida ? asientosElegidos.join(", ") || "Sin elegir" : "Sin elegir"}</dd></div>
-            <div aria-live="polite"><dt>Total</dt><dd>${((funcionElegida?.precio ?? 0) * asientosElegidos.length).toLocaleString("es-AR")}</dd></div>
-          </dl>
-          {!funcionElegida && <p>Elegí un horario para ver los asientos.</p>}
-        </ResumenFuncion>
-      </div>
+      </ReservaFuncion>
     </main>
   );
 }
