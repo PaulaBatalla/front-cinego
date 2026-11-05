@@ -1,3 +1,4 @@
+import { funcionDisponible } from "../utils/disponibilidadFunciones";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import SelectorAsientos from "./SelectorAsientos";
@@ -25,6 +26,10 @@ export default function ReservaFuncion({ funcion, titulo, onResumen }) {
 
   async function confirmar() {
     if (!isAuthenticated || enviando || isFetching || errorAsientos || reserva || !seleccionados.length) return;
+    if (!funcionDisponible(funcion)) {
+      setError("La función ya comenzó. Elegí otro horario.");
+      return;
+    }
     setError("");
     try {
       await crearReserva({ funcionId: funcion.id, asientoIds: seleccionados }).unwrap();

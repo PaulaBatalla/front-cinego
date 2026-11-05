@@ -1,3 +1,4 @@
+import { useFuncionesDisponibles } from "../hooks/useFuncionesDisponibles";
 import { formatearClasificacion } from "../utils/peliculas";
 import { useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
@@ -11,6 +12,7 @@ import { useAuth } from "../hooks/useAuth";
 function adaptarFuncion(f) {
   return {
     id: f.id,
+    horarioInicio: f.horarioInicio,
     peliculaId: f.peliculaId,
     fecha: f.horarioInicio.slice(0, 10),
     hora: f.horarioInicio.slice(11, 16),
@@ -46,14 +48,15 @@ function SeleccionFuncion({ pelicula, funciones }) {
   const [params, setParams] = useSearchParams();
   const { token } = useAuth();
   // Ordenadas por día y hora.
-  const ordenadas = [...funciones].sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
+  const disponibles = useFuncionesDisponibles(funciones);
+  const ordenadas = [...disponibles].sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
 
   // Los días que tienen funciones, sin repetir.
   const dias = ordenadas.map((f) => f.fecha).filter((fecha, i, lista) => lista.indexOf(fecha) === i);
 
   const funcionElegida = ordenadas.find((f) => String(f.id) === params.get("funcionId")) ?? null;
   const [dia, setDia] = useState(dias[0] ?? null);
-  const diaElegido = funcionElegida?.fecha ?? dia;
+  const diaElegido = funcionElegida?.fecha ?? (dias.includes(dia) ? dia : dias[0]);
   const [asientosElegidos, setAsientosElegidos] = useState([]);
 
   function elegirFuncion(funcion) {
@@ -93,10 +96,11 @@ function SeleccionFuncion({ pelicula, funciones }) {
         </div>
       </section>
 
+      {params.get("funcionId") && !funcionElegida && <p role="status">La función elegida ya no está disponible. Elegí otro horario.</p>}
       <div className="funciones-layout">
         <section className="funciones-selector">
           {dias.length === 0 ? (
-            <p className="sin-funciones">Por ahora no hay funciones programadas para esta película.</p>
+            <p className="sin-funciones">Por ahora no hay funciones disponibles para esta película.</p>
           ) : (
             <>
               <SelectorDia dias={dias} diaElegido={diaElegido} onElegir={elegirDia} />
@@ -124,7 +128,7 @@ function SeleccionFuncion({ pelicula, funciones }) {
 
         <ResumenFuncion titulo={pelicula.titulo} funcion={funcionElegida}>
           <dl>
-            <div><dt>Asientos</dt><dd>{asientosElegidos.join(", ") || "Sin elegir"}</dd></div>
+            <div><dt>Asientos</dt><dd>{funcionElegida ? asientosElegidos.join(", ") || "Sin elegir" : "Sin elegir"}</dd></div>
             <div aria-live="polite"><dt>Total</dt><dd>${((funcionElegida?.precio ?? 0) * asientosElegidos.length).toLocaleString("es-AR")}</dd></div>
           </dl>
           {!funcionElegida && <p>Elegí un horario para ver los asientos.</p>}
