@@ -48,7 +48,6 @@ function Header() {
               Películas
             </NavLink>
             <NavLink to="/candy">Candy</NavLink>
-            <NavLink to="/reservas">Reservas</NavLink>
             {isAuthenticated && <NavLink to="/mis-reservas">Mis reservas</NavLink>}
           </nav>
         </div>

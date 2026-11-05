@@ -22,7 +22,7 @@ export default function MisReservas() {
       <Link className="reserva-volver" to="/">← Volver a la cartelera</Link>
       <header className="mis-reservas-cabecera">
         <div><h1 id="mis-reservas-titulo">Mis reservas</h1><p>Todos tus planes de cine, en un solo lugar.</p></div>
-        <Link className="mis-reservas-accion" to="/reservas">Reservar entradas</Link>
+        <Link className="mis-reservas-accion" to="/">Reservar entradas</Link>
       </header>
       <ListadoReservas key={token} />
     </section>

@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import SelectorAsientos from "./SelectorAsientos";
-import { reservaService } from "../services/reservaService";
+import { useAsientosQuery, useCrearReservaMutation } from "../services/reservasApi";
 import { useAuth } from "../hooks/useAuth";
 import { useNotificaciones } from "../hooks/useNotificaciones";
 
@@ -9,20 +9,11 @@ import { useNotificaciones } from "../hooks/useNotificaciones";
 export default function ReservaFuncion({ funcion, titulo, onResumen }) {
   const { isAuthenticated } = useAuth();
   const { notificar } = useNotificaciones();
-  const [asientos, setAsientos] = useState(null);
+  const { data: asientos, error: errorAsientos, isFetching, refetch } = useAsientosQuery(funcion.id, { refetchOnMountOrArgChange: true });
   const [seleccionados, setSeleccionados] = useState([]);
-  const [error, setError] = useState("");
-  const [intento, setIntento] = useState(0);
-  const [enviando, setEnviando] = useState(false);
-  const [reserva, setReserva] = useState(null);
-
-  useEffect(() => {
-    let activo = true;
-    reservaService.asientos(funcion.id)
-      .then((datos) => { if (activo) setAsientos(datos); })
-      .catch((err) => { if (activo) setError(err.message); });
-    return () => { activo = false; };
-  }, [funcion.id, intento]);
+  const [errorConfirmacion, setError] = useState("");
+  const [crearReserva, { data: reserva, isLoading: enviando }] = useCrearReservaMutation();
+  const error = errorConfirmacion || errorAsientos?.message;
 
   function cambiarAsiento(id) {
     const nuevos = seleccionados.includes(id)
@@ -33,11 +24,10 @@ export default function ReservaFuncion({ funcion, titulo, onResumen }) {
   }
 
   async function confirmar() {
-    if (enviando || reserva || !seleccionados.length) return;
-    setEnviando(true);
+    if (!isAuthenticated || enviando || isFetching || errorAsientos || reserva || !seleccionados.length) return;
     setError("");
     try {
-      setReserva(await reservaService.crear(funcion.id, seleccionados));
+      await crearReserva({ funcionId: funcion.id, asientoIds: seleccionados }).unwrap();
       const cantidad = seleccionados.length;
       notificar(`Reserva confirmada: ${cantidad} ${cantidad === 1 ? "entrada" : "entradas"} para ${titulo}`);
     } catch (err) {
@@ -45,27 +35,23 @@ export default function ReservaFuncion({ funcion, titulo, onResumen }) {
         notificar("Alguien reservó uno de esos asientos. Elegí otros", "error");
         setSeleccionados([]);
         onResumen([]);
-        setAsientos(null);
-        setIntento((actual) => actual + 1);
       } else {
         setError(err.message);
       }
-    } finally {
-      setEnviando(false);
     }
   }
 
   return (
     <section className="funciones-asientos" aria-label="Asientos de la función">
-      {reserva ? <div role="status"><h2>Reserva creada</h2><p>Número: {reserva.idReserva} · Estado: {reserva.estado}</p><p>Total: ${Number(reserva.total).toLocaleString("es-AR")}</p></div> : <>
+      {reserva ? <div role="status"><h2>Reserva creada</h2><p>Número: {reserva.idReserva} · Estado: {reserva.estado}</p><p>Total: ${Number(reserva.total).toLocaleString("es-AR")}</p><Link to="/mis-reservas">Ver mis reservas</Link></div> : <>
         {!asientos && !error && <p role="status">Cargando asientos...</p>}
         {error && <p role="alert">{error}</p>}
-        {!asientos && error && <button type="button" className="boton-continuar" onClick={() => { setError(""); setIntento((actual) => actual + 1); }}>Reintentar cargar asientos</button>}
+        {errorAsientos && <button type="button" className="boton-continuar" disabled={isFetching} onClick={refetch}>Reintentar cargar asientos</button>}
         {asientos?.length === 0 && <p>Esta sala todavía no tiene asientos cargados.</p>}
-        {asientos?.length > 0 && <fieldset disabled={enviando}>
+        {asientos?.length > 0 && <fieldset disabled={enviando || isFetching || Boolean(errorAsientos)}>
           <SelectorAsientos asientos={asientos} asientosSeleccionados={seleccionados} onCambiarAsiento={cambiarAsiento} />
         </fieldset>}
-        {isAuthenticated ? <button type="button" className="boton-continuar" disabled={enviando || !seleccionados.length} onClick={confirmar}>{enviando ? "Reservando..." : "Confirmar reserva"}</button> : <p>Para reservar, <Link to="/login" state={{ volverA: `/pelicula/${funcion.peliculaId}` }}>iniciá sesión</Link>.</p>}
+        {isAuthenticated ? <button type="button" className="boton-continuar" disabled={enviando || isFetching || Boolean(errorAsientos) || !seleccionados.length} onClick={confirmar}>{enviando ? "Reservando..." : "Confirmar reserva"}</button> : <p>Para reservar, <Link to="/login" state={{ volverA: `/pelicula/${funcion.peliculaId}?funcionId=${encodeURIComponent(funcion.id)}` }}>iniciá sesión</Link>.</p>}
       </>}
     </section>
   );

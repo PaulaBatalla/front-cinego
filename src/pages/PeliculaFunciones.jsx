@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useState } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import ResumenFuncion from "../components/funciones/ResumenFuncion";
 import SalaHorarios from "../components/funciones/SalaHorarios";
 import SelectorDia from "../components/funciones/SelectorDia";
 import ReservaFuncion from "../components/ReservaFuncion";
 import "./PeliculaFunciones.css";
-import { solicitar } from "../services/api";
+import { usePeliculasQuery, useFuncionesQuery } from "../services/reservasApi";
+import { useAuth } from "../hooks/useAuth";
 function adaptarFuncion(f) {
   return {
     id: f.id,
@@ -20,40 +21,12 @@ function adaptarFuncion(f) {
 // Página /pelicula/:id → se llega desde "Ver funciones" en la cartelera.
 function PeliculaFunciones() {
   const { id } = useParams();
-  const [pelicula, setPelicula] = useState(null);
-  const [funciones, setFunciones] = useState([]);
-  const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const cargarDatos = async () => {
-      try {
-        // Pedimos la película y todas las funciones al mismo tiempo.
-        const [datosPelicula, datosFunciones] = await Promise.all([
-          solicitar(`/peliculas/${id}`),
-          solicitar("/funciones"),
-        ]);
-
-        setPelicula(datosPelicula);
-        setFunciones(
-          datosFunciones.filter((f) => f.peliculaId === datosPelicula.id).map(adaptarFuncion),
-        );
-      } catch (err) {
-        if (err.status === 404) {
-          setPelicula(null);
-        } else {
-          setError(err.message);
-        }
-      } finally {
-        setCargando(false);
-      }
-    };
-
-    cargarDatos();
-  }, [id]);
-
-  if (cargando) return <p>Cargando funciones...</p>;
-  if (error) return <p>Error: {error}</p>;
+  const peliculas = usePeliculasQuery();
+  const funciones = useFuncionesQuery();
+  const error = peliculas.error || funciones.error;
+  const pelicula = peliculas.data?.find((p) => String(p.id) === id);
+  if (error) return <main className="funciones-pagina"><p role="alert">{error.message}</p><button onClick={() => { peliculas.refetch(); funciones.refetch(); }}>Reintentar</button></main>;
+  if (!peliculas.data || !funciones.data) return <p role="status">Cargando funciones...</p>;
 
   if (!pelicula) {
     return (
@@ -65,23 +38,26 @@ function PeliculaFunciones() {
   }
 
   // key: si se pasa de una película a otra, el selector arranca de cero.
-  return <SeleccionFuncion key={pelicula.id} pelicula={pelicula} funciones={funciones} />;
+  return <SeleccionFuncion key={pelicula.id} pelicula={pelicula} funciones={funciones.data.filter((f) => String(f.peliculaId) === id).map(adaptarFuncion)} />;
 }
 
 function SeleccionFuncion({ pelicula, funciones }) {
+  const [params, setParams] = useSearchParams();
+  const { token } = useAuth();
   // Ordenadas por día y hora.
   const ordenadas = [...funciones].sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
 
   // Los días que tienen funciones, sin repetir.
   const dias = ordenadas.map((f) => f.fecha).filter((fecha, i, lista) => lista.indexOf(fecha) === i);
 
-  const [diaElegido, setDiaElegido] = useState(dias.length > 0 ? dias[0] : null);
-  const [funcionElegida, setFuncionElegida] = useState(null);
+  const funcionElegida = ordenadas.find((f) => String(f.id) === params.get("funcionId")) ?? null;
+  const [dia, setDia] = useState(dias[0] ?? null);
+  const diaElegido = funcionElegida?.fecha ?? dia;
   const [asientosElegidos, setAsientosElegidos] = useState([]);
 
   function elegirFuncion(funcion) {
     if (funcion?.id === funcionElegida?.id) return;
-    setFuncionElegida(funcion);
+    setParams(funcion ? { funcionId: funcion.id } : {});
     setAsientosElegidos([]);
   }
 
@@ -90,8 +66,8 @@ function SeleccionFuncion({ pelicula, funciones }) {
   const salas = funcionesDelDia.map((f) => f.sala).filter((sala, i, lista) => lista.indexOf(sala) === i);
 
   function elegirDia(dia) {
-    setDiaElegido(dia);
-    setFuncionElegida(null); // al cambiar de día, se borra el horario elegido
+    setDia(dia);
+    setParams({}); // al cambiar de día, se borra el horario elegido
     setAsientosElegidos([]);
   }
 
@@ -140,7 +116,7 @@ function SeleccionFuncion({ pelicula, funciones }) {
                   );
                 })}
               </div>
-              {funcionElegida && <ReservaFuncion key={funcionElegida.id} funcion={funcionElegida} titulo={pelicula.titulo} onResumen={setAsientosElegidos} />}
+              {funcionElegida && <ReservaFuncion key={`${token}-${funcionElegida.id}`} funcion={funcionElegida} titulo={pelicula.titulo} onResumen={setAsientosElegidos} />}
             </>
           )}
         </section>
