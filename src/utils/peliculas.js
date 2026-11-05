@@ -27,7 +27,9 @@ export function formatearDuracion(minutos) {
   return resto ? `${horas} h ${resto} min` : `${horas} h`;
 }
 
-// El back guarda la clasificación como número; en el panel es el puntaje de 0 a 10
-export function formatearPuntaje(clasificacion) {
-  return Number(clasificacion).toFixed(1);
+// 0 representa apta para todo público.
+export function formatearClasificacion(clasificacion) {
+  const edad = Number(clasificacion);
+  if (clasificacion == null || String(clasificacion).trim() === "" || !Number.isInteger(edad) || edad < 0) return "Sin clasificación";
+  return edad === 0 ? "ATP" : `+${edad}`;
 }

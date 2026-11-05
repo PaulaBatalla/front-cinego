@@ -1,3 +1,4 @@
+import { formatearClasificacion } from "../utils/peliculas";
 import { useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import ResumenFuncion from "../components/funciones/ResumenFuncion";
@@ -83,7 +84,7 @@ function SeleccionFuncion({ pelicula, funciones }) {
           <h1>{pelicula.titulo}</h1>
           <div className="etiquetas">
             <span className="etiqueta" title="Clasificación por edad">
-              +{pelicula.clasificacion}
+              {formatearClasificacion(pelicula.clasificacion)}
             </span>
             <span className="etiqueta">{pelicula.duracion}</span>
           </div>

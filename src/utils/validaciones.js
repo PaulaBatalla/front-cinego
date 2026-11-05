@@ -26,11 +26,6 @@ export function validarLogin(email, password) {
   return errores;
 }
 
-// Acepta "8,1" y "8.1" para el puntaje
-export function leerDecimal(texto) {
-  return parseFloat(String(texto).replace(",", "."));
-}
-
 export function validarPelicula(datos) {
   const errores = {};
 
@@ -43,9 +38,9 @@ export function validarPelicula(datos) {
     errores.duracion = "Ingresá los minutos (ej: 104).";
   }
 
-  const puntaje = leerDecimal(datos.clasificacion);
-  if (!(puntaje >= 0 && puntaje <= 10)) {
-    errores.clasificacion = "Tiene que ser un número entre 0 y 10.";
+  const edad = Number(datos.clasificacion);
+  if (!String(datos.clasificacion).trim() || !Number.isInteger(edad) || edad < 0) {
+    errores.clasificacion = "Ingresá una edad entera mayor o igual a 0 (0 para ATP).";
   }
 
   return errores;
