@@ -57,6 +57,7 @@ export const {
   usePeliculaQuery,
   useFuncionesQuery,
   useMisReservasQuery,
+  useLazyMisReservasQuery,
   useAsientosQuery,
   useCrearReservaMutation,
   useCancelarReservaMutation,
