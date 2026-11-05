@@ -1,13 +1,13 @@
 import { useFuncionesDisponibles } from "../hooks/useFuncionesDisponibles";
 import { formatearClasificacion } from "../utils/peliculas";
 import { useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams, useLocation } from "react-router-dom";
 import ResumenFuncion from "../components/funciones/ResumenFuncion";
 import SalaHorarios from "../components/funciones/SalaHorarios";
 import SelectorDia from "../components/funciones/SelectorDia";
 import ReservaFuncion from "../components/ReservaFuncion";
 import "./PeliculaFunciones.css";
-import { usePeliculasQuery, useFuncionesQuery } from "../services/reservasApi";
+import { usePeliculaQuery, useFuncionesQuery } from "../services/reservasApi";
 import { useAuth } from "../hooks/useAuth";
 function adaptarFuncion(f) {
   return {
@@ -24,12 +24,13 @@ function adaptarFuncion(f) {
 // Página /pelicula/:id → se llega desde "Ver funciones" en la cartelera.
 function PeliculaFunciones() {
   const { id } = useParams();
-  const peliculas = usePeliculasQuery();
+  const consultaPelicula = usePeliculaQuery(id);
   const funciones = useFuncionesQuery();
-  const error = peliculas.error || funciones.error;
-  const pelicula = peliculas.data?.find((p) => String(p.id) === id);
-  if (error) return <main className="funciones-pagina"><p role="alert">{error.message}</p><button onClick={() => { peliculas.refetch(); funciones.refetch(); }}>Reintentar</button></main>;
-  if (!peliculas.data || !funciones.data) return <p role="status">Cargando funciones...</p>;
+  // currentData pertenece al ID actual; data puede conservar el resultado anterior.
+  const pelicula = consultaPelicula.currentData;
+  const error = consultaPelicula.error?.status === 404 ? null : consultaPelicula.error || funciones.error;
+  if (error) return <main className="funciones-pagina"><p role="alert">{error.message}</p><button onClick={() => { consultaPelicula.refetch(); funciones.refetch(); }}>Reintentar</button></main>;
+  if (consultaPelicula.error?.status !== 404 && (!pelicula || !funciones.data)) return <p role="status">Cargando funciones...</p>;
 
   if (!pelicula) {
     return (
@@ -47,6 +48,7 @@ function PeliculaFunciones() {
 function SeleccionFuncion({ pelicula, funciones }) {
   const [params, setParams] = useSearchParams();
   const { token } = useAuth();
+  const location = useLocation();
   // Ordenadas por día y hora.
   const disponibles = useFuncionesDisponibles(funciones);
   const ordenadas = [...disponibles].sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
@@ -57,7 +59,12 @@ function SeleccionFuncion({ pelicula, funciones }) {
   const funcionElegida = ordenadas.find((f) => String(f.id) === params.get("funcionId")) ?? null;
   const [dia, setDia] = useState(dias[0] ?? null);
   const diaElegido = funcionElegida?.fecha ?? (dias.includes(dia) ? dia : dias[0]);
-  const [asientosElegidos, setAsientosElegidos] = useState([]);
+  const claveSeleccion = `${token}-${location.key}-${funcionElegida?.id}`;
+  const [seleccion, setSeleccion] = useState({ clave: null, asientos: [] });
+  const asientosElegidos = seleccion.clave === claveSeleccion ? seleccion.asientos : [];
+  function setAsientosElegidos(asientos) {
+    setSeleccion({ clave: claveSeleccion, asientos });
+  }
 
   function elegirFuncion(funcion) {
     if (funcion?.id === funcionElegida?.id) return;
@@ -121,7 +128,7 @@ function SeleccionFuncion({ pelicula, funciones }) {
                   );
                 })}
               </div>
-              {funcionElegida && <ReservaFuncion key={`${token}-${funcionElegida.id}`} funcion={funcionElegida} titulo={pelicula.titulo} onResumen={setAsientosElegidos} />}
+              {funcionElegida && <ReservaFuncion key={claveSeleccion} funcion={funcionElegida} titulo={pelicula.titulo} onResumen={setAsientosElegidos} />}
             </>
           )}
         </section>

@@ -4,10 +4,10 @@ import { solicitar } from "./api";
 // Reutiliza la URL configurable, autenticación y errores del cliente compartido.
 export const reservasApi = createApi({
   reducerPath: "reservasApi",
-  baseQuery: async ({ ruta, ...opciones }, { signal }) => {
+  baseQuery: async ({ ruta, esLista = true, ...opciones }, { signal }) => {
     try {
       const data = await solicitar(ruta, { ...opciones, signal });
-      if (!opciones.method && !Array.isArray(data)) {
+      if (!opciones.method && (esLista ? !Array.isArray(data) : !data || typeof data !== "object" || Array.isArray(data))) {
         return { error: { status: "CUSTOM_ERROR", message: "La respuesta del servidor no es válida." } };
       }
       return { data };
@@ -19,6 +19,9 @@ export const reservasApi = createApi({
   endpoints: (builder) => ({
     peliculas: builder.query({
       query: () => ({ ruta: "/peliculas" }),
+    }),
+    pelicula: builder.query({
+      query: (id) => ({ ruta: `/peliculas/${encodeURIComponent(id)}`, esLista: false }),
     }),
     funciones: builder.query({
       query: () => ({ ruta: "/funciones" }),
@@ -46,6 +49,7 @@ export const reservasApi = createApi({
 
 export const {
   usePeliculasQuery,
+  usePeliculaQuery,
   useFuncionesQuery,
   useMisReservasQuery,
   useAsientosQuery,

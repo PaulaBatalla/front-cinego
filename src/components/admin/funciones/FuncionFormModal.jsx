@@ -43,7 +43,7 @@ function FuncionFormModal({ funcion, inicial, peliculas, salas, funciones, onGua
       const otraFin = formatearMinutos(aMinutos(otra.hora) + (otraPelicula?.duracion ?? 0));
       return {
         clave: `${fecha}-${otra.id}`,
-        texto: `${etiquetaDia(fecha)}: ${sala?.nombre ?? otra.salaNombre} ya tiene “${
+        texto: `${etiquetaDia(otra.fecha)}: ${sala?.nombre ?? otra.salaNombre} ya tiene “${
           otraPelicula?.titulo ?? otra.peliculaTitulo
         }” de ${otra.hora} a ${otraFin}.`,
       };
