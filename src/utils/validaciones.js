@@ -77,7 +77,6 @@ export function validarFuncion(datos) {
   return errores;
 }
 
-// Mismos límites que valida el back (SalaService)
 export const MAX_FILAS = 30;
 export const MAX_ASIENTOS_POR_FILA = 40;
 
