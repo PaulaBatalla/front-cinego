@@ -5,8 +5,11 @@ import { useNotificaciones } from "../../hooks/useNotificaciones";
 import LogoCineGo from "../LogoCineGo";
 import { EyeIcon, LogoutIcon } from "../icons";
 
-// Las demás secciones (Funciones, Salas, Promos, Candy) se suman a medida que se desarrollan
-const SECCIONES = [{ ruta: "peliculas", nombre: "Películas" }];
+// Las demás secciones (Salas, Promos, Candy) se suman a medida que se desarrollan
+const SECCIONES = [
+  { ruta: "peliculas", nombre: "Películas" },
+  { ruta: "funciones", nombre: "Funciones" },
+];
 
 function AdminLayout() {
   const { logout } = useAuth();
