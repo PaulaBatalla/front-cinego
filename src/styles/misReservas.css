@@ -26,3 +26,11 @@
   .mis-reservas-tarjeta-cabecera { flex-direction: column; }
   .mis-reservas-total { flex-wrap: wrap; }
 }
+
+.mis-reservas-cancelacion { margin-top: 20px; border-top: 1px solid var(--reserva-borde); padding-top: 16px; }
+.mis-reservas-cancelacion > p { color: var(--reserva-secundario); margin-bottom: 12px; }
+.mis-reservas-confirmacion { padding: 16px; border: 1px solid var(--reserva-borde); border-radius: 8px; }
+.mis-reservas-botones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+.mis-reservas-accion--cancelar { background: transparent; color: #ffb3bd; border: 1px solid #a45964; }
+.mis-reservas-accion--cancelar:hover { background: #382126; }
+.mis-reservas-accion:disabled { opacity: .5; cursor: not-allowed; }

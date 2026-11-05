@@ -34,6 +34,11 @@ export const reservasApi = createApi({
       query: (funcionId) => ({ ruta: `/funciones/${funcionId}/asientos` }),
       providesTags: (_resultado, _error, funcionId) => [{ type: "Asientos", id: String(funcionId) }],
     }),
+    cancelarReserva: builder.mutation({
+      query: ({ idReserva }) => ({ ruta: `/reservas/${encodeURIComponent(idReserva)}/cancelar`, method: "PATCH" }),
+      invalidatesTags: (_resultado, error, { funcionId }) => !error || [400, 409].includes(error.status)
+        ? ["MisReservas", { type: "Asientos", id: String(funcionId) }] : [],
+    }),
     crearReserva: builder.mutation({
       query: ({ funcionId, asientoIds }) => ({
         ruta: "/reservas",
@@ -54,4 +59,5 @@ export const {
   useMisReservasQuery,
   useAsientosQuery,
   useCrearReservaMutation,
+  useCancelarReservaMutation,
 } = reservasApi;
