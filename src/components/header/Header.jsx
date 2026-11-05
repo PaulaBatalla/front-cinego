@@ -4,12 +4,12 @@ import { useAuth } from "../../hooks/useAuth";
 import { useNotificaciones } from "../../hooks/useNotificaciones";
 import useMobileMenu from "../../hooks/useMobileMenu";
 import LogoCineGo from "../LogoCineGo";
-import { UserIcon } from "../icons";
+import { PanelIcon, UserIcon } from "../icons";
 import HamburgerMenu from "./hamburger-menu/HamburgerMenu";
 import Campanita from "./Campanita";
 
 function Header() {
-  const { usuario, isAuthenticated, logout } = useAuth();
+  const { usuario, isAuthenticated, esAdmin, logout } = useAuth();
   const { notificar } = useNotificaciones();
   const navigate = useNavigate();
   const { menuOpen, drawerId, closeMenu, toggleMenu } = useMobileMenu();
@@ -53,6 +53,18 @@ function Header() {
         </div>
 
         <div className="site-header__right">
+          {esAdmin && (
+            <Link
+              className="site-panel"
+              to="/admin/peliculas"
+              aria-label="Ir al panel de administración"
+              onClick={closeMenu}
+            >
+              <PanelIcon />
+              <span className="site-panel__texto">Panel</span>
+            </Link>
+          )}
+
           {isAuthenticated && <Campanita />}
 
           <div className="site-header__actions">{renderAuthActions()}</div>

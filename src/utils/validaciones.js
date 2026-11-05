@@ -26,6 +26,31 @@ export function validarLogin(email, password) {
   return errores;
 }
 
+// Acepta "8,1" y "8.1" para el puntaje
+export function leerDecimal(texto) {
+  return parseFloat(String(texto).replace(",", "."));
+}
+
+export function validarPelicula(datos) {
+  const errores = {};
+
+  if (!datos.titulo.trim()) {
+    errores.titulo = "Escribí el título de la película.";
+  }
+
+  const duracion = Number(datos.duracion);
+  if (!Number.isInteger(duracion) || duracion <= 0) {
+    errores.duracion = "Ingresá los minutos (ej: 104).";
+  }
+
+  const puntaje = leerDecimal(datos.clasificacion);
+  if (!(puntaje >= 0 && puntaje <= 10)) {
+    errores.clasificacion = "Tiene que ser un número entre 0 y 10.";
+  }
+
+  return errores;
+}
+
 export function validarRegistro(datos) {
   const errores = {};
 
