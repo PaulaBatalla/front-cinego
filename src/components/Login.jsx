@@ -50,6 +50,8 @@ function Login() {
     <form className="auth-form" onSubmit={handleSubmit} noValidate>
       <h1>Iniciar sesión</h1>
 
+      {location.state?.sesionVencida && <p className="auth-alert" role="status">Tu sesión venció. Iniciá sesión nuevamente para continuar.</p>}
+
       {error && (
         <p className="auth-alert" role="alert">
           {error}

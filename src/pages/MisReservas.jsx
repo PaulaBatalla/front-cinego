@@ -46,8 +46,8 @@ function ListadoReservas() {
   if (error) return (
     <div className="reserva-panel mis-reservas-mensaje">
       <h2>No pudimos cargar tus reservas</h2>
-      <p role="alert">{[401, 403].includes(error.status) ? "Iniciá sesión nuevamente para consultar tus reservas." : "Ocurrió un problema al consultar el servidor. Intentá nuevamente."}</p>
-      {[401, 403].includes(error.status)
+      <p role="alert">{error.status === 401 ? "Iniciá sesión nuevamente para consultar tus reservas." : error.status === 403 ? "No tenés permisos para consultar estas reservas." : "Ocurrió un problema al consultar el servidor. Intentá nuevamente."}</p>
+      {error.status === 401
         ? <Link className="mis-reservas-accion" to="/login" state={{ volverA: "/mis-reservas" }} onClick={logout}>Iniciar sesión</Link>
         : <button className="mis-reservas-accion" type="button" onClick={reservas.refetch}>Reintentar</button>}
     </div>
