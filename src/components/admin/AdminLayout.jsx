@@ -5,10 +5,11 @@ import { useNotificaciones } from "../../hooks/useNotificaciones";
 import LogoCineGo from "../LogoCineGo";
 import { EyeIcon, LogoutIcon } from "../icons";
 
-// Las demás secciones (Salas, Promos, Candy) se suman a medida que se desarrollan
+// Las demás secciones (Promos, Candy) se suman a medida que se desarrollan
 const SECCIONES = [
   { ruta: "peliculas", nombre: "Películas" },
   { ruta: "funciones", nombre: "Funciones" },
+  { ruta: "salas", nombre: "Salas" },
 ];
 
 function AdminLayout() {

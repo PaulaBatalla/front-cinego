@@ -12,6 +12,7 @@ import Candy from "./components/Candy";
 import PeliculaFunciones from "./pages/PeliculaFunciones";
 import AdminPeliculas from "./pages/AdminPeliculas";
 import AdminFunciones from "./pages/AdminFunciones";
+import AdminSalas from "./pages/AdminSalas";
 import Toasts from "./components/Toasts";
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
             <Route index element={<Navigate to="peliculas" replace />} />
             <Route path="peliculas" element={<AdminPeliculas />} />
             <Route path="funciones" element={<AdminFunciones />} />
+            <Route path="salas" element={<AdminSalas />} />
           </Route>
         </Route>
       </Routes>
