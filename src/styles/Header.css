@@ -137,6 +137,42 @@
 	background-color: rgba(255, 255, 255, 0.06);
 }
 
+/* Acceso al panel: solo lo ven los admins */
+.site-panel {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0 0.875rem;
+	border: 1px solid rgba(255, 107, 74, 0.5);
+	border-radius: 999px;
+	box-sizing: border-box;
+	color: var(--brand-orange);
+	font-size: 0.95rem;
+	font-weight: 600;
+	text-decoration: none;
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+
+.site-panel:hover {
+	background-color: #232327;
+	color: #f4f1ea;
+}
+
+.site-panel__icon {
+	width: 18px;
+	height: 18px;
+	flex-shrink: 0;
+}
+
+/* En mobile queda solo el ícono, como en el mockup */
+.site-panel__texto {
+	display: none;
+}
+
 .site-menu-toggle {
 	display: inline-flex;
 	flex-direction: column;
@@ -269,6 +305,7 @@
 }
 
 .site-brand:focus-visible,
+.site-panel:focus-visible,
 .site-login:focus-visible,
 .site-nav a:focus-visible,
 .site-menu-toggle:focus-visible,
@@ -306,6 +343,10 @@
 
 	.site-header__actions {
 		display: block;
+	}
+
+	.site-panel__texto {
+		display: inline;
 	}
 
 	.site-header__actions .site-session {

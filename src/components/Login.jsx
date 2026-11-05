@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import { useNotificaciones } from "../hooks/useNotificaciones";
-import { clearError, loginUser } from "../store/slices/authSlice";
+import { authService } from "../services/authService";
 import { validarLogin } from "../utils/validaciones";
+import { destinoTrasLogin } from "../utils/roles";
 import CampoFormulario from "./CampoFormulario";
 import "../styles/Auth.css";
 
@@ -11,17 +12,16 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errores, setErrores] = useState({});
-  const { isLoading, error } = useSelector((state) => state.auth);
+  const [errorLogin, setErrorLogin] = useState(null);
+  const [cargando, setCargando] = useState(false);
+  const { login } = useAuth();
   const { notificar } = useNotificaciones();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    return () => dispatch(clearError());
-  }, [dispatch]);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    dispatch(clearError());
+    setErrorLogin(null);
 
     const erroresEncontrados = validarLogin(email, password);
     setErrores(erroresEncontrados);
@@ -30,10 +30,24 @@ function Login() {
       return;
     }
 
-    const resultado = await dispatch(loginUser({ email, password }));
+    setCargando(true);
 
-    if (loginUser.fulfilled.match(resultado)) {
-      notificar("Sesión iniciada");
+    try {
+      const token = await authService.login(email, password);
+      const nuevoUsuario = login(token);
+      const destino = destinoTrasLogin(nuevoUsuario, location.state?.volverA);
+
+      // Un admin entra directo al panel, salvo que viniera de otra página
+      notificar(
+        destino.startsWith("/admin")
+          ? "Entraste al panel de administración"
+          : "Sesión iniciada"
+      );
+      navigate(destino, { replace: true });
+    } catch (err) {
+      setErrorLogin(err.message);
+    } finally {
+      setCargando(false);
     }
   };
 
@@ -41,9 +55,9 @@ function Login() {
     <form className="auth-form" onSubmit={handleSubmit} noValidate>
       <h1>Iniciar sesión</h1>
 
-      {error && (
+      {errorLogin && (
         <p className="auth-alert" role="alert">
-          {error}
+          {errorLogin}
         </p>
       )}
 
@@ -67,8 +81,8 @@ function Login() {
         error={errores.password}
       />
 
-      <button className="auth-submit" type="submit" disabled={isLoading}>
-        {isLoading ? "Ingresando..." : "Ingresar"}
+      <button className="auth-submit" type="submit" disabled={cargando}>
+        {cargando ? "Ingresando..." : "Ingresar"}
       </button>
 
       <p className="auth-switch">

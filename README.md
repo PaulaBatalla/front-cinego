@@ -57,7 +57,7 @@ En producción, configurar `VITE_API_URL` antes de compilar o configurar el serv
 | Directorio | Contenido |
 | --- | --- |
 | `src/components/` | Componentes de interfaz y formularios. |
-| `src/context/` | Contexto de notificaciones. |
+| `src/context/` | Contextos de autenticaci?n y notificaciones. |
 | `src/data/` | Datos locales. |
 | `src/hooks/` | Hooks compartidos. |
 | `src/pages/` | Páginas de funciones y reservas. |

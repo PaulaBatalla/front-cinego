@@ -1,14 +1,12 @@
-import { useDispatch, useSelector } from "react-redux";
-import { logout as cerrarSesion } from "../store/slices/authSlice";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 export function useAuth() {
-  const dispatch = useDispatch();
-  const { token, usuario, isAuthenticated } = useSelector((state) => state.auth);
+  const context = useContext(AuthContext);
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    dispatch(cerrarSesion());
-  };
+  if (!context) {
+    throw new Error("useAuth debe ser usado dentro de un AuthProvider");
+  }
 
-  return { token, usuario, isAuthenticated, logout };
+  return context;
 }
