@@ -8,7 +8,7 @@ export function esRolAdmin(rol) {
 // A dónde va el usuario después de iniciar sesión: a la página de la que venía,
 // o si no, el admin al panel y el cliente al inicio
 export function destinoTrasLogin(usuario, volverA) {
-  if (volverA) {
+  if (typeof volverA === "string" && volverA.startsWith("/") && !volverA.startsWith("//")) {
     return volverA;
   }
 
