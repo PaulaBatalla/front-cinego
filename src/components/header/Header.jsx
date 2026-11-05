@@ -49,6 +49,7 @@ function Header() {
             </NavLink>
             <NavLink to="/candy">Candy</NavLink>
             <NavLink to="/reservas">Reservas</NavLink>
+            {isAuthenticated && <NavLink to="/mis-reservas">Mis reservas</NavLink>}
           </nav>
         </div>
 
@@ -95,6 +96,7 @@ function Header() {
         menuOpen={menuOpen}
         closeMenu={closeMenu}
         renderAuthActions={renderAuthActions}
+        isAuthenticated={isAuthenticated}
       />
     </header>
   );

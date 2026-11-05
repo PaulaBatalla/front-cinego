@@ -1,29 +1,24 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import SelectorFuncion from "../components/SelectorFuncion";
 import SelectorAsientos from "../components/SelectorAsientos";
 import ResumenReserva from "../components/ResumenReserva";
 import { useAuth } from "../hooks/useAuth";
 import { useNotificaciones } from "../hooks/useNotificaciones";
-import { reservaService } from "../services/reservaService";
+import { usePeliculasQuery, useFuncionesQuery, useAsientosQuery, useCrearReservaMutation } from "../services/reservasApi";
 import "../styles/reserva.css";
 
 function ReservaPage() {
   const { isAuthenticated, token } = useAuth();
   const [params, setParams] = useSearchParams();
-  const [datos, setDatos] = useState(null);
-  const [error, setError] = useState("");
-  const [intento, setIntento] = useState(0);
+  const peliculas = usePeliculasQuery(undefined, { skip: !isAuthenticated });
+  const funciones = useFuncionesQuery(undefined, { skip: !isAuthenticated });
+  const error = peliculas.error || funciones.error;
+  const datos = peliculas.data && funciones.data
+    ? { peliculas: peliculas.data, funciones: funciones.data }
+    : null;
   const funcionId = params.get("funcionId");
-
-  useEffect(() => {
-    if (!isAuthenticated) return;
-    let activo = true;
-    Promise.all([reservaService.peliculas(), reservaService.funciones()])
-      .then(([peliculas, funciones]) => { if (activo) setDatos({ peliculas, funciones }); })
-      .catch((err) => { if (activo) setError(err.message); });
-    return () => { activo = false; };
-  }, [isAuthenticated, token, intento]);
+  const reintentar = () => { peliculas.refetch(); funciones.refetch(); };
 
   if (!isAuthenticated) return (
     <main className="reserva-page">
@@ -32,7 +27,7 @@ function ReservaPage() {
       <Link to="/login" state={{ volverA: `/reservas${funcionId ? `?funcionId=${encodeURIComponent(funcionId)}` : ""}` }}>Iniciar sesión</Link>
     </main>
   );
-  if (error) return <main className="reserva-page"><p role="alert">{error}</p><button onClick={() => { setError(""); setIntento(intento + 1); }}>Reintentar</button></main>;
+  if (error) return <main className="reserva-page"><p role="alert">{error.message}</p><button onClick={reintentar}>Reintentar</button></main>;
   if (!datos) return <p role="status">Cargando funciones...</p>;
   return <SeleccionReserva key={`${token}-${funcionId || "inicio"}`} datos={datos} funcionId={funcionId} onCambiarFuncion={(id) => setParams(id == null ? {} : { funcionId: id })} />;
 }
@@ -42,42 +37,30 @@ function SeleccionReserva({ datos, funcionId, onCambiarFuncion }) {
   const funcion = funciones.find((f) => String(f.id) === funcionId);
   const [peliculaId, setPeliculaId] = useState(String(funcion?.peliculaId ?? datos.peliculas[0]?.id ?? ""));
   const pelicula = datos.peliculas.find((p) => String(p.id) === peliculaId);
-  const [asientos, setAsientos] = useState(null);
+  const { data: asientos, error: errorAsientos, isFetching, refetch } = useAsientosQuery(funcionId, {
+    skip: !funcionId || !funcion,
+    refetchOnMountOrArgChange: true,
+  });
   const [seleccionados, setSeleccionados] = useState([]);
-  const [error, setError] = useState("");
-  const [enviando, setEnviando] = useState(false);
-  const [reserva, setReserva] = useState(null);
+  const [errorConfirmacion, setError] = useState("");
+  const [crearReserva, { data: reserva, isLoading: enviando }] = useCrearReservaMutation();
+  const error = errorConfirmacion || errorAsientos?.message;
   const { notificar } = useNotificaciones();
-  const [intento, setIntento] = useState(0);
-
-  useEffect(() => {
-    if (!funcionId) return;
-    let activo = true;
-    reservaService.asientos(funcionId)
-      .then((datos) => { if (activo) setAsientos(datos); })
-      .catch((err) => { if (activo) setError(err.message); });
-    return () => { activo = false; };
-  }, [funcionId, intento]);
 
   async function confirmar() {
-    if (enviando || reserva || !seleccionados.length) return;
-    setEnviando(true);
+    if (enviando || isFetching || errorAsientos || reserva || !seleccionados.length) return;
     setError("");
     try {
-      setReserva(await reservaService.crear(funcion.id, seleccionados));
+      await crearReserva({ funcionId: funcion.id, asientoIds: seleccionados }).unwrap();
       const cantidad = seleccionados.length;
       notificar(`Reserva confirmada: ${cantidad} ${cantidad === 1 ? "entrada" : "entradas"} para ${pelicula.titulo}`);
     } catch (err) {
       if (err.status === 409) {
         notificar("Alguien reservó uno de esos asientos. Elegí otros", "error");
         setSeleccionados([]);
-        setAsientos(null);
-        setIntento((valor) => valor + 1);
       } else {
         setError(err.message);
       }
-    } finally {
-      setEnviando(false);
     }
   }
 
@@ -101,6 +84,7 @@ function SeleccionReserva({ datos, funcionId, onCambiarFuncion }) {
           <p>Asientos: {etiquetas.join(", ")}</p>
           <p>Total: ${reserva.total}</p>
           <Link to="/">Volver a la cartelera</Link>
+          <Link to="/mis-reservas">Ver mis reservas</Link>
         </section>
       ) : (
         <div className="reserva-layout">
@@ -109,7 +93,7 @@ function SeleccionReserva({ datos, funcionId, onCambiarFuncion }) {
             <li className={funcion ? "reserva-paso-completo" : "reserva-paso-actual"} aria-current={!funcion ? "step" : undefined}><span>{funcion ? "✓" : "1"}</span> Función</li>
             <li className={funcion ? "reserva-paso-actual" : ""} aria-current={funcion ? "step" : undefined}><span>2</span> Asientos</li>
           </ol>
-          <fieldset disabled={enviando}>
+          <fieldset disabled={enviando || isFetching}>
             <label htmlFor="pelicula">Película</label>
             <select id="pelicula" value={peliculaId} disabled={Boolean(funcionId)} onChange={(e) => setPeliculaId(e.target.value)}>
               {datos.peliculas.map((p) => <option key={p.id} value={p.id}>{p.titulo}</option>)}
@@ -123,7 +107,7 @@ function SeleccionReserva({ datos, funcionId, onCambiarFuncion }) {
             {asientos?.length === 0 && <p>Esta sala todavía no tiene asientos cargados.</p>}
           </fieldset>
           {error && <p role="alert">{error}</p>}
-          {funcion && !asientos && error && <button onClick={() => { setError(""); setIntento(intento + 1); }}>Reintentar cargar asientos</button>}
+          {funcion && errorAsientos && <button onClick={refetch} disabled={isFetching}>Reintentar cargar asientos</button>}
           </div>
           <ResumenReserva pelicula={{ ...pelicula, precio: Number(funcion?.precio ?? 0) }} funcion={funcion} asientos={etiquetas} total={Number(funcion?.precio ?? 0) * seleccionados.length} onConfirmar={confirmar} enviando={enviando} />
         </div>
