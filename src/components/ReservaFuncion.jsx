@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SelectorAsientos from "./SelectorAsientos";
 import { reservaService } from "../services/reservaService";
 import { useAuth } from "../hooks/useAuth";
 import { useNotificaciones } from "../hooks/useNotificaciones";
 
 // Se monta de nuevo para cada función: nunca arrastra butacas de otro horario.
-export default function ReservaFuncion({ funcion, titulo, onResumen }) {
+export default function ReservaFuncion({ funcion, onResumen }) {
   const { isAuthenticated } = useAuth();
   const { notificar } = useNotificaciones();
+  const navigate = useNavigate();
   const [asientos, setAsientos] = useState(null);
   const [seleccionados, setSeleccionados] = useState([]);
   const [error, setError] = useState("");
@@ -37,9 +38,9 @@ export default function ReservaFuncion({ funcion, titulo, onResumen }) {
     setEnviando(true);
     setError("");
     try {
-      setReserva(await reservaService.crear(funcion.id, seleccionados));
-      const cantidad = seleccionados.length;
-      notificar(`Reserva confirmada: ${cantidad} ${cantidad === 1 ? "entrada" : "entradas"} para ${titulo}`);
+      const creada = await reservaService.crear(funcion.id, seleccionados);
+      setReserva(creada);
+      navigate(`/checkout/${creada.idReserva}`);
     } catch (err) {
       if (err.status === 409) {
         notificar("Alguien reservó uno de esos asientos. Elegí otros", "error");

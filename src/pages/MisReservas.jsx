@@ -83,6 +83,7 @@ function ListadoReservas() {
                   <div><dt>Reservada el</dt><dd>{fecha(reserva.fechaReserva)}</dd></div>
                 </dl>
                 <div className="mis-reservas-total"><span>Total de la reserva</span><strong>{reserva.total != null && Number.isFinite(Number(reserva.total)) ? moneda.format(Number(reserva.total)) : "No disponible"}</strong></div>
+                {reserva.estado === "PENDIENTE" && <Link className="mis-reservas-accion checkout-continuar" to={`/checkout/${reserva.idReserva}`}>Continuar con el pago</Link>}
               </article>
             </li>
           );
