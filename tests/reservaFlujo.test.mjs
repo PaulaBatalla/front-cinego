@@ -51,10 +51,10 @@ test('continuar abre Candy sin crear la reserva y volver conserva las butacas', 
 test('confirmar despues de seleccionar Candy solo envia funcion y asientos', async () => {
   await preparar(); avanzar();
   fireEvent.click(screen.getByRole('button', { name: 'Agregar Combo Pareja al pedido' }));
-  fireEvent.click(screen.getAllByRole('button', { name: 'Confirmar reserva' })[0]);
+  fireEvent.click(screen.getAllByRole('button', { name: 'Crear reserva' })[0]);
   await screen.findByRole('heading', { name: '¡Listo! Tu reserva fue creada.' });
   assert.deepEqual(peticiones, [{ funcionId: 1, asientoIds: [1, 2] }]);
-  assert.ok(screen.getByText('Tu reserva está pendiente de confirmación.'));
+  assert.ok(screen.getByText('Tenés 10 minutos para confirmar en Mis reservas. Si cerrás sesión, se cancela.'));
 });
 test('seguir sin Candy confirma y vacia la seleccion de productos', async () => {
   await preparar(); avanzar();
@@ -65,7 +65,7 @@ test('seguir sin Candy confirma y vacia la seleccion de productos', async () => 
 });
 test('un conflicto devuelve a asientos y elimina la seleccion anterior', async () => {
   await preparar(); avanzar(); conflicto = true;
-  fireEvent.click(screen.getAllByRole('button', { name: 'Confirmar reserva' })[0]);
+  fireEvent.click(screen.getAllByRole('button', { name: 'Crear reserva' })[0]);
   await waitFor(() => assert.equal(screen.getByRole('button', { name: 'Butaca A1' }).getAttribute('aria-pressed'), 'false'));
   assert.equal(screen.queryByRole('heading', { name: '¿Y el pochoclo?' }), null);
 });

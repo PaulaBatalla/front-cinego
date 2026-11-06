@@ -8,7 +8,7 @@ import PasoCandy from './PasoCandy';
 import ProgresoReserva from './funciones/ProgresoReserva';
 import ResumenFuncion from './funciones/ResumenFuncion';
 import { vaciarCandy } from '../store/slices/candySlice';
-import { useAsientosQuery, useCrearReservaMutation } from '../services/reservasApi';
+import { useAsientosQuery, useCrearReservaMutation, useMisReservasQuery } from '../services/reservasApi';
 import { useAuth } from '../hooks/useAuth';
 import { useNotificaciones } from '../hooks/useNotificaciones';
 const moneda = (n) => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n);
@@ -22,7 +22,9 @@ export default function ReservaFuncion({ funcion, pelicula, children }) {
   const [seleccionados, setSeleccionados] = useState([]);
   const [paso, setPaso] = useState('asientos');
   const [errorConfirmacion, setError] = useState('');
-  const [crearReserva, { data: reserva, isLoading: enviando }] = useCrearReservaMutation();
+  const [crearReserva, { data: reservaCreada, isLoading: enviando }] = useCrearReservaMutation();
+  const { data: misReservas } = useMisReservasQuery(undefined, { skip: !isAuthenticated || !reservaCreada, pollingInterval: 5000 });
+  const reserva = misReservas?.find((r) => String(r.idReserva) === String(reservaCreada?.idReserva)) || reservaCreada;
   const error = errorConfirmacion || errorAsientos?.message;
   const vigente = funcion && funcionDisponible(funcion);
   const etiquetas = (asientos || []).filter((a) => seleccionados.includes(a.id)).map((a) => `${a.fila}${a.numero}`);
@@ -51,13 +53,13 @@ export default function ReservaFuncion({ funcion, pelicula, children }) {
     setError(''); setPaso('candy');
   }
   const accion = paso === 'candy' ? () => confirmar() : continuar;
-  const textoAccion = enviando ? 'Reservando...' : paso === 'candy' ? 'Confirmar reserva' : 'Continuar';
+  const textoAccion = enviando ? 'Reservando...' : paso === 'candy' ? 'Crear reserva' : 'Continuar';
   const boton = <button type="button" className="boton-continuar" disabled={bloqueado} onClick={accion}>{textoAccion}</button>;
   const login = <Link className="boton-continuar reserva-login" to="/login" state={{ volverA: `/pelicula/${funcion?.peliculaId}?funcionId=${encodeURIComponent(funcion?.id)}` }}>Iniciar sesión para continuar</Link>;
   return <><FichaPelicula pelicula={pelicula} compacta={paso === 'candy' || Boolean(reserva)} /><div className={`funciones-layout${!reserva && funcion ? ' reserva-con-barra' : ''}`}>
     <section className="funciones-selector">
       <ProgresoReserva paso={reserva ? 3 : paso === 'candy' ? 2 : funcion ? 1 : 0} />
-      {reserva ? <section className="reserva-final" role="status"><span className={`reserva-final-estado${reserva.estado !== 'CONFIRMADA' ? ' reserva-final-estado--pendiente' : ''}`}>Reserva #{reserva.idReserva} · {reserva.estado === 'CONFIRMADA' ? 'CONFIRMADA' : 'PENDIENTE'}</span><h2>{reserva.estado === 'CONFIRMADA' ? '¡Listo! Nos vemos en la función.' : '¡Listo! Tu reserva fue creada.'}</h2><div className="reserva-ticket"><strong>{pelicula.titulo}</strong><p>{funcion.fecha} · {funcion.sala} · {funcion.hora}</p><p>Butacas: {etiquetas.join(', ')}</p><p>Total entradas: {moneda(Number(reserva.total))}</p>{reserva.estado !== 'CONFIRMADA' && <p>Tu reserva está pendiente de confirmación.</p>}</div><Link to="/mis-reservas">Ver mis reservas y descargar entradas</Link><Link to="/">Hacer otra reserva</Link></section> : <>
+      {reserva ? <section className="reserva-final" role="status"><span className={`reserva-final-estado${reserva.estado !== 'CONFIRMADA' ? ' reserva-final-estado--pendiente' : ''}`}>Reserva #{reserva.idReserva} · {reserva.estado}</span><h2>{reserva.estado === 'CONFIRMADA' ? '¡Listo! Nos vemos en la función.' : reserva.estado === 'CANCELADA' ? 'Tu reserva fue cancelada.' : '¡Listo! Tu reserva fue creada.'}</h2><div className="reserva-ticket"><strong>{pelicula.titulo}</strong><p>{funcion.fecha} · {funcion.sala} · {funcion.hora}</p><p>Butacas: {etiquetas.join(', ')}</p><p>Total entradas: {moneda(Number(reserva.total))}</p>{reserva.estado === 'PENDIENTE' && <p>Tenés 10 minutos para confirmar en Mis reservas. Si cerrás sesión, se cancela.</p>}</div><Link to="/mis-reservas">Ver mis reservas y descargar entradas</Link><Link to="/">Hacer otra reserva</Link></section> : <>
         {(paso === 'asientos' || !vigente) ? <>{children}{funcion && <section className="funciones-asientos">
           {!vigente ? <p role="alert">Esta función ya comenzó. Elegí otro horario.</p> : <>
             {!asientos && !error && <p role="status">Cargando asientos...</p>}

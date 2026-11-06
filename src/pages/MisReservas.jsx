@@ -4,7 +4,7 @@ import { estadoCancelacion } from "../utils/cancelacionReservas";
 import { useNotificaciones } from "../hooks/useNotificaciones";
 import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { useMisReservasQuery, useFuncionesQuery, usePeliculasQuery, useCancelarReservaMutation, useLazyMisReservasQuery } from "../services/reservasApi";
+import { useMisReservasQuery, useFuncionesQuery, usePeliculasQuery, useCancelarReservaMutation, useLazyMisReservasQuery, useConfirmarReservaMutation } from "../services/reservasApi";
 import "../styles/reserva.css";
 import "../styles/misReservas.css";
 
@@ -43,7 +43,7 @@ function ListadoReservas() {
     window.addEventListener("focus", actualizar);
     return () => { clearInterval(reloj); window.removeEventListener("focus", actualizar); };
   }, []);
-  const reservas = useMisReservasQuery(undefined, { refetchOnMountOrArgChange: true });
+  const reservas = useMisReservasQuery(undefined, { refetchOnMountOrArgChange: true, pollingInterval: 5000 });
   const consultarCatalogos = Boolean(reservas.data?.length);
   const funciones = useFuncionesQuery(undefined, { skip: !consultarCatalogos });
   const peliculas = usePeliculasQuery(undefined, { skip: !consultarCatalogos });
@@ -118,6 +118,7 @@ function ListadoReservas() {
 }
 
 function TarjetaReserva({ reserva, funcion, pelicula, ahora }) {
+  const [confirmarReserva, { isLoading: confirmandoReserva }] = useConfirmarReservaMutation();
   const [confirmando, setConfirmando] = useState(false);
   const [descargando, setDescargando] = useState(false);
   const [consultarReservas] = useLazyMisReservasQuery();
@@ -125,7 +126,18 @@ function TarjetaReserva({ reserva, funcion, pelicula, ahora }) {
   const [cancelarReserva, { isLoading, data: cancelada }] = useCancelarReservaMutation();
   const { notificar } = useNotificaciones();
   const actual = cancelada?.estado === "CANCELADA" ? { ...reserva, estado: "CANCELADA" } : reserva;
+  const limite = Date.parse(reserva.fechaReserva) + 10 * 60 * 1000;
+  const vencida = actual.estado === "PENDIENTE" && ahora >= limite;
   const cancelacion = estadoCancelacion(actual, funcion, ahora);
+
+  async function confirmarPendiente() {
+    if (confirmandoReserva || vencida || isLoading) return;
+    setError("");
+    try {
+      await confirmarReserva({ idReserva: reserva.idReserva }).unwrap();
+      notificar("Reserva confirmada.");
+    } catch (err) { setError(err.message || "No pudimos confirmar la reserva."); }
+  }
   const butacas = Array.isArray(reserva.asientos) ? reserva.asientos : [];
 
   async function descargarEntradas() {
@@ -168,7 +180,11 @@ function TarjetaReserva({ reserva, funcion, pelicula, ahora }) {
         <div><dt>Butacas</dt><dd>{butacas.length ? [...butacas].sort((a, b) => String(a.fila).localeCompare(String(b.fila)) || a.numero - b.numero).map((a) => `${a.fila}${a.numero}`).join(", ") : "No disponibles"}</dd></div>
       </dl>
       <div className="mis-reservas-total"><span>Total de la reserva</span><strong>{reserva.total != null && Number.isFinite(Number(reserva.total)) ? moneda.format(Number(reserva.total)) : "No disponible"}</strong></div>
-      {["PENDIENTE", "CONFIRMADA"].includes(actual.estado) && <div className="mis-reservas-descarga">
+      {actual.estado === "PENDIENTE" && <div className="mis-reservas-confirmacion">
+        <p>{vencida ? "La reserva venció. Sus butacas vuelven a estar disponibles." : `Confirmá en ${Math.ceil((limite - ahora) / 1000)} segundos. Si cerrás sesión, se cancela.`}</p>
+        <button type="button" className="mis-reservas-accion" disabled={vencida || confirmandoReserva || isLoading} onClick={confirmarPendiente}>{confirmandoReserva ? "Confirmando..." : "Confirmar reserva"}</button>
+      </div>}
+      {actual.estado === "CONFIRMADA" && <div className="mis-reservas-descarga">
         <button type="button" className="mis-reservas-accion" disabled={descargando || isLoading || !butacas.length || !funcion || !pelicula} onClick={descargarEntradas}>{descargando ? "Generando PDF..." : "Descargar entradas"}</button>
         <p>Un PDF con una entrada por butaca.{actual.estado === "PENDIENTE" ? " Tu reserva sigue pendiente de confirmaci\u00f3n." : ""}</p>
       </div>}
@@ -178,7 +194,7 @@ function TarjetaReserva({ reserva, funcion, pelicula, ahora }) {
         {confirmando && actual.estado !== "CANCELADA" && <div className="mis-reservas-confirmacion" role="group" aria-labelledby={`confirmacion-${reserva.idReserva}`} aria-busy={isLoading}>
           <p id={`confirmacion-${reserva.idReserva}`}><strong>¿Cancelar la reserva #{reserva.idReserva}?</strong> Se liberarán todas sus butacas. Esta acción no se puede deshacer.</p>
           <div className="mis-reservas-botones">
-            <button className="mis-reservas-accion" disabled={isLoading || descargando} onClick={() => { setConfirmando(false); setError(""); }}>Conservar reserva</button>
+            <button className="mis-reservas-accion" disabled={isLoading || descargando || confirmandoReserva} onClick={() => { setConfirmando(false); setError(""); }}>Conservar reserva</button>
             <button className="mis-reservas-accion mis-reservas-accion--cancelar" disabled={isLoading || descargando || !cancelacion.permitido} onClick={confirmarCancelacion}>{isLoading ? "Cancelando..." : "Sí, cancelar reserva"}</button>
           </div>
         </div>}

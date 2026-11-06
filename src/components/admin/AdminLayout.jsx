@@ -16,8 +16,11 @@ function AdminLayout() {
   const { notificar } = useNotificaciones();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    try { await logout(); } catch {
+      notificar("No pudimos cancelar las reservas pendientes. Intentá cerrar sesión nuevamente.", "error");
+      return;
+    }
     notificar("Cerraste sesión");
     navigate("/login");
   };
