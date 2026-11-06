@@ -7,7 +7,7 @@ export const reservasApi = createApi({
   baseQuery: async ({ ruta, ...opciones }, { signal }) => {
     try {
       const data = await solicitar(ruta, { ...opciones, signal });
-      if (!opciones.method && !Array.isArray(data)) {
+      if (!opciones.method && !/^\/reservas\/\d+$/.test(ruta) && !Array.isArray(data)) {
         return { error: { status: "CUSTOM_ERROR", message: "La respuesta del servidor no es válida." } };
       }
       return { data };
@@ -27,6 +27,10 @@ export const reservasApi = createApi({
       query: () => ({ ruta: "/reservas/mis-reservas" }),
       providesTags: ["MisReservas"],
     }),
+    reserva: builder.query({
+      query: (id) => ({ ruta: `/reservas/${id}` }),
+      providesTags: ["MisReservas"],
+    }),
     asientos: builder.query({
       query: (funcionId) => ({ ruta: `/funciones/${funcionId}/asientos` }),
       providesTags: (_resultado, _error, funcionId) => [{ type: "Asientos", id: String(funcionId) }],
@@ -41,6 +45,10 @@ export const reservasApi = createApi({
         ? (error.status === 409 ? [{ type: "Asientos", id: String(funcionId) }] : [])
         : ["MisReservas", { type: "Asientos", id: String(funcionId) }],
     }),
+    confirmarReserva: builder.mutation({
+      query: (id) => ({ ruta: `/reservas/${id}/confirmar`, method: "PATCH" }),
+      invalidatesTags: ["MisReservas"],
+    }),
   }),
 });
 
@@ -48,6 +56,8 @@ export const {
   usePeliculasQuery,
   useFuncionesQuery,
   useMisReservasQuery,
+  useReservaQuery,
   useAsientosQuery,
   useCrearReservaMutation,
+  useConfirmarReservaMutation,
 } = reservasApi;

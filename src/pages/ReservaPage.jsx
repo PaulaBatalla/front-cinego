@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import SelectorFuncion from "../components/SelectorFuncion";
 import SelectorAsientos from "../components/SelectorAsientos";
 import ResumenReserva from "../components/ResumenReserva";
@@ -33,6 +33,7 @@ function ReservaPage() {
 }
 
 function SeleccionReserva({ datos, funcionId, onCambiarFuncion }) {
+  const navigate = useNavigate();
   const funciones = datos.funciones.map((f) => ({ ...f, fecha: f.horarioInicio.slice(0, 10), hora: f.horarioInicio.slice(11, 16), sala: f.salaNombre }));
   const funcion = funciones.find((f) => String(f.id) === funcionId);
   const [peliculaId, setPeliculaId] = useState(String(funcion?.peliculaId ?? datos.peliculas[0]?.id ?? ""));
@@ -51,9 +52,8 @@ function SeleccionReserva({ datos, funcionId, onCambiarFuncion }) {
     if (enviando || isFetching || errorAsientos || reserva || !seleccionados.length) return;
     setError("");
     try {
-      await crearReserva({ funcionId: funcion.id, asientoIds: seleccionados }).unwrap();
-      const cantidad = seleccionados.length;
-      notificar(`Reserva confirmada: ${cantidad} ${cantidad === 1 ? "entrada" : "entradas"} para ${pelicula.titulo}`);
+      const creada = await crearReserva({ funcionId: funcion.id, asientoIds: seleccionados }).unwrap();
+      navigate(`/checkout/${creada.idReserva}`);
     } catch (err) {
       if (err.status === 409) {
         notificar("Alguien reservó uno de esos asientos. Elegí otros", "error");
