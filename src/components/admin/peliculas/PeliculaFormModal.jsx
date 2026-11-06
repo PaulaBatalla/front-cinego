@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CloseIcon } from "../../icons";
-import { validarPelicula } from "../../../utils/validaciones";
+import { leerDecimal, validarPelicula } from "../../../utils/validaciones";
 import Modal from "../Modal";
 import PosterMiniatura from "./PosterMiniatura";
 
@@ -19,7 +19,7 @@ function armarDatos(form) {
   return {
     titulo: form.titulo.trim(),
     duracion: Number(form.duracion),
-    clasificacion: Number(form.clasificacion),
+    clasificacion: Math.round(leerDecimal(form.clasificacion) * 10) / 10,
     sinopsis: form.sinopsis.trim(),
     posterUrl: form.posterUrl.trim() || null,
   };
@@ -148,15 +148,16 @@ function PeliculaFormModal({ pelicula, idColor, onGuardar, onCerrar }) {
           </label>
 
           <label className="admin-campo">
-            Clasificación por edad (0 para ATP)
+            Puntaje (0 a 10)
             <input
               className="admin-input"
               type="number"
               name="clasificacion"
               min="0"
-              step="1"
-              inputMode="numeric"
-              placeholder="Ej: 13"
+              max="10"
+              step="0.1"
+              inputMode="decimal"
+              placeholder="Ej: 8.1"
               value={form.clasificacion}
               onChange={handleChange}
               aria-invalid={Boolean(verError("clasificacion"))}
