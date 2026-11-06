@@ -4,6 +4,7 @@ import PeliculasFallback from "./PeliculasFallback";
 import PeliculasList from "./PeliculasList";
 import PeliculasFiltros from "./PeliculasFiltros";
 import { SearchIcon } from "./icons";
+import { solicitar } from "../services/api";
 import { filtrarPeliculas } from "../utils/filtrarPeliculas";
 
 const FILTROS_INICIALES = {
@@ -36,22 +37,10 @@ function Peliculas() {
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const [respPeliculas, respFunciones] = await Promise.all([
-          fetch("http://localhost:8080/api/peliculas", {
-            headers: { Accept: "application/json" },
-          }),
-          fetch("http://localhost:8080/api/funciones", {
-            headers: { Accept: "application/json" },
-          }).catch(() => null),
+        const [datosPeliculas, datosFunciones] = await Promise.all([
+          solicitar("/peliculas"),
+          solicitar("/funciones").catch(() => []),
         ]);
-
-        if (!respPeliculas.ok) {
-          throw new Error(`Error al cargar las películas (${respPeliculas.status})`);
-        }
-
-        const datosPeliculas = await respPeliculas.json();
-        const datosFunciones =
-          respFunciones && respFunciones.ok ? await respFunciones.json() : [];
 
         // Enriquecer cada película con metadatos de funciones, idiomas y formatos
         const peliculasEnriquecidas = datosPeliculas.map((peli) => {

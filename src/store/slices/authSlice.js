@@ -28,7 +28,7 @@ export const loginUser = createAsyncThunk(
     try {
       const token = await authService.login(email, password);
       localStorage.setItem("token", token);
-      return token;
+      return { token, usuario: leerUsuario(token) };
     } catch (err) {
       return rejectWithValue(err.message);
     }
@@ -64,11 +64,9 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        const sesion = armarSesion(action.payload);
-
-        state.token = sesion.token;
-        state.usuario = sesion.usuario;
-        state.isAuthenticated = sesion.isAuthenticated;
+        state.token = action.payload.token;
+        state.usuario = action.payload.usuario;
+        state.isAuthenticated = Boolean(action.payload.usuario);
         state.isLoading = false;
       })
       .addCase(loginUser.rejected, (state, action) => {

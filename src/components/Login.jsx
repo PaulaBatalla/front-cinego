@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useNotificaciones } from "../hooks/useNotificaciones";
 import { clearError, loginUser } from "../store/slices/authSlice";
 import { validarLogin } from "../utils/validaciones";
+import { destinoTrasLogin } from "../utils/roles";
 import CampoFormulario from "./CampoFormulario";
 import "../styles/Auth.css";
 
@@ -14,6 +15,7 @@ function Login() {
   const { isLoading, error } = useSelector((state) => state.auth);
   const { notificar } = useNotificaciones();
   const dispatch = useDispatch();
+  const location = useLocation();
 
   useEffect(() => {
     return () => dispatch(clearError());
@@ -33,7 +35,14 @@ function Login() {
     const resultado = await dispatch(loginUser({ email, password }));
 
     if (loginUser.fulfilled.match(resultado)) {
-      notificar("Sesión iniciada");
+      const destino = destinoTrasLogin(resultado.payload.usuario, location.state?.volverA);
+
+      // Un admin entra directo al panel, salvo que viniera de otra página
+      notificar(
+        destino.startsWith("/admin")
+          ? "Entraste al panel de administración"
+          : "Sesión iniciada"
+      );
     }
   };
 

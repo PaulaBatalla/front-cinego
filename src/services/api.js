@@ -26,8 +26,7 @@ export async function solicitar(ruta, opciones = {}) {
     error.status = respuesta.status;
     throw error;
   }
-  if (respuesta.status === 204) {
-    return null;
-  }
-  return respuesta.json();
+  // Algunos endpoints no traen cuerpo: el 204 de películas o el DELETE de funciones/carrito
+  const texto = await respuesta.text();
+  return texto ? JSON.parse(texto) : null;
 }
