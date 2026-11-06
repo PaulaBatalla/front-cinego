@@ -2,7 +2,7 @@ import FichaPelicula from './funciones/FichaPelicula';
 import { funcionDisponible } from '../utils/disponibilidadFunciones';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import SelectorAsientos from './SelectorAsientos';
 import PasoCandy from './PasoCandy';
 import ProgresoReserva from './funciones/ProgresoReserva';
@@ -15,6 +15,7 @@ const moneda = (n) => new Intl.NumberFormat('es-AR', { style: 'currency', curren
 
 export default function ReservaFuncion({ funcion, pelicula, children }) {
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const candy = useSelector((state) => state.candy.items);
   const { notificar } = useNotificaciones();
@@ -40,6 +41,7 @@ export default function ReservaFuncion({ funcion, pelicula, children }) {
     try {
       const creada = await crearReserva({ funcionId: funcion.id, asientoIds: seleccionados }).unwrap();
       if (omitirCandy) dispatch(vaciarCandy());
+      navigate(`/checkout/${creada.idReserva}`);
       notificar(`Reserva ${creada.estado === 'CONFIRMADA' ? 'confirmada' : 'creada'} para ${pelicula.titulo}`);
     } catch (err) {
       if (err.status === 409) {

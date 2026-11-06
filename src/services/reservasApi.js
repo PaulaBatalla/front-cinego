@@ -30,6 +30,10 @@ export const reservasApi = createApi({
       query: () => ({ ruta: "/reservas/mis-reservas" }),
       providesTags: ["MisReservas"],
     }),
+    reserva: builder.query({
+      query: (id) => ({ ruta: `/reservas/${encodeURIComponent(id)}`, esLista: false }),
+      providesTags: ["MisReservas"],
+    }),
     asientos: builder.query({
       query: (funcionId) => ({ ruta: `/funciones/${funcionId}/asientos` }),
       providesTags: (_resultado, _error, funcionId) => [{ type: "Asientos", id: String(funcionId) }],
@@ -62,6 +66,7 @@ export const {
   useFuncionesQuery,
   useMisReservasQuery,
   useLazyMisReservasQuery,
+  useReservaQuery,
   useAsientosQuery,
   useCrearReservaMutation,
   useCancelarReservaMutation,

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { JSDOM } from 'jsdom';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
 import { createServer } from 'vite';
 const dom = new JSDOM('<!doctype html><html><body></body></html>', { url: 'http://localhost' });
@@ -18,6 +18,12 @@ const fetchOriginal = globalThis.fetch;
 let store;
 let peticiones;
 let conflicto;
+function ReservaConRuta(props) {
+  const ruta = useLocation();
+  return React.createElement(React.Fragment, null,
+    React.createElement('output', { 'data-testid': 'ruta' }, ruta.pathname),
+    React.createElement(ReservaFuncion, props));
+}
 async function preparar() {
   peticiones = []; conflicto = false;
   globalThis.fetch = async (url, opciones = {}) => {
@@ -28,7 +34,7 @@ async function preparar() {
     return new Response(JSON.stringify([{ id: 1, fila: 'A', numero: 1, ocupado: false }, { id: 2, fila: 'A', numero: 2, ocupado: false }, { id: 3, fila: 'A', numero: 3, ocupado: true }]));
   };
   store = configureStore({ reducer: { auth: () => ({ token: null, usuario: { email: 'prueba@cinego.test' }, isAuthenticated: true }), candy: candyReducer, [reservasApi.reducerPath]: reservasApi.reducer }, middleware: (defecto) => defecto().concat(reservasApi.middleware) });
-  render(React.createElement(Provider, { store }, React.createElement(MemoryRouter, null, React.createElement(NotificacionesProvider, null, React.createElement(ReservaFuncion, { funcion: { id: 1, peliculaId: 1, precio: 8200, horarioInicio: '2099-12-15T19:30:00', fecha: '2099-12-15', hora: '19:30', sala: 'Sala 3' }, pelicula: { titulo: 'Prueba' } }, React.createElement('p', null, 'Selector de funcion'))))));
+  render(React.createElement(Provider, { store }, React.createElement(MemoryRouter, null, React.createElement(NotificacionesProvider, null, React.createElement(ReservaConRuta, { funcion: { id: 1, peliculaId: 1, precio: 8200, horarioInicio: '2099-12-15T19:30:00', fecha: '2099-12-15', hora: '19:30', sala: 'Sala 3' }, pelicula: { titulo: 'Prueba' } }, React.createElement('p', null, 'Selector de funcion'))))));
   await screen.findByRole('button', { name: 'Butaca A1' });
 }
 function avanzar() {
@@ -53,6 +59,7 @@ test('confirmar despues de seleccionar Candy solo envia funcion y asientos', asy
   fireEvent.click(screen.getByRole('button', { name: 'Agregar Combo Pareja al pedido' }));
   fireEvent.click(screen.getAllByRole('button', { name: 'Crear reserva' })[0]);
   await screen.findByRole('heading', { name: '¡Listo! Tu reserva fue creada.' });
+  await waitFor(() => assert.equal(screen.getByTestId('ruta').textContent, '/checkout/50'));
   assert.deepEqual(peticiones, [{ funcionId: 1, asientoIds: [1, 2] }]);
   assert.ok(screen.getByText('Tenés 10 minutos para confirmar en Mis reservas. Si cerrás sesión, se cancela.'));
 });
