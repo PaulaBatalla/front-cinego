@@ -27,9 +27,6 @@ function HamburgerMenu({ drawerId, menuOpen, closeMenu, renderAuthActions, isAut
           <NavLink to="/candy" onClick={closeMenu}>
             Candy
           </NavLink>
-          <NavLink to="/reservas" onClick={closeMenu}>
-            Reservas
-          </NavLink>
         </nav>
         {isAuthenticated && <nav className="site-nav site-nav--drawer" aria-label="Mi cuenta"><NavLink to="/mis-reservas" onClick={closeMenu}>Mis reservas</NavLink></nav>}
         <div className="site-drawer__actions">{renderAuthActions()}</div>

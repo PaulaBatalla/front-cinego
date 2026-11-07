@@ -14,8 +14,11 @@ function Header() {
   const navigate = useNavigate();
   const { menuOpen, drawerId, closeMenu, toggleMenu } = useMobileMenu();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    try { await logout(); } catch {
+      notificar("No pudimos cancelar las reservas pendientes. Intentá cerrar sesión nuevamente.", "error");
+      return;
+    }
     notificar("Cerraste sesión");
     closeMenu();
     navigate("/login");
@@ -48,7 +51,6 @@ function Header() {
               Películas
             </NavLink>
             <NavLink to="/candy">Candy</NavLink>
-            <NavLink to="/reservas">Reservas</NavLink>
             {isAuthenticated && <NavLink to="/mis-reservas">Mis reservas</NavLink>}
           </nav>
         </div>

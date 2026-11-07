@@ -1,3 +1,4 @@
+import ControlSesion from "./components/ControlSesion";
 import ReservaPage from "./pages/ReservaPage";
 import MisReservas from "./pages/MisReservas";
 import Checkout from "./pages/Checkout";
@@ -19,6 +20,7 @@ import Toasts from "./components/Toasts";
 function App() {
   return (
     <div className="App">
+      <ControlSesion>
       <Routes>
         <Route element={<SitioLayout />}>
           <Route path="/" element={<Peliculas />} />
@@ -42,6 +44,7 @@ function App() {
           </Route>
         </Route>
       </Routes>
+      </ControlSesion>
       <Toasts />
     </div>
   );

@@ -11,7 +11,7 @@
 .mis-reservas-lista { display: grid; gap: 18px; list-style: none; padding: 0; margin: 0; }
 .mis-reservas-tarjeta-cabecera { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .mis-reservas-numero { margin-bottom: 8px; font-size: 12px; color: var(--reserva-secundario); }
-.mis-reservas-tarjeta h2 { font-size: 23px; font-weight: 700; overflow-wrap: anywhere; }
+.mis-reservas-tarjeta h3 { font-size: 23px; font-weight: 700; overflow-wrap: anywhere; }
 .mis-reservas-estado { padding: 5px 12px; border: 1px solid #62616d; border-radius: 999px; font-size: 12px; }
 .mis-reservas-estado--pendiente { background: #342a19; color: #f1ce86; border-color: #68532c; }
 .mis-reservas-estado--confirmada { background: #183328; color: #a3e2be; border-color: #315b45; }
@@ -26,3 +26,35 @@
   .mis-reservas-tarjeta-cabecera { flex-direction: column; }
   .mis-reservas-total { flex-wrap: wrap; }
 }
+
+.mis-reservas-cancelacion { margin-top: 20px; border-top: 1px solid var(--reserva-borde); padding-top: 16px; }
+.mis-reservas-cancelacion > p { color: var(--reserva-secundario); margin-bottom: 12px; }
+.mis-reservas-confirmacion { padding: 16px; border: 1px solid var(--reserva-borde); border-radius: 8px; }
+.mis-reservas-botones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+.mis-reservas-accion--cancelar { background: transparent; color: #ffb3bd; border: 1px solid #a45964; }
+.mis-reservas-accion--cancelar:hover { background: #382126; }
+.mis-reservas-accion:disabled { opacity: .5; cursor: not-allowed; }
+
+.mis-reservas-grupo { margin-top: 32px; }
+/* Misma paleta y botones redondeados que los filtros de Candy y cartelera. */
+.mis-reservas-filtros { padding: 16px; background: #141417; border: 1px solid #222226; border-radius: 14px; margin-bottom: 20px; }
+.mis-reservas-filtros-label { display: block; margin-bottom: 12px; color: var(--reserva-secundario); font-size: 12px; font-weight: 700; }
+.mis-reservas-filtros-opciones { display: flex; flex-wrap: wrap; gap: 8px; }
+.mis-reservas-filtro { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 40px; padding: 8px 16px; border: 1px solid #2a2a30; border-radius: 999px; background: transparent; color: var(--reserva-secundario); font: inherit; font-weight: 500; cursor: pointer; transition: background .15s ease, border-color .15s ease, color .15s ease; }
+.mis-reservas-filtro:hover { border-color: #4a4852; color: var(--reserva-texto); }
+.mis-reservas-filtro.activa { background: var(--reserva-texto); border-color: var(--reserva-texto); color: var(--reserva-fondo); font-weight: 700; }
+.mis-reservas-filtro-cantidad { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; padding-inline: 5px; border-radius: 999px; background: #ffffff10; font-size: 12px; }
+.mis-reservas-filtro.activa .mis-reservas-filtro-cantidad { background: #0e0e1014; }
+.mis-reservas-filtro:focus-visible, .mis-reservas-accion:focus-visible { outline: 2px solid var(--reserva-acento); outline-offset: 4px; }
+.mis-reservas-grupo-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 16px; margin-bottom: 18px; border-bottom: 1px solid var(--reserva-borde); }
+.mis-reservas-grupo-cabecera h2 { margin: 0 0 6px; font-size: clamp(20px, 3vw, 24px); font-weight: 700; }
+.mis-reservas-grupo-cabecera p { margin: 0; color: var(--reserva-secundario); font-size: 13px; }
+.mis-reservas-grupo-cantidad { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; padding-inline: 10px; border: 1px solid var(--reserva-borde); border-radius: 10px; background: var(--reserva-panel); color: var(--reserva-secundario); font-size: 14px; font-weight: 700; flex-shrink: 0; }
+.mis-reservas-grupo--proximas .mis-reservas-grupo-cantidad { color: var(--reserva-acento); border-color: #ff6b4a40; background: #ff6b4a0d; }
+@media (max-width: 600px) {
+  .mis-reservas-filtro { flex: 1 1 calc(50% - 8px); padding-inline: 10px; }
+  .mis-reservas-grupo-cabecera { align-items: flex-start; }
+}
+
+.mis-reservas-descarga { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 16px; margin-top: 20px; }
+.mis-reservas-descarga p { margin: 0; color: var(--reserva-secundario); font-size: 12px; flex: 1 1 200px; }
