@@ -966,6 +966,122 @@
   }
 }
 
+/* Salas: grilla de tarjetas */
+.admin-salas {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.admin-sala {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--admin-borde);
+  border-radius: 18px;
+  background: var(--admin-superficie-2);
+}
+
+.admin-sala__cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.admin-sala__nombre {
+  margin: 0;
+  color: var(--admin-texto);
+  font-family: inherit;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: normal;
+  line-height: 1.25;
+}
+
+.admin-sala__funciones {
+  flex-shrink: 0;
+  color: var(--admin-texto-2);
+  font-size: 13px;
+}
+
+.admin-sala__total {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-sala__numero {
+  font-family: var(--admin-titulos);
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.admin-sala__detalle {
+  color: var(--admin-texto-2);
+  font-size: 14px;
+}
+
+.admin-sala__acciones {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.admin-sala__editar {
+  flex: 1;
+}
+
+/* Vista previa de los asientos (tarjeta y formulario) */
+.admin-mapa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--admin-fondo);
+}
+
+.admin-mapa__etiqueta {
+  color: var(--admin-texto-3);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+}
+
+.admin-mapa__pantalla {
+  width: 70%;
+  height: 4px;
+  border-radius: 999px;
+  background: #3a3a40;
+}
+
+.admin-sala-form__mapa .admin-mapa {
+  border: 1px solid var(--admin-borde);
+}
+
+.admin-sala-form__total {
+  margin: 0;
+  color: #c9c6ce;
+  font-size: 15px;
+}
+
+.admin-sala-form__total strong {
+  color: var(--admin-texto);
+}
+
+.admin-sala-form__nota {
+  margin: -6px 0 0;
+  color: var(--admin-texto-3);
+  font-size: 13px;
+}
+
 .admin-boton-ghost:focus-visible,
 .admin-tab:focus-visible,
 .admin-boton-cta:focus-visible,

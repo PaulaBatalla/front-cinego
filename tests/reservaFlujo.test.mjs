@@ -31,6 +31,12 @@ async function preparar() {
       peticiones.push(JSON.parse(opciones.body));
       return conflicto ? new Response('Butaca ocupada', { status: 409 }) : new Response(JSON.stringify({ idReserva: 50, estado: 'PENDIENTE', total: 16400 }));
     }
+    if (String(url).includes('/candy')) {
+      return new Response(JSON.stringify([
+        { id: 10, nombre: 'Combo Pareja', descripcion: 'Para dos', precio: 5000, imagen: '' },
+        { id: 11, nombre: 'Combo Solo', descripcion: 'Individual', precio: 3500, imagen: '' },
+      ]));
+    }
     return new Response(JSON.stringify([{ id: 1, fila: 'A', numero: 1, ocupado: false }, { id: 2, fila: 'A', numero: 2, ocupado: false }, { id: 3, fila: 'A', numero: 3, ocupado: true }]));
   };
   store = configureStore({ reducer: { auth: () => ({ token: null, usuario: { email: 'prueba@cinego.test' }, isAuthenticated: true }), candy: candyReducer, [reservasApi.reducerPath]: reservasApi.reducer }, middleware: (defecto) => defecto().concat(reservasApi.middleware) });
@@ -56,7 +62,7 @@ test('continuar abre Candy sin crear la reserva y volver conserva las butacas', 
 });
 test('confirmar despues de seleccionar Candy solo envia funcion y asientos', async () => {
   await preparar(); avanzar();
-  fireEvent.click(screen.getByRole('button', { name: 'Agregar Combo Pareja al pedido' }));
+  fireEvent.click(await screen.findByRole('button', { name: 'Agregar Combo Pareja al pedido' }));
   fireEvent.click(screen.getAllByRole('button', { name: 'Crear reserva' })[0]);
   await screen.findByRole('heading', { name: '¡Listo! Tu reserva fue creada.' });
   await waitFor(() => assert.equal(screen.getByTestId('ruta').textContent, '/checkout/50'));
@@ -65,7 +71,7 @@ test('confirmar despues de seleccionar Candy solo envia funcion y asientos', asy
 });
 test('seguir sin Candy confirma y vacia la seleccion de productos', async () => {
   await preparar(); avanzar();
-  fireEvent.click(screen.getByRole('button', { name: 'Agregar Combo Pareja al pedido' }));
+  fireEvent.click(await screen.findByRole('button', { name: 'Agregar Combo Pareja al pedido' }));
   fireEvent.click(screen.getByRole('button', { name: 'Seguir sin candy' }));
   await screen.findByRole('heading', { name: '¡Listo! Tu reserva fue creada.' });
   assert.equal(store.getState().candy.items.length, 0);

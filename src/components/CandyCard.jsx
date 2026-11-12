@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { agregarCandy, disminuirCandy } from "../store/slices/candySlice";
 import { useNotificaciones } from "../hooks/useNotificaciones";
-import CandyIcon from "./CandyIcon";
 
 function CandyCard({ item }) {
   const dispatch = useDispatch();
@@ -21,44 +20,26 @@ function CandyCard({ item }) {
 
   return (
     <article className="candy-card">
-      {/* Contenedor pastel con ilustración y badge */}
-      <div
-        className="candy-card-cover"
-        style={{ backgroundColor: item.color || "#f6d895" }}
-      >
-        {item.badge && (
-          <span className="candy-card-badge">{item.badge}</span>
-        )}
-
-        <div className="candy-card-icono-wrap">
-          <CandyIcon tipo={item.icono} />
-        </div>
-
-        <span className="candy-card-label-imagen">IMAGEN</span>
+      <div className="candy-card-cover">
+        {item.imagen ? (
+          <img
+            className="candy-card-cover-img"
+            src={item.imagen}
+            alt=""
+            loading="lazy"
+          />
+        ) : null}
       </div>
 
-      {/* Datos del producto */}
       <div className="candy-card-info">
-        {item.categoria && (
-          <span className="candy-card-categoria">{item.categoria}</span>
-        )}
         <h3 className="candy-card-titulo">{item.nombre}</h3>
         <p className="candy-card-desc">{item.descripcion}</p>
 
-        {/* Pie con precio y botón de agregar */}
         <div className="candy-card-pie">
           <div className="candy-precios">
             <span className="candy-precio-actual">
               ${Number(item.precio).toLocaleString("es-AR")}
             </span>
-            {item.precioMostrador && (
-              <span
-                className="candy-precio-tachado"
-                title="Precio en mostrador"
-              >
-                ${Number(item.precioMostrador).toLocaleString("es-AR")}
-              </span>
-            )}
           </div>
 
           {cantidad > 0 ? (
