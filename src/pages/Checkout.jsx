@@ -77,7 +77,7 @@ export default function Checkout() {
             <button className="reserva-confirmar" type="submit" disabled={!tarjeta || enviando}>{enviando ? "Confirmando..." : "Confirmar pago"}</button>
           </form>
         ) : (
-          <p role="status">{actual.estado === "CONFIRMADA" ? "Tu reserva está confirmada." : vencida ? "La reserva venció. Las butacas quedaron disponibles." : "Esta reserva está cancelada."}</p>
+          <p role="status">{actual.estado === "CONFIRMADA" ? "Tu reserva está confirmada." : vencida ? "El plazo para confirmar venció. Consultá el estado en Mis reservas." : "Esta reserva está cancelada."}</p>
         )}
         {(actual.estado !== "PENDIENTE" || vencida) && <Link className="checkout-enlace" to="/mis-reservas">Ver mis reservas</Link>}
       </div>

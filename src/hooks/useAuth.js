@@ -10,11 +10,18 @@ export function useAuth() {
   const { token, usuario, isAuthenticated } = useSelector((state) => state.auth);
 
   const logout = async () => {
-    if (token && tokenVigente(token)) {
-      await solicitar("/reservas/pendientes/cancelar", { method: "PATCH" });
+    let pendientesCanceladas = true;
+    try {
+      if (token && tokenVigente(token)) {
+        await solicitar("/reservas/pendientes/cancelar", { method: "PATCH" });
+      }
+    } catch {
+      pendientesCanceladas = false;
+    } finally {
+      localStorage.removeItem("token");
+      dispatch(cerrarSesion());
     }
-    localStorage.removeItem("token");
-    dispatch(cerrarSesion());
+    return pendientesCanceladas;
   };
 
   return { token, usuario, isAuthenticated, esAdmin: esRolAdmin(usuario?.rol), logout };

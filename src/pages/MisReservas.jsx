@@ -172,7 +172,7 @@ function TarjetaReserva({ reserva, funcion, pelicula, ahora }) {
       </dl>
       <div className="mis-reservas-total"><span>Total de la reserva</span><strong>{reserva.total != null && Number.isFinite(Number(reserva.total)) ? moneda.format(Number(reserva.total)) : "No disponible"}</strong></div>
       {actual.estado === "PENDIENTE" && <div className="mis-reservas-confirmacion">
-        <p>{vencida ? "La reserva venció. Sus butacas vuelven a estar disponibles." : `Confirmá en ${Math.ceil((limite - ahora) / 1000)} segundos. Si cerrás sesión, se cancela.`}</p>
+        <p>{vencida ? "El plazo para confirmar venció. Actualizando el estado de la reserva." : `Confirmá en ${Math.ceil((limite - ahora) / 1000)} segundos. Si cerrás sesión, se cancela.`}</p>
         {!vencida && <Link className="mis-reservas-accion checkout-continuar" to={`/checkout/${reserva.idReserva}`}>Continuar con el pago</Link>}
       </div>}
       {actual.estado === "CONFIRMADA" && <div className="mis-reservas-descarga">
