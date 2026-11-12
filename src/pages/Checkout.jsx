@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useConfirmarReservaMutation, useFuncionesQuery, usePeliculasQuery, useReservaQuery } from "../services/reservasApi";
@@ -12,7 +12,12 @@ export default function Checkout() {
   const { id } = useParams();
   const { isAuthenticated } = useAuth();
   const [tarjeta, setTarjeta] = useState(false);
-  const reserva = useReservaQuery(id, { skip: !isAuthenticated, refetchOnMountOrArgChange: true });
+  const [ahora, setAhora] = useState(Date.now);
+  useEffect(() => {
+    const reloj = setInterval(() => setAhora(Date.now()), 1000);
+    return () => clearInterval(reloj);
+  }, []);
+  const reserva = useReservaQuery(id, { skip: !isAuthenticated, refetchOnMountOrArgChange: true, pollingInterval: 5000 });
   const funciones = useFuncionesQuery(undefined, { skip: !isAuthenticated });
   const peliculas = usePeliculasQuery(undefined, { skip: !isAuthenticated });
   const [confirmar, { data: confirmada, isLoading: enviando, error: errorPago }] = useConfirmarReservaMutation();
@@ -28,6 +33,8 @@ export default function Checkout() {
   );
 
   const actual = confirmada || reserva.data;
+  const limite = Date.parse(actual.fechaReserva) + 10 * 60 * 1000;
+  const vencida = actual.estado === "PENDIENTE" && ahora >= limite;
   const funcion = funciones.data?.find((item) => item.id === actual.idFuncion);
   const pelicula = peliculas.data?.find((item) => item.id === funcion?.peliculaId);
   const fecha = funcion?.horarioInicio
@@ -37,9 +44,9 @@ export default function Checkout() {
 
   async function confirmarPago(event) {
     event.preventDefault();
-    if (!tarjeta || enviando) return;
+    if (!tarjeta || enviando || vencida || actual.estado !== "PENDIENTE" || Date.now() >= limite) return;
     try {
-      await confirmar(id).unwrap();
+      await confirmar({ idReserva: id }).unwrap();
     } catch {
       // El error se muestra en la pantalla para que el usuario pueda reintentar.
     }
@@ -59,8 +66,9 @@ export default function Checkout() {
         </dl>
         <div className="checkout-total"><span>Total</span><strong>{moneda.format(Number(actual.total ?? 0))}</strong></div>
 
-        {actual.estado === "PENDIENTE" ? (
+        {actual.estado === "PENDIENTE" && !vencida ? (
           <form onSubmit={confirmarPago}>
+            <p role="status">Tenés {Math.max(0, Math.ceil((limite - ahora) / 1000))} segundos para confirmar. Si cerrás sesión, se cancela.</p>
             <fieldset className="checkout-metodo">
               <legend>Medio de pago</legend>
               <label className="checkout-tarjeta"><input type="radio" name="metodo" checked={tarjeta} onChange={() => setTarjeta(true)} /> Tarjeta</label>
@@ -69,9 +77,9 @@ export default function Checkout() {
             <button className="reserva-confirmar" type="submit" disabled={!tarjeta || enviando}>{enviando ? "Confirmando..." : "Confirmar pago"}</button>
           </form>
         ) : (
-          <p role="status">{actual.estado === "CONFIRMADA" ? "Tu reserva está confirmada." : "Esta reserva está cancelada."}</p>
+          <p role="status">{actual.estado === "CONFIRMADA" ? "Tu reserva está confirmada." : vencida ? "El plazo para confirmar venció. Consultá el estado en Mis reservas." : "Esta reserva está cancelada."}</p>
         )}
-        {actual.estado !== "PENDIENTE" && <Link className="checkout-enlace" to="/mis-reservas">Ver mis reservas</Link>}
+        {(actual.estado !== "PENDIENTE" || vencida) && <Link className="checkout-enlace" to="/mis-reservas">Ver mis reservas</Link>}
       </div>
     </main>
   );
