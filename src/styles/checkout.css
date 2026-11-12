@@ -1,0 +1,16 @@
+.checkout { max-width: 700px; margin-inline: auto; }
+.checkout h1 { margin: 24px 0; font-size: clamp(28px, 4vw, 40px); }
+.checkout-panel h2 { margin: 6px 0 22px; font-size: 24px; }
+.checkout-numero { color: var(--reserva-secundario); font-size: 12px; }
+.checkout-datos { display: grid; gap: 12px; margin: 0 0 22px; }
+.checkout-datos div, .checkout-total { display: flex; justify-content: space-between; gap: 16px; }
+.checkout-datos dt { color: var(--reserva-secundario); }
+.checkout-datos dd { margin: 0; text-align: right; }
+.checkout-total { align-items: center; border-top: 1px solid var(--reserva-borde); padding-top: 18px; }
+.checkout-total strong { font-size: 24px; }
+.checkout .checkout-metodo { margin-top: 28px; }
+.checkout-metodo legend { font-weight: 700; margin-bottom: 12px; }
+.checkout .checkout-tarjeta { display: flex; align-items: center; gap: 10px; padding: 14px; border: 1px solid var(--reserva-borde); border-radius: 8px; color: var(--reserva-texto); font-size: 14px; cursor: pointer; }
+.checkout-tarjeta input { accent-color: var(--reserva-acento); }
+.checkout-enlace { display: inline-block; margin-top: 12px; color: var(--reserva-acento); }
+.checkout-continuar { margin-top: 18px; }

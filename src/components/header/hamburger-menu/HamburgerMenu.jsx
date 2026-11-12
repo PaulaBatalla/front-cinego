@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { CloseIcon } from "../../icons";
 
-function HamburgerMenu({ drawerId, menuOpen, closeMenu, renderAuthActions }) {
+function HamburgerMenu({ drawerId, menuOpen, closeMenu, renderAuthActions, isAuthenticated }) {
   return (
     <aside
         id={drawerId}
@@ -27,10 +27,8 @@ function HamburgerMenu({ drawerId, menuOpen, closeMenu, renderAuthActions }) {
           <NavLink to="/candy" onClick={closeMenu}>
             Candy
           </NavLink>
-          <NavLink to="/reservas" onClick={closeMenu}>
-            Reservas
-          </NavLink>
         </nav>
+        {isAuthenticated && <nav className="site-nav site-nav--drawer" aria-label="Mi cuenta"><NavLink to="/mis-reservas" onClick={closeMenu}>Mis reservas</NavLink></nav>}
         <div className="site-drawer__actions">{renderAuthActions()}</div>
       </aside>
   );

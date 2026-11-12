@@ -1,12 +1,28 @@
-import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { useDispatch, useSelector } from "react-redux";
+import { logout as cerrarSesion } from "../store/slices/authSlice";
+import { esRolAdmin } from "../utils/roles";
+
+import { solicitar } from "../services/api";
+import { tokenVigente } from "../utils/sesion";
 
 export function useAuth() {
-  const context = useContext(AuthContext);
+  const dispatch = useDispatch();
+  const { token, usuario, isAuthenticated } = useSelector((state) => state.auth);
 
-  if (!context) {
-    throw new Error("useAuth debe ser usado dentro de un AuthProvider");
-  }
+  const logout = async () => {
+    let pendientesCanceladas = true;
+    try {
+      if (token && tokenVigente(token)) {
+        await solicitar("/reservas/pendientes/cancelar", { method: "PATCH" });
+      }
+    } catch {
+      pendientesCanceladas = false;
+    } finally {
+      localStorage.removeItem("token");
+      dispatch(cerrarSesion());
+    }
+    return pendientesCanceladas;
+  };
 
-  return context;
+  return { token, usuario, isAuthenticated, esAdmin: esRolAdmin(usuario?.rol), logout };
 }

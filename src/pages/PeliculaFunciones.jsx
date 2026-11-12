@@ -1,14 +1,16 @@
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import ResumenFuncion from "../components/funciones/ResumenFuncion";
+import { useFuncionesDisponibles } from "../hooks/useFuncionesDisponibles";
+import { useState } from "react";
+import { Link, useParams, useSearchParams, useLocation } from "react-router-dom";
 import SalaHorarios from "../components/funciones/SalaHorarios";
 import SelectorDia from "../components/funciones/SelectorDia";
 import ReservaFuncion from "../components/ReservaFuncion";
 import "./PeliculaFunciones.css";
-import { solicitar } from "../services/api";
+import { usePeliculaQuery, useFuncionesQuery } from "../services/reservasApi";
+import { useAuth } from "../hooks/useAuth";
 function adaptarFuncion(f) {
   return {
     id: f.id,
+    horarioInicio: f.horarioInicio,
     peliculaId: f.peliculaId,
     fecha: f.horarioInicio.slice(0, 10),
     hora: f.horarioInicio.slice(11, 16),
@@ -20,40 +22,13 @@ function adaptarFuncion(f) {
 // Página /pelicula/:id → se llega desde "Ver funciones" en la cartelera.
 function PeliculaFunciones() {
   const { id } = useParams();
-  const [pelicula, setPelicula] = useState(null);
-  const [funciones, setFunciones] = useState([]);
-  const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const cargarDatos = async () => {
-      try {
-        // Pedimos la película y todas las funciones al mismo tiempo.
-        const [datosPelicula, datosFunciones] = await Promise.all([
-          solicitar(`/peliculas/${id}`),
-          solicitar("/funciones"),
-        ]);
-
-        setPelicula(datosPelicula);
-        setFunciones(
-          datosFunciones.filter((f) => f.peliculaId === datosPelicula.id).map(adaptarFuncion),
-        );
-      } catch (err) {
-        if (err.status === 404) {
-          setPelicula(null);
-        } else {
-          setError(err.message);
-        }
-      } finally {
-        setCargando(false);
-      }
-    };
-
-    cargarDatos();
-  }, [id]);
-
-  if (cargando) return <p>Cargando funciones...</p>;
-  if (error) return <p>Error: {error}</p>;
+  const consultaPelicula = usePeliculaQuery(id);
+  const funciones = useFuncionesQuery();
+  // currentData pertenece al ID actual; data puede conservar el resultado anterior.
+  const pelicula = consultaPelicula.currentData;
+  const error = consultaPelicula.error?.status === 404 ? null : consultaPelicula.error || funciones.error;
+  if (error) return <main className="funciones-pagina"><p role="alert">{error.message}</p><button onClick={() => { consultaPelicula.refetch(); funciones.refetch(); }}>Reintentar</button></main>;
+  if (consultaPelicula.error?.status !== 404 && (!pelicula || !funciones.data)) return <p role="status">Cargando funciones...</p>;
 
   if (!pelicula) {
     return (
@@ -65,24 +40,27 @@ function PeliculaFunciones() {
   }
 
   // key: si se pasa de una película a otra, el selector arranca de cero.
-  return <SeleccionFuncion key={pelicula.id} pelicula={pelicula} funciones={funciones} />;
+  return <SeleccionFuncion key={pelicula.id} pelicula={pelicula} funciones={funciones.data.filter((f) => String(f.peliculaId) === id).map(adaptarFuncion)} />;
 }
 
 function SeleccionFuncion({ pelicula, funciones }) {
+  const [params, setParams] = useSearchParams();
+  const { token } = useAuth();
+  const location = useLocation();
   // Ordenadas por día y hora.
-  const ordenadas = [...funciones].sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
+  const disponibles = useFuncionesDisponibles(funciones);
+  const ordenadas = [...disponibles].sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
 
   // Los días que tienen funciones, sin repetir.
   const dias = ordenadas.map((f) => f.fecha).filter((fecha, i, lista) => lista.indexOf(fecha) === i);
 
-  const [diaElegido, setDiaElegido] = useState(dias.length > 0 ? dias[0] : null);
-  const [funcionElegida, setFuncionElegida] = useState(null);
-  const [asientosElegidos, setAsientosElegidos] = useState([]);
-
+  const funcionElegida = funciones.find((f) => String(f.id) === params.get("funcionId")) ?? null;
+  const [dia, setDia] = useState(dias[0] ?? null);
+  const diaElegido = funcionElegida && dias.includes(funcionElegida.fecha) ? funcionElegida.fecha : dias.includes(dia) ? dia : dias[0];
+  const claveSeleccion = `${token}-${location.key}-${funcionElegida?.id}`;
   function elegirFuncion(funcion) {
     if (funcion?.id === funcionElegida?.id) return;
-    setFuncionElegida(funcion);
-    setAsientosElegidos([]);
+    setParams(funcion ? { funcionId: funcion.id } : {});
   }
 
   // Las funciones del día elegido, agrupadas por sala.
@@ -90,9 +68,8 @@ function SeleccionFuncion({ pelicula, funciones }) {
   const salas = funcionesDelDia.map((f) => f.sala).filter((sala, i, lista) => lista.indexOf(sala) === i);
 
   function elegirDia(dia) {
-    setDiaElegido(dia);
-    setFuncionElegida(null); // al cambiar de día, se borra el horario elegido
-    setAsientosElegidos([]);
+    setDia(dia);
+    setParams({}); // al cambiar de día, se borra el horario elegido
   }
 
   return (
@@ -101,25 +78,10 @@ function SeleccionFuncion({ pelicula, funciones }) {
         ← Volver a la cartelera
       </Link>
 
-      <section className="pelicula-detalle">
-        <img className="pelicula-detalle-poster" src={pelicula.posterUrl} alt={`Póster de ${pelicula.titulo}`} />
-        <div>
-          <h1>{pelicula.titulo}</h1>
-          <div className="etiquetas">
-            <span className="etiqueta" title="Clasificación por edad">
-              +{pelicula.clasificacion}
-            </span>
-            <span className="etiqueta">{pelicula.duracion}</span>
-          </div>
-          <h2 className="selector-titulo">Sinopsis</h2>
-          <p className="sinopsis">{pelicula.sinopsis}</p>
-        </div>
-      </section>
-
-      <div className="funciones-layout">
-        <section className="funciones-selector">
+      {params.get("funcionId") && !funcionElegida && <p role="status">La función elegida ya no está disponible. Elegí otro horario.</p>}
+      <ReservaFuncion key={claveSeleccion} pelicula={pelicula} funcion={funcionElegida}>
           {dias.length === 0 ? (
-            <p className="sin-funciones">Por ahora no hay funciones programadas para esta película.</p>
+            <p className="sin-funciones">Por ahora no hay funciones disponibles para esta película.</p>
           ) : (
             <>
               <SelectorDia dias={dias} diaElegido={diaElegido} onElegir={elegirDia} />
@@ -140,19 +102,9 @@ function SeleccionFuncion({ pelicula, funciones }) {
                   );
                 })}
               </div>
-              {funcionElegida && <ReservaFuncion key={funcionElegida.id} funcion={funcionElegida} titulo={pelicula.titulo} onResumen={setAsientosElegidos} />}
             </>
           )}
-        </section>
-
-        <ResumenFuncion titulo={pelicula.titulo} funcion={funcionElegida}>
-          <dl>
-            <div><dt>Asientos</dt><dd>{asientosElegidos.join(", ") || "Sin elegir"}</dd></div>
-            <div aria-live="polite"><dt>Total</dt><dd>${((funcionElegida?.precio ?? 0) * asientosElegidos.length).toLocaleString("es-AR")}</dd></div>
-          </dl>
-          {!funcionElegida && <p>Elegí un horario para ver los asientos.</p>}
-        </ResumenFuncion>
-      </div>
+      </ReservaFuncion>
     </main>
   );
 }
