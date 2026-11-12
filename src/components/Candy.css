@@ -197,7 +197,7 @@
   transform: translateY(-2px);
 }
 
-/* Contenedor pastel superior */
+/* Contenedor superior: imagen del producto o fondo pastel */
 .candy-card-cover {
   width: 100%;
   aspect-ratio: 16 / 10;
@@ -207,38 +207,14 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  background-color: #f6d895;
 }
 
-.candy-card-badge {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  background: #141417;
-  color: #f4f1ea;
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 999px;
-  letter-spacing: -0.01em;
-  z-index: 1;
-}
-
-.candy-card-icono-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(20, 20, 23, 0.75);
-}
-
-.candy-card-label-imagen {
-  position: absolute;
-  bottom: 6px;
-  right: 8px;
-  font-size: 0.58rem;
-  color: rgba(20, 20, 23, 0.45);
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.candy-card-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 /* Contenido de la tarjeta */
