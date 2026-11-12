@@ -51,7 +51,7 @@ test('checkout consulta una reserva individual y confirma usando su ID', async (
 
 test('checkout impide confirmar una pendiente vencida', async () => {
   preparar({ minutos: 11 });
-  await screen.findByText('La reserva venció. Las butacas quedaron disponibles.');
+  await screen.findByText('El plazo para confirmar venció. Consultá el estado en Mis reservas.');
   assert.equal(screen.queryByRole('button', { name: 'Confirmar pago' }), null);
   assert.equal(pagos.length, 0);
 });
