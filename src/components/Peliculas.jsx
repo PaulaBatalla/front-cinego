@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import "../styles/Peliculas.css";
 import PeliculasFallback from "./PeliculasFallback";
 import PeliculasList from "./PeliculasList";
@@ -12,7 +12,20 @@ const FILTROS_INICIALES = {
   dia: "todos",
   idioma: "todos",
   formato: "todos",
+  genero: "todos",
 };
+
+const GENEROS_BASE = [
+  "Acción",
+  "Animación",
+  "Aventura",
+  "Ciencia Ficción",
+  "Comedia",
+  "Crimen",
+  "Drama",
+  "Fantasía",
+  "Historia",
+];
 
 // Metadatos complementarios para idiomas y formatos de cada película
 const METADATOS_DEFAULT = {
@@ -23,66 +36,124 @@ const METADATOS_DEFAULT = {
 };
 
 function Peliculas() {
-  const [peliculas, setPeliculas] = useState([]);
+  const [peliculasCrudas, setPeliculasCrudas] = useState([]);
+  const [funciones, setFunciones] = useState([]);
+  const [generosDisponibles, setGenerosDisponibles] = useState(GENEROS_BASE);
   const [cargando, setCargando] = useState(true);
+  const [buscando, setBuscando] = useState(false);
   const [error, setError] = useState(null);
 
   // Estados de filtros
   const [busqueda, setBusqueda] = useState("");
   const [filtros, setFiltros] = useState(FILTROS_INICIALES);
+  const busquedaAnteriorRef = useRef("");
+  const cargaInicialCompletaRef = useRef(false);
 
   const actualizarFiltro = (nombre, valor) => {
     setFiltros((anteriores) => ({ ...anteriores, [nombre]: valor }));
   };
 
   useEffect(() => {
-    const cargarDatos = async () => {
-      try {
-        const [datosPeliculas, datosFunciones] = await Promise.all([
-          solicitar("/peliculas"),
-          solicitar("/funciones").catch(() => []),
-        ]);
-
-        // Enriquecer cada película con metadatos de funciones, idiomas y formatos
-        const peliculasEnriquecidas = datosPeliculas.map((peli) => {
-          const funcionesPeli = datosFunciones.filter(
-            (f) => f.peliculaId === peli.id
-          );
-          const meta = METADATOS_DEFAULT[peli.id] || {
-            idiomas: ["sub", "castellano"],
-            formatos: ["2D"],
-          };
-
-          // Extraer fechas con funciones para esta película
-          const fechasConFunciones = funcionesPeli.map((f) =>
-            f.horarioInicio ? f.horarioInicio.slice(0, 10) : ""
-          );
-
-          // Extraer formatos de sala de las funciones reales
-          const formatosReales = new Set(meta.formatos);
-          funcionesPeli.forEach((f) => {
-            if (f.salaNombre?.toLowerCase().includes("3d")) formatosReales.add("3D");
-            if (f.salaNombre?.toLowerCase().includes("premium")) formatosReales.add("premium");
-          });
-
-          return {
-            ...peli,
-            idiomas: meta.idiomas,
-            formatos: Array.from(formatosReales),
-            fechasFunciones: fechasConFunciones,
-          };
-        });
-
-        setPeliculas(peliculasEnriquecidas);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setCargando(false);
-      }
-    };
-
-    cargarDatos();
+    const controlador = new AbortController();
+    solicitar("/funciones", { signal: controlador.signal })
+      .then((datos) => setFunciones(datos ?? []))
+      .catch(() => {
+        if (!controlador.signal.aborted) setFunciones([]);
+      });
+    return () => controlador.abort();
   }, []);
+
+  useEffect(() => {
+    const controlador = new AbortController();
+    const cambioBusqueda = busqueda !== busquedaAnteriorRef.current;
+    busquedaAnteriorRef.current = busqueda;
+    const delay =
+      cargaInicialCompletaRef.current && cambioBusqueda && busqueda.trim() !== ""
+        ? 200
+        : 0;
+
+    const timer = setTimeout(async () => {
+      if (cargaInicialCompletaRef.current) {
+        setBuscando(true);
+      }
+
+      try {
+        const params = new URLSearchParams();
+        if (busqueda.trim()) params.set("titulo", busqueda.trim());
+        if (filtros.genero !== "todos") params.set("genero", filtros.genero);
+        const query = params.toString();
+        const ruta = query ? `/peliculas?${query}` : "/peliculas";
+
+        const datosPeliculas = await solicitar(ruta, { signal: controlador.signal });
+        const lista = datosPeliculas ?? [];
+        setPeliculasCrudas(lista);
+        setError(null);
+
+        if (!query) {
+          const encontrados = new Set();
+          lista.forEach((peli) => {
+            if (peli.genero) {
+              peli.genero
+                .split(",")
+                .map((g) => g.trim())
+                .filter(Boolean)
+                .forEach((g) => encontrados.add(g));
+            }
+          });
+          if (encontrados.size > 0) {
+            setGenerosDisponibles(
+              Array.from(encontrados).sort((a, b) => a.localeCompare(b, "es"))
+            );
+          }
+        }
+      } catch (err) {
+        if (!controlador.signal.aborted) {
+          setError(err.message);
+        }
+      } finally {
+        if (!controlador.signal.aborted) {
+          cargaInicialCompletaRef.current = true;
+          setCargando(false);
+          setBuscando(false);
+        }
+      }
+    }, delay);
+
+    return () => {
+      clearTimeout(timer);
+      controlador.abort();
+    };
+  }, [busqueda, filtros.genero]);
+
+  // Enriquecer cada película con metadatos de funciones, idiomas y formatos
+  const peliculas = useMemo(() => {
+    return peliculasCrudas.map((peli) => {
+      const funcionesPeli = funciones.filter((f) => f.peliculaId === peli.id);
+      const meta = METADATOS_DEFAULT[peli.id] || {
+        idiomas: ["sub", "castellano"],
+        formatos: ["2D"],
+      };
+
+      // Extraer fechas con funciones para esta película
+      const fechasConFunciones = funcionesPeli.map((f) =>
+        f.horarioInicio ? f.horarioInicio.slice(0, 10) : ""
+      );
+
+      // Extraer formatos de sala de las funciones reales
+      const formatosReales = new Set(meta.formatos);
+      funcionesPeli.forEach((f) => {
+        if (f.salaNombre?.toLowerCase().includes("3d")) formatosReales.add("3D");
+        if (f.salaNombre?.toLowerCase().includes("premium")) formatosReales.add("premium");
+      });
+
+      return {
+        ...peli,
+        idiomas: meta.idiomas,
+        formatos: Array.from(formatosReales),
+        fechasFunciones: fechasConFunciones,
+      };
+    });
+  }, [peliculasCrudas, funciones]);
 
   // Función para resetear todos los filtros
   const limpiarFiltros = () => {
@@ -94,17 +165,20 @@ function Peliculas() {
     busqueda.trim() !== "" ||
     Object.values(filtros).some((filtro) => filtro !== "todos");
 
-  // Aplicación combinada de filtros
+  // El filtrado por título (LIKE) y género se realiza en el backend vía GET /api/peliculas;
+  // aquí aplicamos los filtros locales de día, idioma y formato.
   const peliculasFiltradas = useMemo(
-    () => filtrarPeliculas(peliculas, busqueda, filtros),
-    [peliculas, busqueda, filtros]
+    () => filtrarPeliculas(peliculas, "", { ...filtros, genero: "todos" }),
+    [peliculas, filtros]
   );
 
   if (cargando) return <p className="listado-status">Cargando películas...</p>;
-  if (error) return <p className="listado-status">Error: {error}</p>;
+  if (error && !hayFiltrosActivos && peliculasCrudas.length === 0) {
+    return <p className="listado-status">Error: {error}</p>;
+  }
 
   return (
-    <div className="listado-container">
+    <div className="listado-container" aria-busy={buscando}>
       {/* Encabezado con título y buscador */}
       <section className="listado-header">
         <div className="listado-header__copy">
@@ -127,7 +201,7 @@ function Peliculas() {
         </label>
       </section>
 
-      {/* Barra de Filtros compacta: Días + Idioma + Formato */}
+      {/* Barra de Filtros compacta: Días + Género + Formato + Idioma */}
       <PeliculasFiltros
         diaSeleccionado={filtros.dia}
         onSeleccionarDia={(valor) => actualizarFiltro("dia", valor)}
@@ -135,10 +209,19 @@ function Peliculas() {
         onSeleccionarIdioma={(valor) => actualizarFiltro("idioma", valor)}
         formatoSeleccionado={filtros.formato}
         onSeleccionarFormato={(valor) => actualizarFiltro("formato", valor)}
+        generoSeleccionado={filtros.genero}
+        onSeleccionarGenero={(valor) => actualizarFiltro("genero", valor)}
+        generosDisponibles={generosDisponibles}
         onLimpiarFiltros={limpiarFiltros}
         hayFiltrosActivos={hayFiltrosActivos}
         totalResultados={peliculasFiltradas.length}
       />
+
+      {error && (
+        <p className="listado-status" role="alert">
+          Error: {error}
+        </p>
+      )}
 
       {/* Grilla de películas filtradas */}
       <PeliculasList

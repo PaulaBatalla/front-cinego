@@ -16,6 +16,12 @@ function PeliculaFila({ pelicula, onEditar, onEliminar }) {
             <span className="visually-hidden">Clasificación por edad: </span>
             {formatearClasificacion(pelicula.clasificacion)}
           </span>
+          {pelicula.genero && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>{pelicula.genero}</span>
+            </>
+          )}
         </span>
       </div>
 

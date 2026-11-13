@@ -1,21 +1,39 @@
 import "../../styles/Header.css";
+import { useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "../../hooks/useAuth";
 import { useNotificaciones } from "../../hooks/useNotificaciones";
 import useMobileMenu from "../../hooks/useMobileMenu";
+import { fetchCarrito, vaciarCandyLocal } from "../../store/slices/candySlice";
 import LogoCineGo from "../LogoCineGo";
-import { PanelIcon, UserIcon } from "../icons";
+import { CandyIcon, PanelIcon, UserIcon } from "../icons";
 import HamburgerMenu from "./hamburger-menu/HamburgerMenu";
 import Campanita from "./Campanita";
 
+const SIN_CANDY = [];
+
 function Header() {
-  const { usuario, isAuthenticated, esAdmin, logout } = useAuth();
+  const { usuario, isAuthenticated, token, esAdmin, logout } = useAuth();
   const { notificar } = useNotificaciones();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { menuOpen, drawerId, closeMenu, toggleMenu } = useMobileMenu();
+  const itemsCandy = useSelector((state) => state?.candy?.items ?? SIN_CANDY);
+  const totalUnidadesCandy = itemsCandy.reduce(
+    (acc, item) => acc + Number(item.cantidad || 0),
+    0
+  );
+
+  useEffect(() => {
+    if (isAuthenticated && token) {
+      dispatch(fetchCarrito());
+    }
+  }, [isAuthenticated, token, dispatch]);
 
   const handleLogout = async () => {
     try {
+      dispatch(vaciarCandyLocal());
       const canceladas = await logout();
       notificar(canceladas ? "Cerraste sesión" : "Cerraste sesión, pero no pudimos cancelar tus reservas pendientes.", canceladas ? undefined : "error");
       closeMenu();
@@ -68,6 +86,23 @@ function Header() {
               <span className="site-panel__texto">Panel</span>
             </Link>
           )}
+
+          <Link
+            to="/candy"
+            className={`site-cart-btn${totalUnidadesCandy > 0 ? " has-items" : ""}`}
+            aria-label={
+              totalUnidadesCandy > 0
+                ? `Carrito de Candy: ${totalUnidadesCandy} ${totalUnidadesCandy === 1 ? "producto" : "productos"}`
+                : "Ir al carrito de Candy"
+            }
+            title="Ver carrito de Candy"
+            onClick={closeMenu}
+          >
+            <CandyIcon className="site-cart-btn__icon" />
+            <span className="site-cart-btn__badge" aria-live="polite">
+              {totalUnidadesCandy}
+            </span>
+          </Link>
 
           {isAuthenticated && <Campanita />}
 

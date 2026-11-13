@@ -197,7 +197,7 @@
   transform: translateY(-2px);
 }
 
-/* Contenedor superior: imagen del producto o fondo pastel */
+/* Contenedor superior: imagen o ilustración HD del producto */
 .candy-card-cover {
   width: 100%;
   aspect-ratio: 16 / 10;
@@ -207,7 +207,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background-color: #f6d895;
+  background-color: #18171c;
 }
 
 .candy-card-cover-img {
@@ -215,6 +215,11 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.25s ease;
+}
+
+.candy-card:hover .candy-card-cover-img {
+  transform: scale(1.04);
 }
 
 /* Contenido de la tarjeta */
@@ -480,11 +485,13 @@
 
 .candy-resumen-acciones {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
   align-items: center;
 }
 
-.candy-btn-vaciar {
+.candy-btn-vaciar,
+.candy-btn-secundario {
   background: transparent;
   border: 1px solid #33333b;
   color: #a9a6ae;
@@ -495,6 +502,15 @@
   cursor: pointer;
   min-height: 44px;
   transition: all 0.15s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.candy-btn-secundario:hover {
+  border-color: #6b6b74;
+  color: #f4f1ea;
 }
 
 .candy-btn-vaciar:hover {
@@ -516,9 +532,133 @@
   text-decoration: none;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.4rem;
 }
 
 .candy-btn-continuar:hover {
   background: #ff856b;
+}
+
+/* ---------- Modal Mostrador Express ---------- */
+.candy-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.candy-modal {
+  width: 100%;
+  max-width: 440px;
+  background: #141417;
+  border: 1px solid #2b2b33;
+  border-radius: 18px;
+  padding: 1.75rem;
+  color: #f4f1ea;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+
+.candy-modal-tag {
+  display: inline-block;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255, 107, 74, 0.15);
+  color: #ff6b4a;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.65rem;
+}
+
+.candy-modal h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #f4f1ea;
+}
+
+.candy-modal-sub {
+  margin: 0 0 1.25rem;
+  font-size: 0.875rem;
+  color: #a9a6ae;
+  line-height: 1.45;
+}
+
+.candy-qr-box {
+  background: #1a1a20;
+  border: 1px solid #2a2a33;
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.candy-qr-svg {
+  width: 148px;
+  height: 148px;
+  padding: 10px;
+  background: #ffffff;
+  border-radius: 10px;
+}
+
+.candy-codigo-retiro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.candy-codigo-retiro span {
+  font-size: 0.75rem;
+  color: #8a8793;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.candy-codigo-retiro strong {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #ff6b4a;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.candy-modal-detalle {
+  list-style: none;
+  margin: 0 0 1.25rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid #222226;
+  border-bottom: 1px solid #222226;
+  display: grid;
+  gap: 0.45rem;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.candy-modal-detalle li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  color: #c7c4ce;
+}
+
+.candy-modal-detalle .candy-modal-total {
+  margin-top: 0.35rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed #2a2a33;
+  color: #f4f1ea;
+  font-size: 1rem;
+}
+
+.candy-modal-cerrar {
+  width: 100%;
 }

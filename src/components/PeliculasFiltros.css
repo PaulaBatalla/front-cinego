@@ -198,6 +198,12 @@
   border-color: rgba(255, 107, 74, 0.3);
 }
 
+.movie-tag.genero {
+  background: rgba(127, 183, 190, 0.14);
+  color: #9cd4db;
+  border-color: rgba(127, 183, 190, 0.35);
+}
+
 @media (max-width: 640px) {
   .peliculas-filtros {
     padding: 10px;

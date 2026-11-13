@@ -22,6 +22,16 @@ export function filtrarPeliculas(peliculas, busqueda, filtros) {
       return false;
     }
 
+    if (filtros.genero && filtros.genero !== "todos") {
+      const generosPelicula = (pelicula.genero || "")
+        .split(",")
+        .map((g) => g.trim().toLowerCase())
+        .filter(Boolean);
+      if (!generosPelicula.includes(filtros.genero.toLowerCase())) {
+        return false;
+      }
+    }
+
     return true;
   });
 }

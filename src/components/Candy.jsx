@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import CandyCard from "./CandyCard";
 import ResumenCandy from "./ResumenCandy";
 import { candyService } from "../services/candyService";
+import { useAuth } from "../hooks/useAuth";
+import { fetchCarrito } from "../store/slices/candySlice";
 import "./Candy.css";
 
 function Candy() {
@@ -10,6 +13,14 @@ function Candy() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [categoriaActiva, setCategoriaActiva] = useState("Todos");
+  const { isAuthenticated, token } = useAuth();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isAuthenticated && token) {
+      dispatch(fetchCarrito());
+    }
+  }, [isAuthenticated, token, dispatch]);
 
   useEffect(() => {
     const controlador = new AbortController();

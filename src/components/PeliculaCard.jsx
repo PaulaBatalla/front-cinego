@@ -5,6 +5,9 @@ import CustomCard from "./CustomCard";
 function PeliculaCard({ movie }) {
   const idiomas = movie.idiomas || ["sub", "castellano"];
   const formatos = movie.formatos || ["2D"];
+  const generos = movie.genero
+    ? movie.genero.split(",").map((g) => g.trim()).filter(Boolean)
+    : [];
 
   return (
     <CustomCard
@@ -16,7 +19,12 @@ function PeliculaCard({ movie }) {
       description={movie.sinopsis}
       duration={movie.duracion}
     >
-      <div className="movie-tags-list" aria-label="Formatos e idiomas disponibles">
+      <div className="movie-tags-list" aria-label="Géneros, formatos e idiomas disponibles">
+        {generos.map((genero) => (
+          <span key={genero} className="movie-tag genero">
+            {genero}
+          </span>
+        ))}
         {formatos.map((fmt) => (
           <span
             key={fmt}
