@@ -1,6 +1,6 @@
 // 15 -> "−15%" (con el signo menos tipográfico, como en el mockup)
 export function formatearPorcentaje(porcentaje) {
-  return `−${Math.round(Number(porcentaje))}%`;
+  return `−${Number(porcentaje).toLocaleString("es-AR", { maximumFractionDigits: 20 })}%`;
 }
 
 // A qué películas se aplica la promo, en una línea
