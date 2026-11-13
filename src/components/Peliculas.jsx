@@ -3,6 +3,7 @@ import "../styles/Peliculas.css";
 import PeliculasFallback from "./PeliculasFallback";
 import PeliculasList from "./PeliculasList";
 import PeliculasFiltros from "./PeliculasFiltros";
+import PromosEntradas from "./promos/PromosEntradas";
 import { SearchIcon } from "./icons";
 import { solicitar } from "../services/api";
 import { filtrarPeliculas } from "../utils/filtrarPeliculas";
@@ -147,6 +148,9 @@ function Peliculas() {
         hayFiltrosActivos={hayFiltrosActivos}
         onLimpiarFiltros={limpiarFiltros}
       />
+
+      {/* Promos activas en entradas (si no hay, no se muestra nada) */}
+      <PromosEntradas />
     </div>
   );
 }

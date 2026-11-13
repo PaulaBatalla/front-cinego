@@ -391,3 +391,8 @@
 .pelicula-detalle--compacta .etiqueta { padding: 3px 8px; font-size: 11px; }
 .reserva-final-estado--pendiente { color: #f1ce86; }
 @media (max-width: 720px) { .pelicula-detalle--compacta { flex-direction: row; gap: 12px; } .pelicula-detalle--compacta h1 { font-size: 18px; } }
+
+/* Promos: precio original tachado al lado del precio con descuento */
+.precio-original { margin-right: 6px; color: #8a8790; font-weight: 400; text-decoration: line-through; }
+.precio-original__lector { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.resumen-promo { color: #7fd49b; }

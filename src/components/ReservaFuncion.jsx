@@ -29,7 +29,9 @@ export default function ReservaFuncion({ funcion, pelicula, children }) {
   const error = errorConfirmacion || errorAsientos?.message;
   const vigente = funcion && funcionDisponible(funcion);
   const etiquetas = (asientos || []).filter((a) => seleccionados.includes(a.id)).map((a) => `${a.fila}${a.numero}`);
-  const totalEntradas = Number(funcion?.precio || 0) * seleccionados.length;
+  // Precio con la promo aplicada: es lo que cobra el back al crear la reserva
+  const precioEntrada = Number(funcion?.precioFinal ?? funcion?.precio ?? 0);
+  const totalEntradas = precioEntrada * seleccionados.length;
   const totalCandy = paso === 'candy' ? candy.reduce((total, p) => total + p.precio * p.cantidad, 0) : 0;
   const total = reserva ? Number(reserva.total) : totalEntradas + totalCandy;
   const bloqueado = !vigente || isFetching || Boolean(errorAsientos) || enviando || !seleccionados.length;
@@ -75,7 +77,7 @@ export default function ReservaFuncion({ funcion, pelicula, children }) {
     </section>
     <ResumenFuncion titulo={pelicula.titulo} funcion={funcion}>
       <dl><div><dt>Asientos</dt><dd>{etiquetas.join(', ') || 'Sin elegir'}</dd></div></dl>
-      <div className="reserva-desglose"><span>{seleccionados.length} entradas × {moneda(Number(funcion?.precio || 0))}</span><span>{moneda(reserva ? Number(reserva.total) : totalEntradas)}</span></div>
+      <div className="reserva-desglose"><span>{seleccionados.length} entradas × {moneda(precioEntrada)}</span><span>{moneda(reserva ? Number(reserva.total) : totalEntradas)}</span></div>
       {!reserva && paso === 'candy' && candy.map((p) => <div className="reserva-desglose" key={p.id}><span>{p.cantidad} × {p.nombre}</span><span>{moneda(p.precio * p.cantidad)}</span></div>)}
       <div className="reserva-total" aria-live="polite"><span>{totalCandy && !reserva ? 'Total estimado' : 'Total'}</span><strong>{moneda(total)}</strong></div>
       {!reserva && <>{paso === 'asientos' && <p className="reserva-nota">En el próximo paso podés explorar Candy o continuar sin productos.</p>}{paso === 'candy' && totalCandy > 0 && <p className="reserva-nota">Se reservan únicamente las entradas ({moneda(totalEntradas)}). Candy no se cobra ni se incluye.</p>}<div className="reserva-accion-escritorio">{funcion && !isAuthenticated ? login : boton}</div></>}
