@@ -55,7 +55,7 @@ export default function PasoCandy({ cantidad, onVolver, onOmitir, disabled }) {
               <p className="selector-titulo">
                 Recomendado para tus {cantidad} {cantidad === 1 ? "entrada" : "entradas"}
               </p>
-              <CandyCard item={recomendado} />
+              <CandyCard item={recomendado} soloLocal />
             </div>
           )}
           <h3 className="selector-titulo">Sumá algo más</h3>
@@ -63,7 +63,7 @@ export default function PasoCandy({ cantidad, onVolver, onOmitir, disabled }) {
             {candy
               .filter((p) => p.id !== recomendado?.id)
               .map((p) => (
-                <CandyCard key={p.id} item={p} />
+                <CandyCard key={p.id} item={p} soloLocal />
               ))}
           </div>
         </fieldset>

@@ -3,7 +3,8 @@ import { formatearPorcentaje } from "../../utils/promos";
 
 // Cuadro con lo que eligió el usuario. El botón para seguir llega por children.
 function ResumenFuncion({ titulo, funcion, children }) {
-  const conDescuento = Boolean(funcion) && funcion.precioFinal < funcion.precio;
+  const precioFinal = funcion ? (funcion.precioFinal ?? funcion.precio) : 0;
+  const conDescuento = Boolean(funcion && funcion.precioFinal != null && funcion.precioFinal < funcion.precio);
 
   return (
     <aside className="resumen">
@@ -33,10 +34,10 @@ function ResumenFuncion({ titulo, funcion, children }) {
                 {conDescuento && (
                   <s className="precio-original">
                     <span className="precio-original__lector">Antes </span>$
-                    {funcion.precio.toLocaleString("es-AR")}
+                    {Number(funcion.precio).toLocaleString("es-AR")}
                   </s>
                 )}
-                ${funcion.precioFinal.toLocaleString("es-AR")}
+                ${Number(precioFinal).toLocaleString("es-AR")}
               </>
             ) : (
               "—"

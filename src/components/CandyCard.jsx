@@ -1,12 +1,14 @@
 import { useDispatch, useSelector } from "react-redux";
 import {
+  agregarCandy,
+  disminuirCandy,
   agregarItemCarrito,
   disminuirItemCarrito,
 } from "../store/slices/candySlice";
 import { useAuth } from "../hooks/useAuth";
 import { useNotificaciones } from "../hooks/useNotificaciones";
 
-function CandyCard({ item }) {
+function CandyCard({ item, soloLocal = false }) {
   const dispatch = useDispatch();
   const { notificar } = useNotificaciones();
   const { isAuthenticated } = useAuth();
@@ -20,24 +22,32 @@ function CandyCard({ item }) {
   const cantidad = seleccionado ? seleccionado.cantidad : 0;
 
   const agregarAlPedido = () => {
-    dispatch(
-      agregarItemCarrito({
-        producto: item,
-        cantidad: 1,
-        isAuthenticated,
-      })
-    );
+    if (soloLocal || !isAuthenticated) {
+      dispatch(agregarCandy(item));
+    } else {
+      dispatch(
+        agregarItemCarrito({
+          producto: item,
+          cantidad: 1,
+          isAuthenticated,
+        })
+      );
+    }
     notificar(`Agregaste ${item.nombre} a tu pedido`);
   };
 
   const restarDelPedido = () => {
     if (!seleccionado) return;
-    dispatch(
-      disminuirItemCarrito({
-        item: seleccionado,
-        isAuthenticated,
-      })
-    );
+    if (soloLocal || !isAuthenticated) {
+      dispatch(disminuirCandy(item.id));
+    } else {
+      dispatch(
+        disminuirItemCarrito({
+          item: seleccionado,
+          isAuthenticated,
+        })
+      );
+    }
   };
 
   return (
