@@ -7,14 +7,14 @@ import SelectorAsientos from './SelectorAsientos';
 import PasoCandy from './PasoCandy';
 import ProgresoReserva from './funciones/ProgresoReserva';
 import ResumenFuncion from './funciones/ResumenFuncion';
-import { vaciarCandy } from '../store/slices/candySlice';
+import { vaciarCandy, vaciarPedidoCarrito } from '../store/slices/candySlice';
 import { useAsientosQuery, useCrearReservaMutation, useMisReservasQuery } from '../services/reservasApi';
 import { useAuth } from '../hooks/useAuth';
 import { useNotificaciones } from '../hooks/useNotificaciones';
 const moneda = (n) => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n);
 
 export default function ReservaFuncion({ funcion, pelicula, children }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, token } = useAuth();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const candy = useSelector((state) => state.candy.items);
@@ -42,7 +42,12 @@ export default function ReservaFuncion({ funcion, pelicula, children }) {
     setError('');
     try {
       const creada = await crearReserva({ funcionId: funcion.id, asientoIds: seleccionados }).unwrap();
-      if (omitirCandy) dispatch(vaciarCandy());
+      if (omitirCandy) {
+        if (isAuthenticated && token && candy.length > 0) {
+          await dispatch(vaciarPedidoCarrito({ items: candy, isAuthenticated: true }));
+        }
+        dispatch(vaciarCandy());
+      }
       navigate(`/checkout/${creada.idReserva}`);
       notificar(`Reserva ${creada.estado === 'CONFIRMADA' ? 'confirmada' : 'creada'} para ${pelicula.titulo}`);
     } catch (err) {
@@ -80,7 +85,7 @@ export default function ReservaFuncion({ funcion, pelicula, children }) {
       <div className="reserva-desglose"><span>{seleccionados.length} entradas × {moneda(precioEntrada)}</span><span>{moneda(reserva ? Number(reserva.total) : totalEntradas)}</span></div>
       {!reserva && paso === 'candy' && candy.map((p) => <div className="reserva-desglose" key={p.id}><span>{p.cantidad} × {p.nombre}</span><span>{moneda(p.precio * p.cantidad)}</span></div>)}
       <div className="reserva-total" aria-live="polite"><span>{totalCandy && !reserva ? 'Total estimado' : 'Total'}</span><strong>{moneda(total)}</strong></div>
-      {!reserva && <>{paso === 'asientos' && <p className="reserva-nota">En el próximo paso podés explorar Candy o continuar sin productos.</p>}{paso === 'candy' && totalCandy > 0 && <p className="reserva-nota">Se reservan únicamente las entradas ({moneda(totalEntradas)}). Candy no se cobra ni se incluye.</p>}<div className="reserva-accion-escritorio">{funcion && !isAuthenticated ? login : boton}</div></>}
+      {!reserva && <>{paso === 'asientos' && <p className="reserva-nota">En el próximo paso podés explorar Candy o continuar sin productos.</p>}{paso === 'candy' && totalCandy > 0 && <p className="reserva-nota">Tus combos de Candy se sumarán al desglose final en la pantalla de pago.</p>}<div className="reserva-accion-escritorio">{funcion && !isAuthenticated ? login : boton}</div></>}
     </ResumenFuncion>
     {!reserva && funcion && <div className="reserva-barra-movil"><div><span>{totalCandy ? 'Total estimado' : 'Total'}</span><strong>{moneda(total)}</strong></div>{isAuthenticated ? boton : login}</div>}
   </div></>;

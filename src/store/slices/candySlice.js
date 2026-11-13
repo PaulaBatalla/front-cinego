@@ -40,8 +40,8 @@ export const disminuirItemCarrito = createAsyncThunk(
     }
     try {
       const nuevaCantidad = item.cantidad - 1;
-      await carritoService.actualizarCantidad(item.id, candyId, nuevaCantidad);
-      return { id: item.id, candyId, cantidad: nuevaCantidad };
+      const res = await carritoService.actualizarCantidad(item.id, candyId, nuevaCantidad);
+      return { oldId: item.id, candyId, cantidad: nuevaCantidad, itemActualizado: res };
     } catch (err) {
       return rejectWithValue(err.message);
     }
@@ -174,12 +174,18 @@ const candySlice = createSlice({
       // disminuirItemCarrito
       .addCase(disminuirItemCarrito.fulfilled, (state, action) => {
         if (!action.payload) return;
-        const { id, cantidad } = action.payload;
-        if (cantidad <= 0) {
-          state.items = state.items.filter((i) => i.id !== id);
+        const { oldId, cantidad, itemActualizado } = action.payload;
+        if (cantidad <= 0 || !itemActualizado) {
+          state.items = state.items.filter((i) => i.id !== oldId);
         } else {
-          const item = state.items.find((i) => i.id === id);
-          if (item) item.cantidad = cantidad;
+          const index = state.items.findIndex(
+            (i) => i.id === oldId || (i.candyId ?? i.id) === itemActualizado.candyId
+          );
+          if (index >= 0) {
+            state.items[index] = itemActualizado;
+          } else {
+            state.items.push(itemActualizado);
+          }
         }
       })
       // quitarItemCarrito

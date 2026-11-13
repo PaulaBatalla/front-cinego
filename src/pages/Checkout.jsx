@@ -1,22 +1,34 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useConfirmarReservaMutation, useFuncionesQuery, usePeliculasQuery, useReservaQuery } from "../services/reservasApi";
+import { fetchCarrito, vaciarCandyLocal, vaciarPedidoCarrito } from "../store/slices/candySlice";
 import "../styles/reserva.css";
 import "../styles/misReservas.css";
 import "../styles/checkout.css";
 
 const moneda = new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS" });
+const SIN_CANDY = [];
 
 export default function Checkout() {
   const { id } = useParams();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, token } = useAuth();
+  const dispatch = useDispatch();
+  const tieneCandyStore = useSelector((state) => Boolean(state?.candy));
+  const itemsCandy = useSelector((state) => state?.candy?.items ?? SIN_CANDY);
+  const [candyConfirmado, setCandyConfirmado] = useState(null);
   const [tarjeta, setTarjeta] = useState(false);
   const [ahora, setAhora] = useState(Date.now);
   useEffect(() => {
     const reloj = setInterval(() => setAhora(Date.now()), 1000);
     return () => clearInterval(reloj);
   }, []);
+  useEffect(() => {
+    if (tieneCandyStore && isAuthenticated && token) {
+      dispatch(fetchCarrito());
+    }
+  }, [tieneCandyStore, isAuthenticated, token, dispatch]);
   const reserva = useReservaQuery(id, { skip: !isAuthenticated, refetchOnMountOrArgChange: true, pollingInterval: 5000 });
   const funciones = useFuncionesQuery(undefined, { skip: !isAuthenticated });
   const peliculas = usePeliculasQuery(undefined, { skip: !isAuthenticated });
@@ -41,12 +53,29 @@ export default function Checkout() {
     ? new Date(funcion.horarioInicio).toLocaleString("es-AR", { dateStyle: "long", timeStyle: "short" })
     : "No disponible";
   const asientos = actual.asientos?.map((asiento) => `${asiento.fila}${asiento.numero}`).join(", ") || "No disponibles";
+  const listaCandy = candyConfirmado ?? itemsCandy;
+  const totalEntradas = Number(actual.total ?? 0);
+  const totalCandy = listaCandy.reduce((acc, item) => acc + Number(item.precio) * Number(item.cantidad), 0);
+  const totalGeneral = totalEntradas + totalCandy;
 
   async function confirmarPago(event) {
     event.preventDefault();
     if (!tarjeta || enviando || vencida || actual.estado !== "PENDIENTE" || Date.now() >= limite) return;
+    const snapshotCandy = [...itemsCandy];
     try {
       await confirmar({ idReserva: id }).unwrap();
+      if (snapshotCandy.length > 0) {
+        setCandyConfirmado(snapshotCandy);
+        if (tieneCandyStore) {
+          await dispatch(
+            vaciarPedidoCarrito({
+              items: snapshotCandy,
+              isAuthenticated: Boolean(isAuthenticated && token),
+            })
+          );
+          dispatch(vaciarCandyLocal());
+        }
+      }
     } catch {
       // El error se muestra en la pantalla para que el usuario pueda reintentar.
     }
@@ -63,8 +92,20 @@ export default function Checkout() {
           <div><dt>Función</dt><dd>{fecha}</dd></div>
           <div><dt>Sala</dt><dd>{funcion?.salaNombre || "No disponible"}</dd></div>
           <div><dt>Asientos</dt><dd>{asientos}</dd></div>
+          <div><dt>Entradas</dt><dd>{moneda.format(totalEntradas)}</dd></div>
+          <div><dt>Candy seleccionado</dt><dd>{listaCandy.length > 0 ? moneda.format(totalCandy) : moneda.format(0)}</dd></div>
         </dl>
-        <div className="checkout-total"><span>Total</span><strong>{moneda.format(Number(actual.total ?? 0))}</strong></div>
+        {listaCandy.length > 0 && (
+          <ul className="checkout-candy-lista" aria-label="Combos de Candy seleccionados">
+            {listaCandy.map((item) => (
+              <li key={item.id ?? item.candyId} className="checkout-candy-item">
+                <span>{item.cantidad} × {item.nombre}</span>
+                <span>{moneda.format(Number(item.precio) * Number(item.cantidad))}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="checkout-total"><span>Total a pagar</span><strong>{moneda.format(totalGeneral)}</strong></div>
 
         {actual.estado === "PENDIENTE" && !vencida ? (
           <form onSubmit={confirmarPago}>
