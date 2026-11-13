@@ -1,34 +1,21 @@
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router-dom";
-import { avisarSesionVencida } from "../services/sesionService";
-import { leerToken, tokenVigente } from "../utils/sesion";
+import { verificarSesion } from "../store/slices/authSlice";
 
 export default function ControlSesion({ children }) {
-  const { token, sesionVencida } = useSelector((state) => state.auth);
+  const { verificandoSesion, errorVerificacion, sesionVencida } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
   const location = useLocation();
-  useEffect(() => {
-    if (!token) return;
-    let temporizador;
-    const comprobar = () => {
-      clearTimeout(temporizador);
-      if (!tokenVigente(token)) {
-        avisarSesionVencida(token);
-        return;
-      }
-      const restante = leerToken(token).exp * 1000 - Date.now();
-      temporizador = setTimeout(comprobar, Math.min(restante, 2147483647));
-    };
-    comprobar();
-    window.addEventListener("focus", comprobar);
-    document.addEventListener("visibilitychange", comprobar);
-    return () => {
-      clearTimeout(temporizador);
-      window.removeEventListener("focus", comprobar);
-      document.removeEventListener("visibilitychange", comprobar);
-    };
-  }, [token]);
 
+  useEffect(() => {
+    // Elimina el token que pudiera quedar de versiones anteriores de la app.
+    localStorage.removeItem("token");
+    dispatch(verificarSesion());
+  }, [dispatch]);
+
+  if (verificandoSesion) return <p role="status">Comprobando sesión...</p>;
+  if (errorVerificacion) return <main><p role="alert">{errorVerificacion}</p><button type="button" onClick={() => dispatch(verificarSesion())}>Reintentar</button></main>;
   if (sesionVencida && location.pathname !== "/login") {
     const volverA = location.pathname === "/registro" ? "/" : location.pathname + location.search + location.hash;
     return <Navigate to="/login" replace state={{ volverA, sesionVencida: true }} />;

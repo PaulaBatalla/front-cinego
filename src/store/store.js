@@ -1,4 +1,5 @@
-import { configurarSesionVencida } from "../services/sesionService";
+import { configurarControlSesion } from "../services/sesionService";
+import { authService } from "../services/authService";
 import { configureStore } from "@reduxjs/toolkit";
 import candyReducer from "./slices/candySlice";
 import authReducer, { loginUser, logout, vencerSesion } from "./slices/authSlice";
@@ -22,9 +23,16 @@ export const store = configureStore({
     .concat(limpiarReservasAlCambiarSesion, reservasApi.middleware),
 });
 
-configurarSesionVencida((token) => {
-  // Una respuesta de una sesión anterior no debe cerrar la sesión nueva.
-  if (store.getState().auth.token !== token) return;
-  localStorage.removeItem("token");
-  store.dispatch(vencerSesion());
-});
+configurarControlSesion(
+  () => store.getState().auth.versionSesion,
+  async (version) => {
+    const actual = store.getState().auth;
+    if (!actual.isAuthenticated || actual.versionSesion !== version) return;
+    try {
+      const usuario = await authService.usuarioActual();
+      if (!usuario && store.getState().auth.versionSesion === version) store.dispatch(vencerSesion());
+    } catch {
+      // Un error de conexión no confirma que la sesión haya vencido.
+    }
+  }
+);
