@@ -21,7 +21,7 @@ function formInicial(promo) {
 function armarDatos(form) {
   return {
     nombre: form.nombre.trim(),
-    porcentaje: Math.round(leerPorcentaje(form.porcentaje)),
+    porcentaje: leerPorcentaje(form.porcentaje),
     aplicaATodas: form.todas,
     peliculaIds: form.todas ? [] : form.peliculas,
     activo: form.activo,
@@ -123,7 +123,8 @@ function PromoFormModal({ promo, peliculas, onGuardar, onCerrar }) {
               name="porcentaje"
               min="1"
               max="90"
-              inputMode="numeric"
+              step="any"
+              inputMode="decimal"
               placeholder="Ej: 30"
               value={form.porcentaje}
               onChange={handleChange}
