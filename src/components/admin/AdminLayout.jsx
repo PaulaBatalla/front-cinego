@@ -11,6 +11,8 @@ const SECCIONES = [
   { ruta: "funciones", nombre: "Funciones" },
   { ruta: "salas", nombre: "Salas" },
   { ruta: "candy", nombre: "Candy" },
+  { ruta: "promos", nombre: "Promos" },
+
 ];
 
 function AdminLayout() {
