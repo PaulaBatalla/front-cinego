@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   agregarCandy,
@@ -8,11 +9,45 @@ import {
 import { useAuth } from "../hooks/useAuth";
 import { useNotificaciones } from "../hooks/useNotificaciones";
 
+function obtenerFotoPorNombre(nombre = "") {
+  const texto = nombre.toLowerCase();
+  if (
+    texto.includes("combo") ||
+    texto.includes("pareja") ||
+    texto.includes("familiar") ||
+    texto.includes("solo")
+  ) {
+    return "/candy/combo-clasico.jpg";
+  }
+  if (texto.includes("caramelo") || texto.includes("dulce")) {
+    return "/candy/pochoclos-caramelo.jpg";
+  }
+  if (texto.includes("pochoclo") || texto.includes("pop")) {
+    return "/candy/pochoclos-clasicos.jpg";
+  }
+  if (texto.includes("nacho") || texto.includes("queso")) {
+    return "/candy/nachos-queso.jpg";
+  }
+  if (
+    texto.includes("gaseosa") ||
+    texto.includes("bebida") ||
+    texto.includes("agua") ||
+    texto.includes("cola")
+  ) {
+    return "/candy/gaseosa-grande.jpg";
+  }
+  return "/candy/combo-clasico.jpg";
+}
+
 function CandyCard({ item, soloLocal = false }) {
   const dispatch = useDispatch();
   const { notificar } = useNotificaciones();
-  const { isAuthenticated } = useAuth();
-  const imagenUrl = item.imagenUrl?.trim();
+  const { isAuthenticated, token } = useAuth();
+  const sincronizarConBack = !soloLocal && Boolean(isAuthenticated && token);
+  const [urlsFallidas, setUrlsFallidas] = useState([]);
+  const foto = obtenerFotoPorNombre(item.nombre);
+  const candidatos = [item.imagenUrl?.trim(), foto, "/candy/combo-clasico.jpg"].filter(Boolean);
+  const imagenSrc = candidatos.find((u) => !urlsFallidas.includes(u)) || foto;
 
   const seleccionado = useSelector((state) =>
     state.candy.items.find(
@@ -22,14 +57,14 @@ function CandyCard({ item, soloLocal = false }) {
   const cantidad = seleccionado ? seleccionado.cantidad : 0;
 
   const agregarAlPedido = () => {
-    if (soloLocal || !isAuthenticated) {
+    if (!sincronizarConBack) {
       dispatch(agregarCandy(item));
     } else {
       dispatch(
         agregarItemCarrito({
           producto: item,
           cantidad: 1,
-          isAuthenticated,
+          isAuthenticated: true,
         })
       );
     }
@@ -38,13 +73,13 @@ function CandyCard({ item, soloLocal = false }) {
 
   const restarDelPedido = () => {
     if (!seleccionado) return;
-    if (soloLocal || !isAuthenticated) {
+    if (!sincronizarConBack) {
       dispatch(disminuirCandy(item.id));
     } else {
       dispatch(
         disminuirItemCarrito({
           item: seleccionado,
-          isAuthenticated,
+          isAuthenticated: true,
         })
       );
     }
@@ -53,14 +88,17 @@ function CandyCard({ item, soloLocal = false }) {
   return (
     <article className="candy-card">
       <div className="candy-card-cover">
-        {imagenUrl ? (
-          <img
-            className="candy-card-cover-img"
-            src={imagenUrl}
-            alt=""
-            loading="lazy"
-          />
-        ) : null}
+        <img
+          className="candy-card-cover-img"
+          src={imagenSrc}
+          alt={item.nombre}
+          loading="lazy"
+          onError={() => {
+            if (!urlsFallidas.includes(imagenSrc)) {
+              setUrlsFallidas((prev) => [...prev, imagenSrc]);
+            }
+          }}
+        />
       </div>
 
       <div className="candy-card-info">
