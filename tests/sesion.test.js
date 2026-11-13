@@ -1,78 +1,96 @@
-import { Buffer } from "node:buffer";
-import test from 'node:test';
+import test, { after, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
-import { tokenVigente, leerToken } from '../src/utils/sesion.js';
-import { configurarSesionVencida } from '../src/services/sesionService.js';
+import { createServer } from 'vite';
 
-const token = (datos) => `header.${Buffer.from(JSON.stringify(datos)).toString('base64url')}.firma`;
-const vigente = () => token({ sub: 'usuario@cinego.test', exp: Math.floor(Date.now() / 1000) + 60 });
+const vite = await createServer({ server: { middlewareMode: true, hmr: false }, appType: 'custom' });
+const { store } = await vite.ssrLoadModule('/src/store/store.js');
+const { loginUser, verificarSesion, logout } = await vite.ssrLoadModule('/src/store/slices/authSlice.js');
+const { solicitar } = await vite.ssrLoadModule('/src/services/api.js');
+const originalFetch = globalThis.fetch;
+const usuario = { email: 'cliente@cinego.test', nombre: 'Cliente', rol: 'CLIENTE' };
 
-let codigo = await readFile(new URL('../src/services/api.js', import.meta.url), 'utf8');
-codigo = codigo.replace('"../utils/sesion"', JSON.stringify(new URL('../src/utils/sesion.js', import.meta.url).href))
-  .replace('"./sesionService"', JSON.stringify(new URL('../src/services/sesionService.js', import.meta.url).href))
-  .replace('import.meta.env.VITE_API_URL', 'undefined');
-const { solicitar } = await import(`data:text/javascript;base64,${Buffer.from(codigo).toString('base64')}`);
+afterEach(() => { globalThis.fetch = originalFetch; store.dispatch(logout()); });
+after(async () => { await vite.close(); });
 
-async function conCliente(valor, respuesta, comprobar) {
-  const anteriorFetch = globalThis.fetch;
-  const anteriorStorage = globalThis.localStorage;
-  const avisos = [];
-  let llamadas = 0;
-  globalThis.localStorage = { getItem: () => valor };
-  globalThis.fetch = async () => { llamadas++; return new Response('', { status: respuesta }); };
-  configurarSesionVencida((rechazado) => avisos.push(rechazado));
-  try { await comprobar(avisos, () => llamadas); }
-  finally {
-    globalThis.fetch = anteriorFetch;
-    globalThis.localStorage = anteriorStorage;
-    configurarSesionVencida(() => {});
-  }
-}
-
-test('el instante exacto de expiracion ya no es valido', () => {
-  const jwt = token({ sub: 'usuario', exp: 100 });
-  assert.equal(tokenVigente(jwt, 99999), true);
-  assert.equal(tokenVigente(jwt, 100000), false);
+test('al cargar recupera el usuario desde la cookie', async () => {
+  globalThis.fetch = async (url, opciones) => {
+    assert.equal(url, '/api/usuarios/me');
+    assert.equal(opciones.credentials, 'include');
+    return Response.json(usuario);
+  };
+  await store.dispatch(verificarSesion());
+  assert.deepEqual(store.getState().auth.usuario, usuario);
+  assert.equal(store.getState().auth.isAuthenticated, true);
 });
 
-test('rechaza tokens malformados o sin vencimiento', () => {
-  for (const jwt of ['roto', token({ sub: 'usuario' }), token({ sub: 'usuario', exp: '100' })]) {
-    assert.equal(tokenVigente(jwt), false);
-  }
+test('sin cookie la respuesta 403 deja al usuario desconectado', async () => {
+  globalThis.fetch = async () => new Response(null, { status: 403 });
+  await store.dispatch(verificarSesion());
+  assert.equal(store.getState().auth.isAuthenticated, false);
+  assert.equal(store.getState().auth.errorVerificacion, null);
 });
 
-test('decodifica nombres Unicode', () => {
-  assert.equal(leerToken(token({ sub: 'jos\u00e9@cinego.test', exp: 100 })).sub, 'jos\u00e9@cinego.test');
+test('un error de conexión al iniciar permite reintentar', async () => {
+  globalThis.fetch = async () => { throw new Error('sin conexión'); };
+  await store.dispatch(verificarSesion());
+  assert.ok(store.getState().auth.errorVerificacion);
+  globalThis.fetch = async () => Response.json(usuario);
+  await store.dispatch(verificarSesion());
+  assert.equal(store.getState().auth.isAuthenticated, true);
 });
 
-test('un 401 avisa al control central con el token de la solicitud', async () => {
-  const jwt = vigente();
-  await conCliente(jwt, 401, async (avisos) => {
-    await assert.rejects(solicitar('/reservas'), { status: 401 });
-    assert.deepEqual(avisos, [jwt]);
-  });
+test('login usa la cookie y consulta los datos del usuario', async () => {
+  const llamadas = [];
+  globalThis.fetch = async (url, opciones) => {
+    llamadas.push({ url, credentials: opciones.credentials });
+    return url.endsWith('/login') ? new Response('token no utilizado') : Response.json(usuario);
+  };
+  await store.dispatch(loginUser({ email: usuario.email, password: '123' }));
+  assert.deepEqual(llamadas, [
+    { url: '/api/usuarios/login', credentials: 'include' },
+    { url: '/api/usuarios/me', credentials: 'include' },
+  ]);
+  assert.equal(store.getState().auth.usuario.email, usuario.email);
+  assert.equal('token' in store.getState().auth, false);
 });
 
-test('un 403 con token vigente no cierra sesion', async () => {
-  await conCliente(vigente(), 403, async (avisos) => {
-    await assert.rejects(solicitar('/reservas'), (error) => error.status === 403 && error.message.includes('permisos'));
-    assert.deepEqual(avisos, []);
-  });
+test('los pedidos incluyen cookies y no agregan Authorization', async () => {
+  globalThis.fetch = async (_url, opciones) => {
+    assert.equal(opciones.credentials, 'include');
+    assert.equal(opciones.headers.Authorization, undefined);
+    return Response.json([]);
+  };
+  await solicitar('/peliculas');
 });
 
-test('un token vencido se rechaza antes de enviar la solicitud', async () => {
-  const jwt = token({ sub: 'usuario', exp: 1 });
-  await conCliente(jwt, 200, async (avisos, llamadas) => {
-    await assert.rejects(solicitar('/reservas'), { status: 401 });
-    assert.deepEqual(avisos, [jwt]);
-    assert.equal(llamadas(), 0);
-  });
+test('un 403 no cierra la sesión si /me confirma que sigue vigente', async () => {
+  globalThis.fetch = async (url) => url.endsWith('/me') ? Response.json(usuario) : new Response(null, { status: 403 });
+  await store.dispatch(verificarSesion());
+  await assert.rejects(solicitar('/protegido'), { status: 403 });
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(store.getState().auth.isAuthenticated, true);
 });
 
-test('un 401 anonimo no genera un cierre de sesion', async () => {
-  await conCliente(null, 401, async (avisos) => {
-    await assert.rejects(solicitar('/reservas'), { status: 401 });
-    assert.deepEqual(avisos, []);
-  });
+test('si /me rechaza la cookie luego de un 403 se cierra la sesión', async () => {
+  globalThis.fetch = async () => Response.json(usuario);
+  await store.dispatch(verificarSesion());
+  globalThis.fetch = async () => new Response(null, { status: 403 });
+  await assert.rejects(solicitar('/reservas'), { status: 403 });
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(store.getState().auth.isAuthenticated, false);
+  assert.equal(store.getState().auth.sesionVencida, true);
+});
+
+test('una respuesta vieja no cierra una sesión iniciada después', async () => {
+  globalThis.fetch = async () => Response.json(usuario);
+  await store.dispatch(verificarSesion());
+  let responder;
+  globalThis.fetch = () => new Promise((resolve) => { responder = resolve; });
+  const pedidoAnterior = solicitar('/reservas');
+  globalThis.fetch = async (url) => url.endsWith('/login') ? new Response('') : Response.json(usuario);
+  await store.dispatch(loginUser({ email: usuario.email, password: '123' }));
+  responder(new Response(null, { status: 403 }));
+  await assert.rejects(pedidoAnterior, { status: 403 });
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(store.getState().auth.isAuthenticated, true);
 });

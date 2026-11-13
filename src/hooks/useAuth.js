@@ -3,26 +3,25 @@ import { logout as cerrarSesion } from "../store/slices/authSlice";
 import { esRolAdmin } from "../utils/roles";
 
 import { solicitar } from "../services/api";
-import { tokenVigente } from "../utils/sesion";
+import { authService } from "../services/authService";
 
 export function useAuth() {
   const dispatch = useDispatch();
-  const { token, usuario, isAuthenticated } = useSelector((state) => state.auth);
+  const { usuario, isAuthenticated } = useSelector((state) => state.auth);
 
   const logout = async () => {
     let pendientesCanceladas = true;
     try {
-      if (token && tokenVigente(token)) {
+      if (isAuthenticated) {
         await solicitar("/reservas/pendientes/cancelar", { method: "PATCH" });
       }
     } catch {
       pendientesCanceladas = false;
-    } finally {
-      localStorage.removeItem("token");
-      dispatch(cerrarSesion());
     }
+    await authService.logout();
+    dispatch(cerrarSesion());
     return pendientesCanceladas;
   };
 
-  return { token, usuario, isAuthenticated, esAdmin: esRolAdmin(usuario?.rol), logout };
+  return { usuario, isAuthenticated, esAdmin: esRolAdmin(usuario?.rol), logout };
 }

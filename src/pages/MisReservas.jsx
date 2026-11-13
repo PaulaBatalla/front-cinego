@@ -17,7 +17,7 @@ function fecha(valor) {
 }
 
 export default function MisReservas() {
-  const { isAuthenticated, token } = useAuth();
+  const { isAuthenticated, usuario } = useAuth();
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ volverA: "/mis-reservas" }} />;
   }
@@ -28,13 +28,12 @@ export default function MisReservas() {
         <div><h1 id="mis-reservas-titulo">Mis reservas</h1><p>Todos tus planes de cine, en un solo lugar.</p></div>
         <Link className="mis-reservas-accion" to="/">Reservar entradas</Link>
       </header>
-      <ListadoReservas key={token} />
+      <ListadoReservas key={usuario.email} />
     </section>
   );
 }
 
 function ListadoReservas() {
-  const { logout } = useAuth();
   const [ahora, setAhora] = useState(Date.now);
   const [estadoFiltro, setEstadoFiltro] = useState("TODAS");
   useEffect(() => {
@@ -60,7 +59,7 @@ function ListadoReservas() {
       <h2>No pudimos cargar tus reservas</h2>
       <p role="alert">{error.status === 401 ? "Iniciá sesión nuevamente para consultar tus reservas." : error.status === 403 ? "No tenés permisos para consultar estas reservas." : "Ocurrió un problema al consultar el servidor. Intentá nuevamente."}</p>
       {error.status === 401
-        ? <Link className="mis-reservas-accion" to="/login" state={{ volverA: "/mis-reservas" }} onClick={logout}>Iniciar sesión</Link>
+        ? <Link className="mis-reservas-accion" to="/login" state={{ volverA: "/mis-reservas" }}>Iniciar sesión</Link>
         : <button className="mis-reservas-accion" type="button" onClick={reservas.refetch}>Reintentar</button>}
     </div>
   );

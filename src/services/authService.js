@@ -4,8 +4,9 @@ async function enviar(ruta, datos) {
   try {
     return await fetch(`${API_URL}/usuarios${ruta}`, {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(datos),
+      ...(datos ? { body: JSON.stringify(datos) } : {}),
     });
   } catch {
     // fetch falla así cuando no llega al servidor (back apagado o CORS)
@@ -14,7 +15,6 @@ async function enviar(ruta, datos) {
 }
 
 export const authService = {
-  // Devuelve el JWT si las credenciales son correctas
   login: async (email, password) => {
     const respuesta = await enviar("/login", { email: email.trim(), password });
 
@@ -26,8 +26,23 @@ export const authService = {
       throw new Error(`No se pudo iniciar sesión (${respuesta.status})`);
     }
 
-    // El back devuelve el JWT como texto plano, no como JSON
-    return respuesta.text();
+  },
+
+  usuarioActual: async () => {
+    let respuesta;
+    try {
+      respuesta = await fetch(`${API_URL}/usuarios/me`, { credentials: "include" });
+    } catch {
+      throw new Error("No se pudo conectar con el servidor.");
+    }
+    if (respuesta.status === 401 || respuesta.status === 403) return null;
+    if (!respuesta.ok) throw new Error(`No se pudo consultar la sesión (${respuesta.status}).`);
+    return respuesta.json();
+  },
+
+  logout: async () => {
+    const respuesta = await enviar("/logout");
+    if (!respuesta.ok) throw new Error("No se pudo cerrar sesión. Intentá nuevamente.");
   },
 
   registrar: async (datos) => {
