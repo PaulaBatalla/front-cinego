@@ -109,6 +109,31 @@ export function validarCandy(datos) {
   return errores;
 }
 
+// "30" o "12,5" -> número; NaN si no es un número
+export function leerPorcentaje(valor) {
+  const texto = String(valor ?? "").trim().replace(",", ".");
+  return texto ? Number(texto) : NaN;
+}
+
+export function validarPromo(datos) {
+  const errores = {};
+
+  if (!datos.nombre.trim()) {
+    errores.nombre = "Escribí un nombre para la promo.";
+  }
+
+  const porcentaje = leerPorcentaje(datos.porcentaje);
+  if (!(porcentaje >= 1 && porcentaje <= 90)) {
+    errores.porcentaje = "Tiene que ser un número entre 1 y 90.";
+  }
+
+  if (!datos.todas && datos.peliculas.length === 0) {
+    errores.peliculas = "Elegí al menos una película.";
+  }
+
+  return errores;
+}
+
 export function validarRegistro(datos) {
   const errores = {};
 

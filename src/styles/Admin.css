@@ -1177,6 +1177,205 @@
   flex: 1;
 }
 
+/* Promos: grilla de tarjetas */
+.admin-promos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.admin-promo {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid var(--admin-borde);
+  border-radius: 18px;
+  background: var(--admin-superficie-2);
+}
+
+.admin-promo.is-pausada {
+  opacity: 0.7;
+}
+
+.admin-promo__datos {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.admin-promo__porcentaje {
+  flex: 0 0 auto;
+  color: var(--admin-acento);
+  font-family: var(--admin-titulos);
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.admin-promo__textos {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.admin-promo__nombre {
+  margin: 0;
+  color: var(--admin-texto);
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: normal;
+  line-height: 1.3;
+}
+
+.admin-promo__aplica {
+  color: var(--admin-texto-2);
+  font-size: 14px;
+}
+
+.admin-promo__acciones {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.admin-promo__editar {
+  flex: 1;
+}
+
+/* Interruptor (tarjeta y formulario) */
+.admin-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #c9c6ce;
+  font-size: 14px;
+  font-weight: 400;
+  text-align: left;
+}
+
+.admin-switch--form {
+  gap: 12px;
+  color: var(--admin-texto);
+  font-size: 15px;
+}
+
+.admin-switch__pista {
+  position: relative;
+  flex: 0 0 auto;
+  width: 46px;
+  height: 28px;
+  border-radius: 999px;
+  background: #3a3a40;
+  transition: background 0.15s ease;
+}
+
+.admin-switch[aria-checked="true"] .admin-switch__pista {
+  background: #7fd49b;
+}
+
+.admin-switch__perilla {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #f4f1ea;
+  transition: left 0.15s ease;
+}
+
+.admin-switch[aria-checked="true"] .admin-switch__perilla {
+  left: 22px;
+}
+
+.admin-switch:focus-visible {
+  outline: 2px solid var(--admin-acento);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+/* Formulario de promo */
+.admin-input-sufijo {
+  position: relative;
+  display: block;
+}
+
+.admin-input-sufijo .admin-input {
+  padding-right: 40px;
+}
+
+.admin-input-sufijo__texto {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  color: var(--admin-texto-3);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.admin-campo__exito {
+  color: #7fd49b;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.admin-segmentado {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid #25252a;
+  border-radius: 14px;
+  background: var(--admin-fondo);
+}
+
+.admin-segmentado__opcion {
+  min-height: 44px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--admin-texto-2);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.admin-segmentado__opcion[aria-pressed="true"] {
+  background: #26262b;
+  color: var(--admin-texto);
+  font-weight: 600;
+}
+
+.admin-segmentado__opcion:focus-visible {
+  outline: 2px solid var(--admin-acento);
+  outline-offset: 2px;
+}
+
+.admin-promo-form__peliculas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-switch__pista,
+  .admin-switch__perilla {
+    transition: none;
+  }
+}
+
 .admin-boton-ghost:focus-visible,
 .admin-tab:focus-visible,
 .admin-boton-cta:focus-visible,
@@ -1198,7 +1397,7 @@
     gap: 12px;
   }
 
-  /* Con 4 pestañas no entran en 390px: menos padding, y si igual se pasan, scroll sin barra */
+  /* Con 4 o más pestañas no entran en 390px: menos padding, y si igual se pasan, scroll sin barra */
   .admin-tabs {
     scrollbar-width: none;
   }
