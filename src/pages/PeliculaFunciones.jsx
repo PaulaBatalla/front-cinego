@@ -6,7 +6,7 @@ import SelectorDia from "../components/funciones/SelectorDia";
 import ReservaFuncion from "../components/ReservaFuncion";
 import "./PeliculaFunciones.css";
 import { usePeliculaQuery, useFuncionesQuery } from "../services/reservasApi";
-import { useAuth } from "../hooks/useAuth";
+import { useSelector } from "react-redux";
 function adaptarFuncion(f) {
   return {
     id: f.id,
@@ -49,7 +49,8 @@ function PeliculaFunciones() {
 
 function SeleccionFuncion({ pelicula, funciones }) {
   const [params, setParams] = useSearchParams();
-  const { token } = useAuth();
+  // Cambia en cada login/logout: así la selección de asientos arranca de cero si cambia la sesión.
+  const versionSesion = useSelector((state) => state.auth.versionSesion);
   const location = useLocation();
   // Ordenadas por día y hora.
   const disponibles = useFuncionesDisponibles(funciones);
@@ -61,7 +62,7 @@ function SeleccionFuncion({ pelicula, funciones }) {
   const funcionElegida = funciones.find((f) => String(f.id) === params.get("funcionId")) ?? null;
   const [dia, setDia] = useState(dias[0] ?? null);
   const diaElegido = funcionElegida && dias.includes(funcionElegida.fecha) ? funcionElegida.fecha : dias.includes(dia) ? dia : dias[0];
-  const claveSeleccion = `${token}-${location.key}-${funcionElegida?.id}`;
+  const claveSeleccion = `${versionSesion}-${location.key}-${funcionElegida?.id}`;
   function elegirFuncion(funcion) {
     if (funcion?.id === funcionElegida?.id) return;
     setParams(funcion ? { funcionId: funcion.id } : {});

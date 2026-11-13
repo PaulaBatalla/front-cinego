@@ -14,7 +14,7 @@ import { useNotificaciones } from '../hooks/useNotificaciones';
 const moneda = (n) => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n);
 
 export default function ReservaFuncion({ funcion, pelicula, children }) {
-  const { isAuthenticated, token } = useAuth();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const candy = useSelector((state) => state.candy.items);
@@ -43,7 +43,7 @@ export default function ReservaFuncion({ funcion, pelicula, children }) {
     try {
       const creada = await crearReserva({ funcionId: funcion.id, asientoIds: seleccionados }).unwrap();
       if (omitirCandy) {
-        if (isAuthenticated && token && candy.length > 0) {
+        if (isAuthenticated && candy.length > 0) {
           await dispatch(vaciarPedidoCarrito({ items: candy, isAuthenticated: true }));
         }
         dispatch(vaciarCandy());

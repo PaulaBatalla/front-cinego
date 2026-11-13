@@ -8,16 +8,16 @@ import "./Candy.css";
 
 export default function PasoCandy({ cantidad, onVolver, onOmitir, disabled }) {
   const dispatch = useDispatch();
-  const { isAuthenticated, token } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [candy, setCandy] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (isAuthenticated && token) {
+    if (isAuthenticated) {
       dispatch(fetchCarrito());
     }
-  }, [isAuthenticated, token, dispatch]);
+  }, [isAuthenticated, dispatch]);
 
   useEffect(() => {
     const controlador = new AbortController();
