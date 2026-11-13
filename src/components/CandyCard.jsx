@@ -5,6 +5,7 @@ import { useNotificaciones } from "../hooks/useNotificaciones";
 function CandyCard({ item }) {
   const dispatch = useDispatch();
   const { notificar } = useNotificaciones();
+  const imagenUrl = item.imagenUrl?.trim();
 
   const cantidad = useSelector((state) => {
     const seleccionado = state.candy.items.find(
@@ -21,10 +22,10 @@ function CandyCard({ item }) {
   return (
     <article className="candy-card">
       <div className="candy-card-cover">
-        {item.imagen ? (
+        {imagenUrl ? (
           <img
             className="candy-card-cover-img"
-            src={item.imagen}
+            src={imagenUrl}
             alt=""
             loading="lazy"
           />

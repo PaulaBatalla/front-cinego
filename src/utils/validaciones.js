@@ -95,6 +95,20 @@ export function validarSala(datos) {
   return errores;
 }
 
+export function validarCandy(datos) {
+  const errores = {};
+
+  if (!datos.nombre.trim()) {
+    errores.nombre = "Escribí el nombre del producto.";
+  }
+
+  if (!(Number(datos.precio) > 0)) {
+    errores.precio = "Ingresá un precio mayor a 0.";
+  }
+
+  return errores;
+}
+
 export function validarRegistro(datos) {
   const errores = {};
 
