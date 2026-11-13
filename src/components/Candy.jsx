@@ -3,24 +3,45 @@ import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import CandyCard from "./CandyCard";
 import ResumenCandy from "./ResumenCandy";
-import { useCandy } from "../hooks/useCandy";
+import { candyService } from "../services/candyService";
 import { useAuth } from "../hooks/useAuth";
 import { fetchCarrito } from "../store/slices/candySlice";
 import "./Candy.css";
 
-const CATEGORIAS = ["Todos", "Combos", "Pochoclos", "Bebidas", "Dulces"];
-
 function Candy() {
-  const { candy, cargando } = useCandy();
+  const [candy, setCandy] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState(null);
+  const [categoriaActiva, setCategoriaActiva] = useState("Todos");
   const { isAuthenticated } = useAuth();
   const dispatch = useDispatch();
-  const [categoriaActiva, setCategoriaActiva] = useState("Todos");
 
   useEffect(() => {
     if (isAuthenticated) {
       dispatch(fetchCarrito());
     }
   }, [isAuthenticated, dispatch]);
+
+  useEffect(() => {
+    const controlador = new AbortController();
+    candyService
+      .listar(controlador.signal)
+      .then((datos) => setCandy(datos ?? []))
+      .catch((err) => {
+        // solicitar() convierte el abort en otro Error, por eso miramos la señal
+        if (!controlador.signal.aborted) setError(err.message);
+      })
+      .finally(() => {
+        if (!controlador.signal.aborted) setCargando(false);
+      });
+    return () => controlador.abort();
+  }, []);
+
+  // El back todavía no tiene "categoria": si ningún producto la trae, solo queda "Todos"
+  const categorias = [
+    "Todos",
+    ...new Set(candy.map((p) => p.categoria).filter(Boolean)),
+  ];
 
   const productosFiltrados =
     categoriaActiva === "Todos"
@@ -40,7 +61,7 @@ function Candy() {
         </div>
 
         <nav className="candy-categorias" aria-label="Filtro de categorías de Candy">
-          {CATEGORIAS.map((cat) => (
+          {categorias.map((cat) => (
             <button
               key={cat}
               type="button"
@@ -76,15 +97,16 @@ function Candy() {
       </section>
 
       {/* Grilla de productos de Candy */}
-      {cargando && candy.length === 0 ? (
-        <p role="status">Cargando productos de Candy...</p>
-      ) : (
-        <section className="candy-grilla" aria-label="Listado de combos y golosinas">
-          {productosFiltrados.map((producto) => (
-            <CandyCard key={producto.id} item={producto} />
-          ))}
-        </section>
+      {cargando && <p className="candy-status">Cargando candy...</p>}
+      {error && <p className="candy-status">Error: {error}</p>}
+      {!cargando && !error && productosFiltrados.length === 0 && (
+        <p className="candy-status">No hay productos de candy cargados.</p>
       )}
+      <section className="candy-grilla" aria-label="Listado de combos y golosinas">
+        {productosFiltrados.map((producto) => (
+          <CandyCard key={producto.id} item={producto} />
+        ))}
+      </section>
 
       {/* Resumen del pedido (se activa cuando el usuario agrega items) */}
       <ResumenCandy />

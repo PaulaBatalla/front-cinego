@@ -26,11 +26,6 @@ export function validarLogin(email, password) {
   return errores;
 }
 
-// Acepta "8,1" y "8.1" para el puntaje
-export function leerDecimal(texto) {
-  return parseFloat(String(texto).replace(",", "."));
-}
-
 export function validarPelicula(datos) {
   const errores = {};
 
@@ -43,9 +38,9 @@ export function validarPelicula(datos) {
     errores.duracion = "Ingresá los minutos (ej: 104).";
   }
 
-  const puntaje = leerDecimal(datos.clasificacion);
-  if (!(puntaje >= 0 && puntaje <= 10)) {
-    errores.clasificacion = "Tiene que ser un número entre 0 y 10.";
+  const edad = Number(datos.clasificacion);
+  if (!String(datos.clasificacion ?? "").trim() || !Number.isInteger(edad) || edad < 0) {
+    errores.clasificacion = "Ingresá una edad entera mayor o igual a 0 (0 para ATP).";
   }
 
   return errores;
@@ -68,6 +63,43 @@ export function validarFuncion(datos) {
 
   if (!/^\d{2}:\d{2}$/.test(datos.hora)) {
     errores.hora = "Elegí a qué hora empieza.";
+  }
+
+  if (!(Number(datos.precio) > 0)) {
+    errores.precio = "Ingresá un precio mayor a 0.";
+  }
+
+  return errores;
+}
+
+export const MAX_FILAS = 30;
+export const MAX_ASIENTOS_POR_FILA = 40;
+
+export function validarSala(datos) {
+  const errores = {};
+
+  if (!datos.nombre.trim()) {
+    errores.nombre = "Escribí el nombre de la sala.";
+  }
+
+  const filas = Number(datos.filas);
+  if (!Number.isInteger(filas) || filas < 1 || filas > MAX_FILAS) {
+    errores.filas = `Entre 1 y ${MAX_FILAS} filas.`;
+  }
+
+  const asientos = Number(datos.asientosPorFila);
+  if (!Number.isInteger(asientos) || asientos < 1 || asientos > MAX_ASIENTOS_POR_FILA) {
+    errores.asientosPorFila = `Entre 1 y ${MAX_ASIENTOS_POR_FILA} asientos.`;
+  }
+
+  return errores;
+}
+
+export function validarCandy(datos) {
+  const errores = {};
+
+  if (!datos.nombre.trim()) {
+    errores.nombre = "Escribí el nombre del producto.";
   }
 
   if (!(Number(datos.precio) > 0)) {

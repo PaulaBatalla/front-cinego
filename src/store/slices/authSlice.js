@@ -1,19 +1,10 @@
+import { leerToken, tokenVigente } from "../../utils/sesion";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { authService } from "../../services/authService";
 
 function leerUsuario(token) {
-  try {
-    const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
-    const datos = JSON.parse(atob(base64));
-
-    if (datos.exp * 1000 < Date.now()) {
-      return null;
-    }
-
-    return { email: datos.sub, rol: datos.rol };
-  } catch {
-    return null;
-  }
+  const datos = leerToken(token);
+  return tokenVigente(token) ? { email: datos.sub, rol: datos.rol } : null;
 }
 
 function armarSesion(token) {
@@ -27,6 +18,7 @@ export const loginUser = createAsyncThunk(
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const token = await authService.login(email, password);
+      if (!tokenVigente(token)) throw new Error("El servidor devolvió una sesión inválida o vencida.");
       localStorage.setItem("token", token);
       return { token, usuario: leerUsuario(token) };
     } catch (err) {
@@ -40,12 +32,23 @@ const authSlice = createSlice({
 
   initialState: {
     ...armarSesion(localStorage.getItem("token")),
+    sesionVencida: false,
     isLoading: false,
     error: null,
   },
 
   reducers: {
+    vencerSesion: (state) => {
+      state.token = null;
+      state.usuario = null;
+      state.isAuthenticated = false;
+      state.isLoading = false;
+      state.error = null;
+      state.sesionVencida = true;
+    },
+
     logout: (state) => {
+      state.sesionVencida = false;
       state.token = null;
       state.usuario = null;
       state.isAuthenticated = false;
@@ -64,6 +67,7 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
+        state.sesionVencida = false;
         state.token = action.payload.token;
         state.usuario = action.payload.usuario;
         state.isAuthenticated = Boolean(action.payload.usuario);
@@ -76,6 +80,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, clearError } = authSlice.actions;
+export const { logout, clearError, vencerSesion } = authSlice.actions;
 
 export default authSlice.reducer;

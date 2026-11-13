@@ -3,7 +3,15 @@
   text-align: center;
 }
 
+/* En las páginas cortas (login, registro) el main crece y el footer queda abajo */
+.sitio-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 .App-main {
+  flex: 1;
   width: 100%;
   max-width: none;
   margin-inline: auto;

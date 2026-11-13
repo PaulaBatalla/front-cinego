@@ -1,5 +1,5 @@
-import { EditIcon, StarIcon, TrashIcon } from "../../icons";
-import { formatearDuracion, formatearPuntaje } from "../../../utils/peliculas";
+import { EditIcon, TrashIcon } from "../../icons";
+import { formatearDuracion, formatearClasificacion } from "../../../utils/peliculas";
 import PosterMiniatura from "./PosterMiniatura";
 
 function PeliculaFila({ pelicula, onEditar, onEliminar }) {
@@ -12,10 +12,9 @@ function PeliculaFila({ pelicula, onEditar, onEliminar }) {
         <span className="admin-fila__meta">
           <span>{formatearDuracion(pelicula.duracion)}</span>
           <span aria-hidden="true">·</span>
-          <span className="admin-fila__puntaje">
-            <StarIcon />
-            <span className="visually-hidden">Puntaje</span>
-            {formatearPuntaje(pelicula.clasificacion)}
+          <span className="admin-fila__clasificacion">
+            <span className="visually-hidden">Clasificación por edad: </span>
+            {formatearClasificacion(pelicula.clasificacion)}
           </span>
         </span>
       </div>

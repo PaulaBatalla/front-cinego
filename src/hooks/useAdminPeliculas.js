@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { peliculaService } from "../services/peliculaService";
-import { reservaService } from "../services/reservaService";
+import { funcionService } from "../services/funcionService";
 import { useNotificaciones } from "./useNotificaciones";
 
 // Datos de la sección Películas del panel
@@ -28,8 +28,7 @@ export function useAdminPeliculas() {
       });
 
     // Solo sirven para avisar cuántas funciones tiene una película al eliminarla
-    reservaService
-      .funciones()
+    funcionService.listar()
       .then((datos) => {
         if (activo) setFunciones(datos);
       })

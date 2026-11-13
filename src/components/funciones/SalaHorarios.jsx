@@ -1,12 +1,22 @@
 // Una sala con sus horarios del día. Cada horario es un botón.
-function SalaHorarios({ sala, formato, precio, funciones, funcionElegida, onElegir }) {
+// Si hay promo, el precio original se muestra tachado al lado del precio con descuento.
+function SalaHorarios({ sala, formato, precio, precioFinal = precio, funciones, funcionElegida, onElegir }) {
+  const conDescuento = precioFinal < precio;
+
   return (
     <div className="sala">
       <div className="sala-info">
         <strong>
           {sala} · {formato}
         </strong>
-        <span>${precio.toLocaleString("es-AR")} por entrada</span>
+        <span>
+          {conDescuento && (
+            <s className="precio-original">
+              <span className="precio-original__lector">Antes </span>${precio.toLocaleString("es-AR")}
+            </s>
+          )}
+          ${precioFinal.toLocaleString("es-AR")} por entrada
+        </span>
       </div>
       <div className="horarios">
         {funciones.map((funcion) => {

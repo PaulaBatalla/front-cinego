@@ -17,10 +17,10 @@ function Header() {
   const navigate = useNavigate();
   const { menuOpen, drawerId, closeMenu, toggleMenu } = useMobileMenu();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     dispatch(vaciarCandyLocal());
-    logout();
-    notificar("Cerraste sesión");
+    const canceladas = await logout();
+    notificar(canceladas ? "Cerraste sesión" : "Cerraste sesión, pero no pudimos cancelar tus reservas pendientes.", canceladas ? undefined : "error");
     closeMenu();
     navigate("/login");
   };
@@ -52,7 +52,6 @@ function Header() {
               Películas
             </NavLink>
             <NavLink to="/candy">Candy</NavLink>
-            <NavLink to="/reservas">Reservas</NavLink>
             {isAuthenticated && <NavLink to="/mis-reservas">Mis reservas</NavLink>}
           </nav>
         </div>

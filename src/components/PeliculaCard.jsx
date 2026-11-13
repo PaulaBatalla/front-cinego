@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { formatearClasificacion } from "../utils/peliculas";
 import CustomCard from "./CustomCard";
 
 function PeliculaCard({ movie }) {
@@ -9,7 +10,7 @@ function PeliculaCard({ movie }) {
     <CustomCard
       image={movie.posterUrl}
       imageAlt={`Póster de ${movie.titulo}`}
-      badge={`+${movie.clasificacion}`}
+      badge={formatearClasificacion(movie.clasificacion)}
       badgeTitle="Clasificación por edad"
       title={movie.titulo}
       description={movie.sinopsis}

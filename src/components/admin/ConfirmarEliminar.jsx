@@ -1,8 +1,7 @@
 import { TrashIcon } from "../icons";
 import Modal from "./Modal";
 
-// Confirmación antes de borrar algo del panel (películas y, más adelante, el resto de las secciones)
-function ConfirmarEliminar({ titulo, texto, onConfirmar, onCancelar }) {
+function ConfirmarEliminar({ titulo, texto, onConfirmar, onCancelar, bloqueado = false }) {
   return (
     <Modal
       rol="alertdialog"
@@ -21,12 +20,25 @@ function ConfirmarEliminar({ titulo, texto, onConfirmar, onCancelar }) {
         {texto}
       </p>
       <div className="admin-modal__botones">
-        <button className="admin-boton-secundario" type="button" onClick={onCancelar} data-autofocus>
-          Cancelar
-        </button>
-        <button className="admin-boton-peligro" type="button" onClick={onConfirmar}>
-          Sí, eliminar
-        </button>
+        {bloqueado ? (
+          <button className="admin-boton-cta" type="button" onClick={onCancelar} data-autofocus>
+            Entendido
+          </button>
+        ) : (
+          <>
+            <button
+              className="admin-boton-secundario"
+              type="button"
+              onClick={onCancelar}
+              data-autofocus
+            >
+              Cancelar
+            </button>
+            <button className="admin-boton-peligro" type="button" onClick={onConfirmar}>
+              Sí, eliminar
+            </button>
+          </>
+        )}
       </div>
     </Modal>
   );

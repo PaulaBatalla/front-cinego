@@ -5,10 +5,12 @@ import { useNotificaciones } from "../../hooks/useNotificaciones";
 import LogoCineGo from "../LogoCineGo";
 import { EyeIcon, LogoutIcon } from "../icons";
 
-// Las demás secciones (Salas, Promos, Candy) se suman a medida que se desarrollan
+// Promos se suma cuando se desarrolle
 const SECCIONES = [
   { ruta: "peliculas", nombre: "Películas" },
   { ruta: "funciones", nombre: "Funciones" },
+  { ruta: "salas", nombre: "Salas" },
+  { ruta: "candy", nombre: "Candy" },
 ];
 
 function AdminLayout() {
@@ -16,9 +18,9 @@ function AdminLayout() {
   const { notificar } = useNotificaciones();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    notificar("Cerraste sesión");
+  const handleLogout = async () => {
+    const canceladas = await logout();
+    notificar(canceladas ? "Cerraste sesión" : "Cerraste sesión, pero no pudimos cancelar tus reservas pendientes.", canceladas ? undefined : "error");
     navigate("/login");
   };
 

@@ -1,5 +1,3 @@
-import { aMinutos } from "./fechas";
-
 // Minutos de limpieza que tiene que haber entre dos funciones de la misma sala
 export const LIMPIEZA_MIN = 15;
 
@@ -8,7 +6,7 @@ export function armarHorarioInicio(fecha, hora) {
   return `${fecha}T${hora}:00`;
 }
 
-// Funciones de la misma sala y fecha que se pisan con la nueva (duración + limpieza).
+// Funciones de la misma sala que se pisan con la nueva (duración + limpieza).
 // excluirId deja afuera a la función que se está editando.
 export function buscarSuperposiciones(
   { fecha, hora, salaId, duracion },
@@ -16,17 +14,20 @@ export function buscarSuperposiciones(
   duracionDe,
   excluirId
 ) {
-  const inicio = aMinutos(hora);
-  if (inicio === null || !duracion) return [];
-  const fin = inicio + duracion;
+  const inicio = Date.parse(armarHorarioInicio(fecha, hora));
+  const minutos = Number(duracion);
+  if (!Number.isFinite(inicio) || !Number.isFinite(minutos) || minutos <= 0) return [];
+  const fin = inicio + (minutos + LIMPIEZA_MIN) * 60000;
 
   return funciones.filter((otra) => {
-    if (otra.id === excluirId || otra.fecha !== fecha || otra.salaId !== Number(salaId)) {
+    if ((excluirId != null && String(otra.id) === String(excluirId)) || Number(otra.salaId) !== Number(salaId)) {
       return false;
     }
-    const otraInicio = aMinutos(otra.hora);
-    const otraFin = otraInicio + duracionDe(otra.peliculaId);
-    return inicio < otraFin + LIMPIEZA_MIN && otraInicio < fin + LIMPIEZA_MIN;
+    const otraInicio = Date.parse(armarHorarioInicio(otra.fecha, otra.hora));
+    const otraDuracion = Number(duracionDe(otra.peliculaId));
+    if (!Number.isFinite(otraInicio) || !Number.isFinite(otraDuracion) || otraDuracion <= 0) return false;
+    const otraFin = otraInicio + (otraDuracion + LIMPIEZA_MIN) * 60000;
+    return inicio < otraFin && otraInicio < fin;
   });
 }
 

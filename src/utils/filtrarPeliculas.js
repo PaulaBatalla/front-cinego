@@ -9,10 +9,7 @@ export function filtrarPeliculas(peliculas, busqueda, filtros) {
     }
 
     if (filtros.dia !== "todos") {
-      const tieneFuncionEnDia = pelicula.fechasFunciones?.includes(filtros.dia);
-
-      // Si la película tiene funciones asignadas, debe coincidir con el día.
-      if (pelicula.fechasFunciones?.length > 0 && !tieneFuncionEnDia) {
+      if (!pelicula.fechasFunciones?.includes(filtros.dia)) {
         return false;
       }
     }
