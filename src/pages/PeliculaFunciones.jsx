@@ -16,6 +16,10 @@ function adaptarFuncion(f) {
     hora: f.horarioInicio.slice(11, 16),
     sala: f.salaNombre,
     precio: Number(f.precio),
+    // Con la promo aplicada por el back (la de mayor descuento). Si no hay promo, es igual a precio.
+    precioFinal: Number(f.precioFinal ?? f.precio),
+    descuentoNombre: f.descuentoNombre ?? null,
+    descuentoPorcentaje: f.descuentoPorcentaje ?? null,
   };
 }
 
@@ -95,6 +99,7 @@ function SeleccionFuncion({ pelicula, funciones }) {
                       key={sala}
                       sala={sala}
                       precio={funcionesDeLaSala[0].precio}
+                      precioFinal={funcionesDeLaSala[0].precioFinal}
                       funciones={funcionesDeLaSala}
                       funcionElegida={funcionElegida}
                       onElegir={elegirFuncion}
