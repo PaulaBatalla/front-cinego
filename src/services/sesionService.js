@@ -1,8 +1,11 @@
-// El cliente HTTP comunica el rechazo sin importar el store (evita un ciclo).
-let alVencer = () => {};
-export function configurarSesionVencida(callback) {
-  alVencer = callback;
+// Permite comprobar la sesión sin que el cliente HTTP importe el store.
+let obtenerVersion = () => 0;
+let alRechazar = () => {};
+
+export function configurarControlSesion(version, rechazo) {
+  obtenerVersion = version;
+  alRechazar = rechazo;
 }
-export function avisarSesionVencida(token) {
-  if (token) alVencer(token);
-}
+
+export const versionActual = () => obtenerVersion();
+export const avisarSesionRechazada = (version) => alRechazar(version);

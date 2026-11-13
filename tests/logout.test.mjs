@@ -13,28 +13,35 @@ const vite = await createServer({ server: { middlewareMode: true, hmr: false }, 
 const { useAuth } = await vite.ssrLoadModule('/src/hooks/useAuth.js');
 const { default: authReducer } = await vite.ssrLoadModule('/src/store/slices/authSlice.js');
 const originalFetch = globalThis.fetch;
-
-afterEach(() => { cleanup(); localStorage.clear(); globalThis.fetch = originalFetch; });
+afterEach(() => { cleanup(); globalThis.fetch = originalFetch; });
 after(async () => { await vite.close(); dom.window.close(); });
 
 for (const status of [204, 500]) {
-  test(`cerrar sesión limpia el token si cancelar responde ${status}`, async () => {
-    const payload = Buffer.from(JSON.stringify({ sub: 'prueba@cinego.test', exp: Math.floor(Date.now() / 1000) + 60 })).toString('base64url');
-    const token = `cabecera.${payload}.firma`;
-    localStorage.setItem('token', token);
-    let llamada;
+  test(`logout cancela pendientes (${status}) y pide borrar la cookie`, async () => {
+    const llamadas = [];
     globalThis.fetch = async (url, opciones) => {
-      llamada = { url, method: opciones.method };
-      return new Response(status === 204 ? null : 'Error', { status });
+      llamadas.push({ url, method: opciones.method, credentials: opciones.credentials });
+      return new Response(null, { status: url.endsWith('/logout') ? 204 : status });
     };
-    const store = configureStore({ reducer: { auth: authReducer }, preloadedState: { auth: { token, usuario: { email: 'prueba@cinego.test' }, isAuthenticated: true } } });
+    const store = configureStore({ reducer: { auth: authReducer }, preloadedState: { auth: { usuario: { email: 'prueba@cinego.test' }, isAuthenticated: true, versionSesion: 0 } } });
     const wrapper = ({ children }) => React.createElement(Provider, { store }, children);
     const { result } = renderHook(() => useAuth(), { wrapper });
     let canceladas;
     await act(async () => { canceladas = await result.current.logout(); });
     assert.equal(canceladas, status === 204);
-    assert.equal(localStorage.getItem('token'), null);
     assert.equal(store.getState().auth.isAuthenticated, false);
-    assert.deepEqual(llamada, { url: '/api/reservas/pendientes/cancelar', method: 'PATCH' });
+    assert.deepEqual(llamadas, [
+      { url: '/api/reservas/pendientes/cancelar', method: 'PATCH', credentials: 'include' },
+      { url: '/api/usuarios/logout', method: 'POST', credentials: 'include' },
+    ]);
   });
 }
+
+test('si falla el logout no anuncia una sesión cerrada', async () => {
+  globalThis.fetch = async (url) => new Response(null, { status: url.endsWith('/logout') ? 500 : 204 });
+  const store = configureStore({ reducer: { auth: authReducer }, preloadedState: { auth: { usuario: { email: 'prueba@cinego.test' }, isAuthenticated: true, versionSesion: 0 } } });
+  const wrapper = ({ children }) => React.createElement(Provider, { store }, children);
+  const { result } = renderHook(() => useAuth(), { wrapper });
+  await act(async () => { await assert.rejects(result.current.logout()); });
+  assert.equal(store.getState().auth.isAuthenticated, true);
+});

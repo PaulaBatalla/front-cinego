@@ -1,22 +1,15 @@
-import { tokenVigente } from "../utils/sesion";
-import { avisarSesionVencida } from "./sesionService";
+import { avisarSesionRechazada, versionActual } from "./sesionService";
 export const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 export async function solicitar(ruta, opciones = {}) {
   let respuesta;
-  const token = localStorage.getItem("token");
-  if (token && !tokenVigente(token)) {
-    avisarSesionVencida(token);
-    const error = new Error("Tu sesión venció. Iniciá sesión nuevamente.");
-    error.status = 401;
-    throw error;
-  }
+  const version = versionActual();
   try {
     respuesta = await fetch(`${API_URL}${ruta}`, {
       ...opciones,
+      credentials: "include",
       headers: {
         Accept: "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...(opciones.body ? { "Content-Type": "application/json" } : {}),
         ...opciones.headers,
       },
@@ -25,9 +18,7 @@ export async function solicitar(ruta, opciones = {}) {
     throw new Error("No se pudo conectar con el servidor.");
   }
   if (!respuesta.ok) {
-    if (respuesta.status === 401 || (respuesta.status === 403 && token && !tokenVigente(token))) {
-      avisarSesionVencida(token);
-    }
+    if (respuesta.status === 401 || respuesta.status === 403) avisarSesionRechazada(version);
     const mensaje = await respuesta.text();
     const error = new Error(
       respuesta.status === 401

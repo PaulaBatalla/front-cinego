@@ -1,26 +1,20 @@
-import { leerToken, tokenVigente } from "../../utils/sesion";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { authService } from "../../services/authService";
 
-function leerUsuario(token) {
-  const datos = leerToken(token);
-  return tokenVigente(token) ? { email: datos.sub, rol: datos.rol } : null;
-}
-
-function armarSesion(token) {
-  const usuario = token ? leerUsuario(token) : null;
-
-  return { token, usuario, isAuthenticated: Boolean(usuario) };
-}
+export const verificarSesion = createAsyncThunk(
+  "auth/verificarSesion",
+  async () => authService.usuarioActual(),
+  { condition: (_, { getState }) => !getState().auth.verificacionIniciada }
+);
 
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const token = await authService.login(email, password);
-      if (!tokenVigente(token)) throw new Error("El servidor devolvió una sesión inválida o vencida.");
-      localStorage.setItem("token", token);
-      return { token, usuario: leerUsuario(token) };
+      await authService.login(email, password);
+      const usuario = await authService.usuarioActual();
+      if (!usuario) throw new Error("No se pudo recuperar la sesión. Intentá nuevamente.");
+      return { usuario };
     } catch (err) {
       return rejectWithValue(err.message);
     }
@@ -29,48 +23,56 @@ export const loginUser = createAsyncThunk(
 
 const authSlice = createSlice({
   name: "auth",
-
   initialState: {
-    ...armarSesion(localStorage.getItem("token")),
-    sesionVencida: false,
-    isLoading: false,
-    error: null,
+    usuario: null, isAuthenticated: false, sesionVencida: false,
+    verificandoSesion: true, verificacionIniciada: false, errorVerificacion: null,
+    isLoading: false, error: null, versionSesion: 0,
   },
-
   reducers: {
     vencerSesion: (state) => {
-      state.token = null;
       state.usuario = null;
       state.isAuthenticated = false;
       state.isLoading = false;
       state.error = null;
       state.sesionVencida = true;
+      state.versionSesion += 1;
     },
-
     logout: (state) => {
-      state.sesionVencida = false;
-      state.token = null;
       state.usuario = null;
       state.isAuthenticated = false;
+      state.sesionVencida = false;
       state.error = null;
+      state.versionSesion += 1;
     },
-
-    clearError: (state) => {
-      state.error = null;
-    },
+    clearError: (state) => { state.error = null; },
   },
-
   extraReducers: (builder) => {
     builder
+      .addCase(verificarSesion.pending, (state) => {
+        state.verificacionIniciada = true;
+        state.verificandoSesion = true;
+        state.errorVerificacion = null;
+      })
+      .addCase(verificarSesion.fulfilled, (state, action) => {
+        state.usuario = action.payload;
+        state.isAuthenticated = Boolean(action.payload);
+        state.verificandoSesion = false;
+        state.verificacionIniciada = false;
+      })
+      .addCase(verificarSesion.rejected, (state) => {
+        state.verificandoSesion = false;
+        state.verificacionIniciada = false;
+        state.errorVerificacion = "No pudimos comprobar tu sesión. Revisá la conexión e intentá de nuevo.";
+      })
       .addCase(loginUser.pending, (state) => {
         state.isLoading = true;
         state.error = null;
+        state.versionSesion += 1;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.sesionVencida = false;
-        state.token = action.payload.token;
         state.usuario = action.payload.usuario;
-        state.isAuthenticated = Boolean(action.payload.usuario);
+        state.isAuthenticated = true;
         state.isLoading = false;
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -81,5 +83,4 @@ const authSlice = createSlice({
 });
 
 export const { logout, clearError, vencerSesion } = authSlice.actions;
-
 export default authSlice.reducer;

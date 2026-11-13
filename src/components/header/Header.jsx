@@ -18,11 +18,15 @@ function Header() {
   const { menuOpen, drawerId, closeMenu, toggleMenu } = useMobileMenu();
 
   const handleLogout = async () => {
-    dispatch(vaciarCandyLocal());
-    const canceladas = await logout();
-    notificar(canceladas ? "Cerraste sesión" : "Cerraste sesión, pero no pudimos cancelar tus reservas pendientes.", canceladas ? undefined : "error");
-    closeMenu();
-    navigate("/login");
+    try {
+      dispatch(vaciarCandyLocal());
+      const canceladas = await logout();
+      notificar(canceladas ? "Cerraste sesión" : "Cerraste sesión, pero no pudimos cancelar tus reservas pendientes.", canceladas ? undefined : "error");
+      closeMenu();
+      navigate("/login");
+    } catch {
+      notificar("No pudimos cerrar sesión. Intentá nuevamente.", "error");
+    }
   };
 
   const renderAuthActions = () =>

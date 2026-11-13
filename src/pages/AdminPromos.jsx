@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ConfirmarEliminar from "../components/admin/ConfirmarEliminar";
-import PromoFormModal from "../components/admin/promos/PromoFormModal";
+import PromoFormModal from "../components/admin/promos/PromosFormModal";
 import PromoTarjeta from "../components/admin/promos/PromoTarjeta";
 import { PlusIcon } from "../components/icons";
 import { useAdminPromos } from "../hooks/useAdminPromos";
