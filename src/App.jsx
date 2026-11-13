@@ -17,6 +17,7 @@ import AdminPeliculas from "./pages/AdminPeliculas";
 import AdminFunciones from "./pages/AdminFunciones";
 import AdminSalas from "./pages/AdminSalas";
 import AdminCandy from "./pages/AdminCandy";
+import AdminPromos from "./pages/AdminPromos";
 import Toasts from "./components/Toasts";
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
             <Route path="funciones" element={<AdminFunciones />} />
             <Route path="salas" element={<AdminSalas />} />
             <Route path="candy" element={<AdminCandy />} />
+            <Route path="promos" element={<AdminPromos />} />
           </Route>
         </Route>
       </Routes>
