@@ -47,6 +47,9 @@ function PeliculasFiltros({
   onSeleccionarIdioma,
   formatoSeleccionado,
   onSeleccionarFormato,
+  generoSeleccionado = "todos",
+  onSeleccionarGenero,
+  generosDisponibles = [],
   onLimpiarFiltros,
   hayFiltrosActivos,
   totalResultados,
@@ -85,6 +88,26 @@ function PeliculasFiltros({
       {/* Fila 2: Selectores de Formato e Idioma */}
       <div className="filtros-secundarios">
         <div className="filtros-selects">
+          {/* Selector de Tipo / Género */}
+          <div className="filtro-select-group">
+            <label htmlFor="filtro-genero" className="visually-hidden">
+              Tipo de película
+            </label>
+            <select
+              id="filtro-genero"
+              className="filtro-select"
+              value={generoSeleccionado}
+              onChange={(e) => onSeleccionarGenero?.(e.target.value)}
+            >
+              <option value="todos">Tipo / Género ▾</option>
+              {generosDisponibles.map((genero) => (
+                <option key={genero} value={genero}>
+                  {genero}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* Selector de Formatos */}
           <div className="filtro-select-group">
             <label htmlFor="filtro-formato" className="visually-hidden">

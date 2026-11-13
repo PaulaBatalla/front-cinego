@@ -10,6 +10,7 @@ function formInicial(pelicula) {
     titulo: pelicula?.titulo ?? "",
     duracion: pelicula ? String(pelicula.duracion) : "",
     clasificacion: pelicula ? String(pelicula.clasificacion) : "",
+    genero: pelicula?.genero ?? "",
     sinopsis: pelicula?.sinopsis ?? "",
   };
 }
@@ -20,6 +21,7 @@ function armarDatos(form) {
     titulo: form.titulo.trim(),
     duracion: Number(form.duracion),
     clasificacion: Number(form.clasificacion),
+    genero: form.genero.trim() || null,
     sinopsis: form.sinopsis.trim(),
     posterUrl: form.posterUrl.trim() || null,
   };
@@ -166,6 +168,22 @@ function PeliculaFormModal({ pelicula, idColor, onGuardar, onCerrar }) {
             )}
           </label>
         </div>
+
+        <label className="admin-campo">
+          Tipo / Género
+          <input
+            className="admin-input"
+            type="text"
+            name="genero"
+            placeholder="Ej: Acción, Ciencia Ficción"
+            maxLength={100}
+            value={form.genero}
+            onChange={handleChange}
+          />
+          <span className="admin-campo__ayuda">
+            Podés separar varios géneros con coma (ej: Acción, Fantasía).
+          </span>
+        </label>
 
         <label className="admin-campo">
           Sinopsis
