@@ -1,15 +1,29 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { carritoService } from "../../services/carritoService";
+import { leerCarritoInvitado } from "../../utils/carritoInvitado";
 
+// Trae el carrito del back. Si hay productos agregados sin sesión (marcados como local),
+// primero los sube: el back suma la cantidad si el producto ya estaba en el carrito.
 export const fetchCarrito = createAsyncThunk(
   "candy/fetchCarrito",
-  async (_, { rejectWithValue }) => {
+  async (_, { getState, rejectWithValue }) => {
     try {
+      const locales = getState().candy.items.filter((item) => item.local);
+      const resultados = await Promise.allSettled(
+        locales.map((item) => carritoService.agregar(item.candyId, item.cantidad))
+      );
+      // Los que no se pudieron subir se conservan como locales para reintentar en la próxima carga
+      const sinSubir = locales.filter((_, i) => resultados[i].status === "rejected");
       const datos = await carritoService.obtener();
-      return datos;
+      return { items: Array.isArray(datos) ? datos : [], sinSubir };
     } catch (err) {
       return rejectWithValue(err.message);
     }
+  },
+  {
+    // Al loguearse varios componentes piden el carrito a la vez: si uno ya está en curso,
+    // los demás no arrancan (evita subir dos veces lo agregado sin sesión)
+    condition: (_, { getState }) => !getState().candy.cargando,
   }
 );
 
@@ -83,11 +97,12 @@ export const vaciarPedidoCarrito = createAsyncThunk(
 const candySlice = createSlice({
   name: "candy",
 
-  initialState: {
-    items: [],
+  // Como función: se lee localStorage recién cuando se crea el store, no al importar el archivo
+  initialState: () => ({
+    items: leerCarritoInvitado(),
     cargando: false,
     error: null,
-  },
+  }),
 
   reducers: {
     agregarCandyLocal: (state, action) => {
@@ -110,6 +125,8 @@ const candySlice = createSlice({
           icono: producto.icono,
           categoria: producto.categoria,
           cantidad: 1,
+          // Agregado sin sesión: se sube al back cuando el usuario se loguea
+          local: true,
         });
       }
     },
@@ -152,7 +169,7 @@ const candySlice = createSlice({
       })
       .addCase(fetchCarrito.fulfilled, (state, action) => {
         state.cargando = false;
-        state.items = Array.isArray(action.payload) ? action.payload : [];
+        state.items = [...action.payload.items, ...action.payload.sinSubir];
       })
       .addCase(fetchCarrito.rejected, (state, action) => {
         state.cargando = false;

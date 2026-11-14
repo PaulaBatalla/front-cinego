@@ -43,8 +43,8 @@ function ResumenCandy() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { notificar } = useNotificaciones();
-  const { isAuthenticated, token } = useAuth();
-  const tieneSesionRemota = Boolean(isAuthenticated && token);
+  const { isAuthenticated } = useAuth();
+  const tieneSesionRemota = isAuthenticated;
   const [pedidoConfirmado, setPedidoConfirmado] = useState(null);
 
   useEffect(() => {

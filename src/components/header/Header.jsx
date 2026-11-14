@@ -14,7 +14,7 @@ import Campanita from "./Campanita";
 const SIN_CANDY = [];
 
 function Header() {
-  const { usuario, isAuthenticated, token, esAdmin, logout } = useAuth();
+  const { usuario, isAuthenticated, esAdmin, logout } = useAuth();
   const { notificar } = useNotificaciones();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -26,10 +26,10 @@ function Header() {
   );
 
   useEffect(() => {
-    if (isAuthenticated && token) {
+    if (isAuthenticated) {
       dispatch(fetchCarrito());
     }
-  }, [isAuthenticated, token, dispatch]);
+  }, [isAuthenticated, dispatch]);
 
   const handleLogout = async () => {
     try {

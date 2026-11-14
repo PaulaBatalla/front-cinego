@@ -13,14 +13,14 @@ function Candy() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [categoriaActiva, setCategoriaActiva] = useState("Todos");
-  const { isAuthenticated, token } = useAuth();
+  const { isAuthenticated } = useAuth();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (isAuthenticated && token) {
+    if (isAuthenticated) {
       dispatch(fetchCarrito());
     }
-  }, [isAuthenticated, token, dispatch]);
+  }, [isAuthenticated, dispatch]);
 
   useEffect(() => {
     const controlador = new AbortController();

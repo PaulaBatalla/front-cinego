@@ -27,6 +27,15 @@ function ReservaConRuta(props) {
 async function preparar() {
   peticiones = []; conflicto = false;
   globalThis.fetch = async (url, opciones = {}) => {
+    // El carrito de un usuario logueado se guarda en el back: se simula aparte para no mezclarlo con la reserva
+    if (String(url).includes('/carrito')) {
+      if (opciones.method === 'POST') {
+        const { candyId, cantidad } = JSON.parse(opciones.body);
+        return new Response(JSON.stringify({ id: 100 + candyId, candyId, cantidad, nombre: 'Combo Pareja', precio: 5000 }));
+      }
+      if (opciones.method === 'DELETE') return new Response(null, { status: 204 });
+      return new Response(JSON.stringify([]));
+    }
     if (opciones.method === 'POST') {
       peticiones.push(JSON.parse(opciones.body));
       return conflicto ? new Response('Butaca ocupada', { status: 409 }) : new Response(JSON.stringify({ idReserva: 50, estado: 'PENDIENTE', total: 16400 }));
@@ -39,7 +48,7 @@ async function preparar() {
     }
     return new Response(JSON.stringify([{ id: 1, fila: 'A', numero: 1, ocupado: false }, { id: 2, fila: 'A', numero: 2, ocupado: false }, { id: 3, fila: 'A', numero: 3, ocupado: true }]));
   };
-  store = configureStore({ reducer: { auth: () => ({ token: null, usuario: { email: 'prueba@cinego.test' }, isAuthenticated: true }), candy: candyReducer, [reservasApi.reducerPath]: reservasApi.reducer }, middleware: (defecto) => defecto().concat(reservasApi.middleware) });
+  store = configureStore({ reducer: { auth: () => ({ usuario: { email: 'prueba@cinego.test' }, isAuthenticated: true }), candy: candyReducer, [reservasApi.reducerPath]: reservasApi.reducer }, middleware: (defecto) => defecto().concat(reservasApi.middleware) });
   render(React.createElement(Provider, { store }, React.createElement(MemoryRouter, null, React.createElement(NotificacionesProvider, null, React.createElement(ReservaConRuta, { funcion: { id: 1, peliculaId: 1, precio: 8200, horarioInicio: '2099-12-15T19:30:00', fecha: '2099-12-15', hora: '19:30', sala: 'Sala 3' }, pelicula: { titulo: 'Prueba' } }, React.createElement('p', null, 'Selector de funcion'))))));
   await screen.findByRole('button', { name: 'Butaca A1' });
 }

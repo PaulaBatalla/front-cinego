@@ -13,7 +13,7 @@ const SIN_CANDY = [];
 
 export default function Checkout() {
   const { id } = useParams();
-  const { isAuthenticated, token } = useAuth();
+  const { isAuthenticated } = useAuth();
   const dispatch = useDispatch();
   const tieneCandyStore = useSelector((state) => Boolean(state?.candy));
   const itemsCandy = useSelector((state) => state?.candy?.items ?? SIN_CANDY);
@@ -25,10 +25,10 @@ export default function Checkout() {
     return () => clearInterval(reloj);
   }, []);
   useEffect(() => {
-    if (tieneCandyStore && isAuthenticated && token) {
+    if (tieneCandyStore && isAuthenticated) {
       dispatch(fetchCarrito());
     }
-  }, [tieneCandyStore, isAuthenticated, token, dispatch]);
+  }, [tieneCandyStore, isAuthenticated, dispatch]);
   const reserva = useReservaQuery(id, { skip: !isAuthenticated, refetchOnMountOrArgChange: true, pollingInterval: 5000 });
   const funciones = useFuncionesQuery(undefined, { skip: !isAuthenticated });
   const peliculas = usePeliculasQuery(undefined, { skip: !isAuthenticated });
@@ -70,7 +70,7 @@ export default function Checkout() {
           await dispatch(
             vaciarPedidoCarrito({
               items: snapshotCandy,
-              isAuthenticated: Boolean(isAuthenticated && token),
+              isAuthenticated: isAuthenticated,
             })
           );
           dispatch(vaciarCandyLocal());
