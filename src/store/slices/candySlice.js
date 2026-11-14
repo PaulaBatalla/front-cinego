@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { carritoService } from "../../services/carritoService";
+import { leerCarritoInvitado } from "../../utils/carritoInvitado";
 
 // Trae el carrito del back. Si hay productos agregados sin sesión (marcados como local),
 // primero los sube: el back suma la cantidad si el producto ya estaba en el carrito.
@@ -96,11 +97,12 @@ export const vaciarPedidoCarrito = createAsyncThunk(
 const candySlice = createSlice({
   name: "candy",
 
-  initialState: {
-    items: [],
+  // Como función: se lee localStorage recién cuando se crea el store, no al importar el archivo
+  initialState: () => ({
+    items: leerCarritoInvitado(),
     cargando: false,
     error: null,
-  },
+  }),
 
   reducers: {
     agregarCandyLocal: (state, action) => {

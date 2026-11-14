@@ -4,6 +4,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import candyReducer from "./slices/candySlice";
 import authReducer, { loginUser, logout, vencerSesion } from "./slices/authSlice";
 import { reservasApi } from "../services/reservasApi";
+import { guardarCarritoInvitado } from "../utils/carritoInvitado";
 
 const limpiarReservasAlCambiarSesion = ({ dispatch }) => (next) => (action) => {
   const resultado = next(action);
@@ -21,6 +22,16 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware()
     .concat(limpiarReservasAlCambiarSesion, reservasApi.middleware),
+});
+
+// Cada vez que cambia el carrito se guarda la parte de invitado en localStorage
+let itemsGuardados = store.getState().candy.items;
+store.subscribe(() => {
+  const { items } = store.getState().candy;
+  if (items !== itemsGuardados) {
+    itemsGuardados = items;
+    guardarCarritoInvitado(items);
+  }
 });
 
 configurarControlSesion(
